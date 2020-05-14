@@ -32,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, new ListNotasFragment()).commit();
-        getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, new ListNotasFragment()).commit();
+            getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
+        }
 
         // Configuracion de los menus (drawer y toolbar)
         toolbar = findViewById(R.id.toolbar);
