@@ -1,0 +1,54 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.notas.MainActivity">
+
+    <!--<item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />-->
+
+    <!--<item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:orderInCategory="100"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />-->
+
+    <!--<item
+        android:id="@+id/action_filtrar"
+        android:title="Ordenar por"
+        android:orderInCategory="100" >
+
+        <menu>
+            <item
+                android:id="@+id/action_filtrar_fecha_asc"
+                android:orderInCategory="100"
+                android:title="Fecha ascendente" />
+
+            <item
+                android:id="@+id/action_filtrar_fecha_des"
+                android:orderInCategory="100"
+                android:title="Fecha descendente" />
+
+            <item
+                android:id="@+id/action_filtrar_titulo_asc"
+                android:orderInCategory="100"
+                android:title="Título ascendente" />
+
+            <item
+                android:id="@+id/action_filtrar_titulo_des"
+                android:orderInCategory="100"
+                android:title="Título descendente" />
+        </menu>
+
+    </item>-->
+
+    <item
+        android:id="@+id/action_salir"
+        android:orderInCategory="101"
+        android:title="Salir"
+        app:showAsAction="never" />
+
+</menu>
