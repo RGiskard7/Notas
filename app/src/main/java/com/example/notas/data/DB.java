@@ -38,8 +38,5 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL(crearTablaNotas);
         db.execSQL(crearTablaLibretas);
         db.execSQL(libretaNotas);
-
-        /*db.execSQL("INSERT INTO libretas (titulo, fecha_creacion) VALUES ('Default','" +
-                dtf.format(Calendar.getInstance().getTime()) + "')");*/
     }
 }

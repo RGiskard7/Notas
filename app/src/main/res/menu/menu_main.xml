@@ -9,14 +9,15 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />-->
 
-    <!--<item
+    <item
         android:id="@+id/app_bar_search"
+        android:title="Buscar"
         android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="100"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />-->
+        app:showAsAction="always" />
 
-    <!--<item
+    <item
         android:id="@+id/action_filtrar"
         android:title="Ordenar por"
         android:orderInCategory="100" >
@@ -41,9 +42,19 @@
                 android:id="@+id/action_filtrar_titulo_des"
                 android:orderInCategory="100"
                 android:title="Título descendente" />
+
+            <item
+                android:id="@+id/action_recuento_notas_asc"
+                android:orderInCategory="100"
+                android:title="Recuento de notas ascendente" />
+
+            <item
+                android:id="@+id/action_recuento_notas_des"
+                android:orderInCategory="100"
+                android:title="Recuento de notas descendente" />
         </menu>
 
-    </item>-->
+    </item>
 
     <item
         android:id="@+id/action_salir"

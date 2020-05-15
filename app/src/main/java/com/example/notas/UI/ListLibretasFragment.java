@@ -2,10 +2,12 @@ package com.example.notas.UI;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,8 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -34,10 +38,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ListLibretasFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class ListLibretasFragment extends Fragment {
     private ListView lv;
     private AdaptadorListLibretas adaptador;
     private List<Libreta> listaLibretas;
+    private FactoryDAO SQLiteFactory;
     private ILibretaDAO libretaDAO;
     private SearchView searchView;
 
@@ -45,50 +50,82 @@ public class ListLibretasFragment extends Fragment implements SearchView.OnQuery
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_libretas, container, false);
 
+        setHasOptionsMenu(true);
+
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas");
+
+        // Conexion con el proveedor de datos a través del DAO
+        SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+        libretaDAO = SQLiteFactory.getLibretaDao(getActivity());
+
         listaLibretas = new ArrayList<>();
+
+        libretaDAO.getAllLibretas(listaLibretas); // Se carga la base de datos en memoria
+        for (Libreta libreta : listaLibretas) {
+            libretaDAO.getAllNotasFrom(libreta.getId(), new ArrayList<Nota>());
+        }
+
         adaptador = new AdaptadorListLibretas(getActivity(), listaLibretas);
         lv = (ListView) view.findViewById(R.id.listViewLibretas);
         lv.setAdapter(adaptador);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // VER NOTA
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Libreta libreta = listaLibretas.get(position);
                 Libreta libreta = (Libreta) parent.getItemAtPosition(position);
-                List<Nota> notas = new ArrayList<>();
-                libretaDAO.getAllNotasFrom(libreta.getId(), notas);
                 ListNotasFragment fragment = new ListNotasFragment(libreta); // Listar las notas de la libreta
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
                 DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout); // Cerrar la pestaña al presionar
                 drawer.closeDrawer(GravityCompat.START);
                 ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
-                /*if (!notas.isEmpty()) {
-                    ListNotasFragment fragment = new ListNotasFragment(libreta); // Listar las notas de la libreta
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
-                    DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout); // Cerrar la pestaña al presionar
-                    drawer.closeDrawer(GravityCompat.START);
-                    ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
-                } else {
-                    Toast.makeText(getActivity(), "La libreta " + libreta.getTitulo() + " esta vacía", Toast.LENGTH_SHORT).show();
-                }*/
             }
         });
 
         registerForContextMenu(lv);
 
-        // Conexion con el proveedor de datos a través del DAO
-        FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-        libretaDAO = SQLiteFactory.getLibretaDao(getActivity());
+        return view;
+    }
 
-        libretaDAO.getAllLibretas(listaLibretas); // Se carga la base de datos en memoria
-        /*Collections.sort(listaLibretas, new Comparator<Libreta>() {
+    private void resetListaLibretas() {
+        libretaDAO.getAllLibretas(listaLibretas);
+        for (Libreta libreta : listaLibretas) {
+            libretaDAO.getAllNotasFrom(libreta.getId(), new ArrayList<Nota>());
+        }
+        adaptador.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_fecha_des).setVisible(false);
+
+        searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public int compare(Libreta o1, Libreta o2) {
-                return o2.getFechaCreacion().compareTo(o1.getFechaCreacion());
-            } // Se ordenan las libretas por fecha descendente
-        });*/
+            public boolean onQueryTextSubmit(String query) {
+                libretaDAO.getAllLibretas(listaLibretas);
+                List<Libreta> listaLibretasCopy = new ArrayList<>(listaLibretas);
+                listaLibretas.clear();
 
-        searchView = (SearchView) view.findViewById(R.id.search_view2);
-        searchView.setOnQueryTextListener(this);
+                if (!TextUtils.isEmpty(query)) {
+                    for (Libreta libreta : listaLibretasCopy) {
+                        if (libreta.getTitulo().contains(query)) {
+                            listaLibretas.add(libreta);
+                        }
+                    }
+                }
+
+                adaptador.notifyDataSetChanged();
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -96,8 +133,57 @@ public class ListLibretasFragment extends Fragment implements SearchView.OnQuery
                 return false;
             }
         });
+    }
 
-        return view;
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_filtrar_titulo_asc) {
+            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+                @Override
+                public int compare(Libreta o1, Libreta o2) {
+                    return o1.getTitulo().compareToIgnoreCase(o2.getTitulo());
+                }
+            });
+            adaptador.notifyDataSetChanged();
+        }
+
+        if (id == R.id.action_filtrar_titulo_des) {
+            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+                @Override
+                public int compare(Libreta o1, Libreta o2) {
+                    return o2.getTitulo().compareToIgnoreCase(o1.getTitulo());
+                }
+            });
+            adaptador.notifyDataSetChanged();
+        }
+
+        if (id == R.id.action_recuento_notas_asc) {
+            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+                @Override
+                public int compare(Libreta o1, Libreta o2) {
+                    Integer v1 = o1.getNotas().size();
+                    Integer v2 = o2.getNotas().size();
+                    return v1.compareTo(v2);
+                }
+            });
+            adaptador.notifyDataSetChanged();
+        }
+
+        if (id == R.id.action_recuento_notas_des) {
+            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+                @Override
+                public int compare(Libreta o1, Libreta o2) {
+                    Integer v1 = o1.getNotas().size();
+                    Integer v2 = o2.getNotas().size();
+                    return v2.compareTo(v1);
+                }
+            });
+            adaptador.notifyDataSetChanged();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // OPCIONES MENU CONTEXTUAL
@@ -158,44 +244,9 @@ public class ListLibretasFragment extends Fragment implements SearchView.OnQuery
 
     }
 
-    private void resetListaLibretas() {
-        libretaDAO.getAllLibretas(listaLibretas);
-        adaptador.notifyDataSetChanged();
-        /*Collections.sort(listaLibretas, new Comparator<Libreta>() { // Se ordenan las notas por fecha descendente
-            @Override
-            public int compare(Libreta o1, Libreta o2) {
-                return o2.getFechaCreacion().compareTo(o1.getFechaCreacion());
-            }
-        });*/
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         resetListaLibretas();
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        libretaDAO.getAllLibretas(listaLibretas);
-        List<Libreta> listaLibretasCopy = new ArrayList<>(listaLibretas);
-        listaLibretas.clear();
-
-        if (!TextUtils.isEmpty(query)) {
-            for (Libreta libreta : listaLibretasCopy) {
-                if (libreta.getTitulo().contains(query)) {
-                    listaLibretas.add(libreta);
-                }
-            }
-        }
-
-        adaptador.notifyDataSetChanged();
-
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
     }
 }

@@ -55,25 +55,12 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = null;
                 Boolean fragmentSelected = false;
 
-                switch(menuItem.getItemId()) {
-                    case R.id.allNotas:
-                        fragment = new ListNotasFragment();
-                        fragmentSelected = true;
-                        getSupportActionBar().setTitle("Todas las notas");
-                        break;
-                    case R.id.allLibretas:
-                        fragment = new ListLibretasFragment();
-                        fragmentSelected = true;
-                        getSupportActionBar().setTitle("Libretas");
-                        break;
-                    /*case R.id.newLibreta:
-                        Intent intent = new Intent(MainActivity.this, CuartaActivity.class);
-                        intent.putExtra("tipo", "nueva");
-                        startActivity(intent);
-                        fragment = new ListLibretasFragment();
-                        fragmentSelected = true;
-                        getSupportActionBar().setTitle("Libretas");
-                        break;*/
+                if (menuItem.getItemId() == R.id.allNotas) {
+                    fragment = new ListNotasFragment();
+                    fragmentSelected = true;
+                } else if (menuItem.getItemId() == R.id.allLibretas) {
+                    fragment = new ListLibretasFragment();
+                    fragmentSelected = true;
                 }
 
                 if (fragmentSelected) {
@@ -176,46 +163,6 @@ public class MainActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
-
-        /*if (id == R.id.action_filtrar_fecha_asc) {
-            Collections.sort(listaNotas, new Comparator<Nota>() {
-                @Override
-                public int compare(Nota o1, Nota o2) {
-                    return o1.getFechaCreacion().compareTo(o2.getFechaCreacion());
-                }
-            });
-            adaptador.notifyDataSetChanged();
-        }
-
-        if (id == R.id.action_filtrar_fecha_des) {
-            Collections.sort(listaNotas, new Comparator<Nota>() {
-                @Override
-                public int compare(Nota o1, Nota o2) {
-                    return o2.getFechaCreacion().compareTo(o1.getFechaCreacion());
-                }
-            });
-            adaptador.notifyDataSetChanged();
-        }
-
-        if (id == R.id.action_filtrar_titulo_asc) {
-            Collections.sort(listaNotas, new Comparator<Nota>() {
-                @Override
-                public int compare(Nota o1, Nota o2) {
-                    return o1.getTitulo().compareToIgnoreCase(o2.getTitulo());
-                }
-            });
-            adaptador.notifyDataSetChanged();
-        }
-
-        if (id == R.id.action_filtrar_titulo_des) {
-            Collections.sort(listaNotas, new Comparator<Nota>() {
-                @Override
-                public int compare(Nota o1, Nota o2) {
-                    return o2.getTitulo().compareToIgnoreCase(o1.getTitulo());
-                }
-            });
-            adaptador.notifyDataSetChanged();
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
