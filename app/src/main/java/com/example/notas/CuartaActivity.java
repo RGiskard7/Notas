@@ -64,16 +64,15 @@ public class CuartaActivity extends AppCompatActivity {
 
         if (id == R.id.action_guardar2) {
             if (titulo.getText().toString().compareTo("") != 0) {
-                if (libretaDAO.existTitulo(titulo.getText().toString())) {
-                    Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
                 if (editando) {
                     editando = false;
                     libretaDAO.editLibreta(libreta.getId(), titulo.getText().toString()); // Actualizar libreta
                     Toast.makeText(this, "Libreta editada", Toast.LENGTH_SHORT).show();
                 } else {
+                    if (libretaDAO.existTitulo(titulo.getText().toString())) {
+                        Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
                     libretaDAO.createLibreta(titulo.getText().toString()); // Añadir nueva libreta
                     Toast.makeText(this, "Libreta guardada", Toast.LENGTH_SHORT).show();
                 }

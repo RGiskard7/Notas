@@ -115,11 +115,6 @@ public class SegundaActivity extends AppCompatActivity {
 
         if (id == R.id.action_guardar) {
             if (titulo.getText().toString().compareTo("") != 0 || texto.getText().toString().compareTo("") != 0) {
-                if (notaDAO.existTitulo(titulo.getText().toString())) {
-                    Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
                 if (titulo.getText().toString().compareTo("") == 0 && texto.getText().toString().compareTo("") != 0) {
                     titulo.setText("Nota sin título");
                 }
@@ -131,6 +126,10 @@ public class SegundaActivity extends AppCompatActivity {
                     libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
                     Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
                 } else {
+                    if (notaDAO.existTitulo(titulo.getText().toString())) {
+                        Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
                     int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
                     libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
                     Toast.makeText(this, "Nota creada", Toast.LENGTH_SHORT).show();
