@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:inputType="text|textMultiLine|textCapSentences"
         android:singleLine="false"
-        android:hint="Titulo"
+        android:hint="Nombre"
         android:layout_margin="10dp"/>
 
 </LinearLayout>

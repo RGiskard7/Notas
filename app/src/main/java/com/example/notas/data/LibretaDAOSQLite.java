@@ -25,6 +25,16 @@ public class LibretaDAOSQLite implements ILibretaDAO {
     }
 
     @Override
+    public Boolean existTitulo(String titulo) {
+        Cursor c = db.rawQuery("select count(*) from libretas where titulo = ?", new String[]{titulo});
+        c.moveToFirst();
+        if (c.getInt(0) > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void deleteLibreta(int id) {
         db.execSQL("DELETE FROM libretas WHERE libreta_id = '" + id + "'"); // Eliminar libreta por id
         db.execSQL("DELETE FROM libretaNotas WHERE libreta_id = '" + id + "'");

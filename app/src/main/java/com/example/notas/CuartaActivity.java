@@ -17,6 +17,8 @@ import com.example.notas.data.Nota;
 public class CuartaActivity extends AppCompatActivity {
     private Libreta libreta;
     private EditText titulo;
+    private FactoryDAO SQLiteFactory;
+    private ILibretaDAO libretaDAO;
     private boolean editando;
 
     @Override
@@ -27,6 +29,9 @@ public class CuartaActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Nueva libreta");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+        libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
 
         titulo = (EditText) findViewById(R.id.tituloLibreta);
 
@@ -58,16 +63,23 @@ public class CuartaActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_guardar2) {
-            FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-            ILibretaDAO libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
+            if (titulo.getText().toString().compareTo("") != 0) {
+                if (libretaDAO.existTitulo(titulo.getText().toString())) {
+                    Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
 
-            if (editando) {
-                editando = false;
-                libretaDAO.editLibreta(libreta.getId(), titulo.getText().toString()); // Actualizar libreta
-                Toast.makeText(this, "Libreta guardada", Toast.LENGTH_SHORT).show();
+                if (editando) {
+                    editando = false;
+                    libretaDAO.editLibreta(libreta.getId(), titulo.getText().toString()); // Actualizar libreta
+                    Toast.makeText(this, "Libreta editada", Toast.LENGTH_SHORT).show();
+                } else {
+                    libretaDAO.createLibreta(titulo.getText().toString()); // Añadir nueva libreta
+                    Toast.makeText(this, "Libreta guardada", Toast.LENGTH_SHORT).show();
+                }
+
             } else {
-                libretaDAO.createLibreta(titulo.getText().toString()); // Añadir nueva libreta
-                Toast.makeText(this, "Libreta guardada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No se puede guardar una libreta sin nombre", Toast.LENGTH_SHORT).show();
             }
 
             finish();

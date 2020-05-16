@@ -7,31 +7,26 @@
         android:id="@+id/textViewFecha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="3dp"
         android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textViewTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="1dp"
         android:textSize="15sp"
+        android:ellipsize="end"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewTexto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
         android:layout_marginTop="1dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="15dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textSize="15sp" />

@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface INotaDAO {
     public int createNota(String titulo, String texto);
+    public Boolean existTitulo(String titulo);
     public void editNota(int id, String titulo, String texto);
     public Libreta getLibreta(int idNota);
     public void deleteLibreta(int idNota, int idLibreta);

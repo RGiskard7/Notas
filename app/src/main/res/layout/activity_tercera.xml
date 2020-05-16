@@ -9,7 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
 
         <TextView
             android:id="@+id/textViewFecha"
@@ -18,8 +20,6 @@
             android:textSize="12sp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
             android:textAlignment="center" />
 
         <TextView
@@ -30,19 +30,16 @@
             android:ems="10"
             android:textSize="24sp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp" />
 
         <TextView
             android:id="@+id/textViewLibreta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:drawableLeft="?attr/actionModePasteDrawable"
+            android:drawablePadding="5dp"
             android:ems="10"
             android:scrollbars="vertical"
             android:textSize="14sp" />
@@ -57,9 +54,7 @@
             android:textSize="18sp"
             android:scrollbars = "vertical"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
+            android:layout_marginBottom="5dp" />
 
     </LinearLayout>
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class NotaDAOSQLite implements INotaDAO {
     private SQLiteDatabase db;
-    private final SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yyyy");
+    private final SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
 
     public NotaDAOSQLite(Context context, String name, SQLiteDatabase.CursorFactory factory, int versionDB) {
         DB dbNotas = new DB(context, name, factory, versionDB); // Conectar a base de datos
@@ -25,6 +25,16 @@ public class NotaDAOSQLite implements INotaDAO {
         Cursor c = db.rawQuery("SELECT last_insert_rowid();", null);
         c.moveToFirst();
         return c.getInt(0);
+    }
+
+    @Override
+    public Boolean existTitulo(String titulo) {
+        Cursor c = db.rawQuery("select count(*) from notas where titulo = ?", new String[]{titulo});
+        c.moveToFirst();
+        if (c.getInt(0) > 0) {
+            return true;
+        }
+        return false;
     }
 
     @Override

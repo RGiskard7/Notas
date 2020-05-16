@@ -114,18 +114,52 @@ public class SegundaActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_guardar) {
+            if (titulo.getText().toString().compareTo("") != 0 || texto.getText().toString().compareTo("") != 0) {
+                if (notaDAO.existTitulo(titulo.getText().toString())) {
+                    Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
 
-            if (editando) {
+                if (titulo.getText().toString().compareTo("") == 0 && texto.getText().toString().compareTo("") != 0) {
+                    titulo.setText("Nota sin título");
+                }
+
+                if (editando) {
+                    editando = false;
+                    notaDAO.editNota(nota.getId(), titulo.getText().toString(), texto.getText().toString());
+                    notaDAO.deleteLibreta(nota.getId(), oldLibreta.getId());
+                    libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
+                    Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
+                } else {
+                    int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
+                    libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
+                    Toast.makeText(this, "Nota creada", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(this, "No se puede guardar una nota vacía", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+            /*if (editando) {
                 editando = false;
                 notaDAO.editNota(nota.getId(), titulo.getText().toString(), texto.getText().toString());
                 notaDAO.deleteLibreta(nota.getId(), oldLibreta.getId());
                 libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
                 Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
             } else {
-                int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
-                libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
-                Toast.makeText(this, "Nota guardada", Toast.LENGTH_SHORT).show();
-            }
+                if (titulo.getText().toString().compareTo("") != 0 || texto.getText().toString().compareTo("") != 0) {
+                    if (titulo.getText().toString().compareTo("") == 0 && texto.getText().toString().compareTo("") != 0) {
+                        titulo.setText("Nota sin título");
+                    }
+                    int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
+                    libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
+
+                } else {
+                    Toast.makeText(this, "No se puede guardar una nota vacía", Toast.LENGTH_SHORT).show();
+                }
+            }*/
 
             finish();
 

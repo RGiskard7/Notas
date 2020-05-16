@@ -11,13 +11,13 @@ public class DB extends SQLiteOpenHelper {
     private SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yyyy");
 
     private static final String crearTablaNotas = "CREATE TABLE notas(nota_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "titulo TEXT, texto TEXT, libreta INTEGER, fecha_creacion TEXT)";
+            "titulo TEXT NOT NULL UNIQUE, texto TEXT, libreta INTEGER, fecha_creacion TEXT)";
 
     private static final String crearTablaLibretas = "CREATE TABLE libretas(libreta_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "titulo TEXT, fecha_creacion TEXT)";
+            "titulo TEXT NOT NULL UNIQUE, fecha_creacion TEXT)";
 
     private static final String libretaNotas = "CREATE TABLE libretaNotas(id INTEGER PRIMARY KEY AUTOINCREMENT, libreta_id INTEGER , nota_id INTEGER, FOREIGN  KEY" +
-     "(libreta_id) REFERENCES libretas(id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN  KEY (nota_id) REFERENCES notas(id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)";
+     "(libreta_id) REFERENCES libretas(libreta_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN  KEY (nota_id) REFERENCES notas(nota_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)";
 
     public DB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

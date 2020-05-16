@@ -46,7 +46,7 @@ public class TerceraActivity extends AppCompatActivity {
         INotaDAO notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
         Libreta libreta = notaDAO.getLibreta(nota.getId());
 
-        Txlibreta.setText("Libreta: " + libreta.getTitulo());
+        Txlibreta.setText(libreta.getTitulo());
     }
 
     @Override
