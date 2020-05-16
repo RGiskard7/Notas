@@ -20,12 +20,14 @@ public class LibretaDAOSQLite implements ILibretaDAO {
 
     @Override
     public void createLibreta(String titulo) {
+        titulo = titulo.replace("'", "''");
         db.execSQL("INSERT INTO libretas (titulo, fecha_creacion) VALUES ('" + titulo + "','" +
                 dtf.format(Calendar.getInstance().getTime()) + "')"); // Añadir nueva libreta
     }
 
     @Override
     public Boolean existTitulo(String titulo) {
+        titulo = titulo.replace("'", "''");
         Cursor c = db.rawQuery("select count(*) from libretas where titulo = ?", new String[]{titulo});
         c.moveToFirst();
         if (c.getInt(0) > 0) {
@@ -47,6 +49,7 @@ public class LibretaDAOSQLite implements ILibretaDAO {
 
     @Override
     public void editLibreta(int id, String titulo) {
+        titulo = titulo.replace("'", "''");
         db.execSQL("UPDATE libretas SET titulo = '" + titulo + "',"  +  "fecha_creacion = '" + dtf.format(Calendar.getInstance().getTime()) +
                 "' WHERE libreta_id = '" + id + "'"); // Actualizar libreta
     }

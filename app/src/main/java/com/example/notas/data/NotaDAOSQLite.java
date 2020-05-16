@@ -19,6 +19,8 @@ public class NotaDAOSQLite implements INotaDAO {
 
     @Override
     public int createNota(String titulo, String texto) {
+        titulo = titulo.replace("'", "''");
+        texto = texto.replace("'", "''");
         db.execSQL("INSERT INTO notas (titulo, texto, fecha_creacion) VALUES ('" + titulo + "','" +
                 texto + "','" + dtf.format(Calendar.getInstance().getTime()) + "')");
 
@@ -29,6 +31,7 @@ public class NotaDAOSQLite implements INotaDAO {
 
     @Override
     public Boolean existTitulo(String titulo) {
+        titulo = titulo.replace("'", "''");
         Cursor c = db.rawQuery("select count(*) from notas where titulo = ?", new String[]{titulo});
         c.moveToFirst();
         if (c.getInt(0) > 0) {
@@ -52,6 +55,8 @@ public class NotaDAOSQLite implements INotaDAO {
 
     @Override
     public void editNota(int id, String titulo, String texto) {
+        titulo = titulo.replace("'", "''");
+        texto = texto.replace("'", "''");
         db.execSQL("UPDATE notas SET titulo = '" + titulo + "'," + "texto = '" + texto + "'," +
                 "fecha_creacion = '" + dtf.format(Calendar.getInstance().getTime()) + "' WHERE nota_id = '" + id + "'"); // Actualizar nota
 
