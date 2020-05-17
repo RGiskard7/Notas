@@ -20,7 +20,8 @@
             android:textSize="12sp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/textViewTitulo"
@@ -42,7 +43,8 @@
             android:drawablePadding="5dp"
             android:ems="10"
             android:scrollbars="vertical"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textStyle="normal"/>
 
         <View style="@style/Divider"/>
 
@@ -54,7 +56,8 @@
             android:textSize="18sp"
             android:scrollbars = "vertical"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="15dp" />
+            android:layout_marginBottom="15dp"
+            android:textStyle="normal" />
 
     </LinearLayout>
 

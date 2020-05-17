@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="3dp"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/textViewTitulo"
@@ -29,6 +30,7 @@
         android:layout_marginBottom="15dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:textStyle="normal"/>
 
 </LinearLayout>

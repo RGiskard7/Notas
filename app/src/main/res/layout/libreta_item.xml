@@ -25,6 +25,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textStyle="italic"/>
 
 </LinearLayout>
