@@ -30,11 +30,11 @@ public class TerceraActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titulo = (TextView) findViewById(R.id.textViewTitulo);
-        texto = (TextView) findViewById(R.id.textViewTexto);
+        titulo = (TextView) findViewById(R.id.textViewTituloNota);
+        texto = (TextView) findViewById(R.id.textViewTextoNota);
         texto.setMovementMethod(new ScrollingMovementMethod());
-        fecha = (TextView) findViewById(R.id.textViewFecha);
-        Txlibreta = (TextView) findViewById(R.id.textViewLibreta);
+        fecha = (TextView) findViewById(R.id.textViewFechaNota);
+        Txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
 
         nota = (Nota) getIntent().getSerializableExtra("nota");
 

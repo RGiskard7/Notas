@@ -12,11 +12,11 @@
         android:orientation="vertical" >
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editTextTituloNwNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Título de la nota"
+            android:hint="@string/editTextHintAs"
             android:inputType="text|textMultiLine|textCapSentences"
             android:maxLength="60"
             android:singleLine="false"
@@ -28,11 +28,11 @@
             android:layout_marginBottom="2dp"/>
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/editTextContenidoNwNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Contenido"
+            android:hint="@string/editTextHintAs2"
             android:inputType="text|textMultiLine|textCapSentences"
             android:singleLine="false"
             android:layout_marginLeft="10dp"
@@ -41,13 +41,14 @@
             android:layout_marginBottom="2dp"/>
 
         <TextView
+            android:id="@+id/textViewLibretaNewNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="15dp"
             android:drawableLeft="?attr/actionModePasteDrawable"
-            android:text="Libreta" />
+            android:text="@string/textViewAs" />
 
         <Spinner
             android:id="@+id/spinnerOpcionLibretas"

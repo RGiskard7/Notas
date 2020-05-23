@@ -7,7 +7,7 @@
     tools:context=".CuartaActivity">
 
     <EditText
-        android:id="@+id/tituloLibreta"
+        android:id="@+id/editTextTituloLibreta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:inputType="text|textMultiLine|textCapSentences"
         android:singleLine="false"
-        android:hint="Nombre"
+        android:hint="@string/editTextHintAc"
         android:layout_margin="10dp"/>
 
 </LinearLayout>

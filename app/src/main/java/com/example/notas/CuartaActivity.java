@@ -33,7 +33,7 @@ public class CuartaActivity extends AppCompatActivity {
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
 
-        titulo = (EditText) findViewById(R.id.tituloLibreta);
+        titulo = (EditText) findViewById(R.id.editTextTituloLibreta);
 
         editando = false;
 

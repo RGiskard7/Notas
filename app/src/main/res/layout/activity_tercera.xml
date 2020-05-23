@@ -14,7 +14,7 @@
         android:layout_marginRight="15dp">
 
         <TextView
-            android:id="@+id/textViewFecha"
+            android:id="@+id/textViewFechaNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="12sp"
@@ -24,7 +24,7 @@
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/textViewTitulo"
+            android:id="@+id/textViewTituloNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
@@ -34,7 +34,7 @@
             android:layout_marginRight="15dp" />
 
         <TextView
-            android:id="@+id/textViewLibreta"
+            android:id="@+id/textViewLibretaNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -49,7 +49,7 @@
         <View style="@style/Divider"/>
 
         <TextView
-            android:id="@+id/textViewTexto"
+            android:id="@+id/textViewTextoNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

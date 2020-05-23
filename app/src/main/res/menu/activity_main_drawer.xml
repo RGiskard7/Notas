@@ -17,12 +17,4 @@
         </item>
     </group>
 
-    <!--<item android:title="">
-        <menu>
-            <item android:id="@+id/newLibreta"
-                android:title="Crear nueva libreta">
-            </item>
-        </menu>
-    </item>-->
-
 </menu>

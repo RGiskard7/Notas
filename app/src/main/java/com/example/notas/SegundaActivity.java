@@ -42,8 +42,8 @@ public class SegundaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titulo = (EditText) findViewById(R.id.editText);
-        texto = (EditText) findViewById(R.id.editText2);
+        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
+        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
         spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
 
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);

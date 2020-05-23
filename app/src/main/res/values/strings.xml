@@ -5,12 +5,13 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_cuarta">CuartaActivity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <!-- Strings used for nav_header_main.xml -->
+    <string name="textViewNav">Gilinote</string>
+    <string name="textViewNav2">Larga vida y prosperidad, gili</string>
+    <!-- String used for activity_segunda.xml -->
+    <string name="editTextHintAs">"Título de la nota"</string>
+    <string name="editTextHintAs2">"Contenido"</string>
+    <string name="textViewAs">"Libreta"</string>
+    <!-- String used for activity_cuarta.xml -->
+    <string name="editTextHintAc">"Nombre"</string>
 </resources>
