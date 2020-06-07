@@ -1,8 +1,6 @@
 package com.example.notas.UI;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -18,20 +16,17 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.notas.CuartaActivity;
 import com.example.notas.MainActivity;
-import com.example.notas.SegundaActivity;
 import com.example.notas.data.Libreta;
 import com.example.notas.R;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Nota;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,24 +45,40 @@ public class ListLibretasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_libretas, container, false);
 
-        setHasOptionsMenu(true);
-
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas");
-
         // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getActivity());
 
         listaLibretas = new ArrayList<>();
 
+        loadData();
+        createComponents(view);
+        eventRecorder();
+
+        return view;
+    }
+
+    public void loadData() {
         libretaDAO.getAllLibretas(listaLibretas); // Se carga la base de datos en memoria
         for (Libreta libreta : listaLibretas) {
             libretaDAO.getAllNotasFrom(libreta.getId(), new ArrayList<Nota>());
         }
+    }
+
+    public void createComponents(View view) {
+        setHasOptionsMenu(true);
+
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas");
 
         adaptador = new AdaptadorListLibretas(getActivity(), listaLibretas);
         lv = (ListView) view.findViewById(R.id.listViewLibretas);
         lv.setAdapter(adaptador);
+
+
+        registerForContextMenu(lv);
+    }
+
+    public void eventRecorder() {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // VER NOTA
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -79,17 +90,10 @@ public class ListLibretasFragment extends Fragment {
                 ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
             }
         });
-
-        registerForContextMenu(lv);
-
-        return view;
     }
 
     private void resetListaLibretas() {
-        libretaDAO.getAllLibretas(listaLibretas);
-        for (Libreta libreta : listaLibretas) {
-            libretaDAO.getAllNotasFrom(libreta.getId(), new ArrayList<Nota>());
-        }
+        loadData();
         adaptador.notifyDataSetChanged();
     }
 

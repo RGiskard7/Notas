@@ -27,7 +27,6 @@ import com.example.notas.SegundaActivity;
 import com.example.notas.TerceraActivity;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.INotaDAO;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,9 +55,6 @@ public class ListNotasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_notas, container, false);
 
-        setHasOptionsMenu(true); // Habilita la modificacion del menu superior aniadido en la actividad
-                                 // Permite añadir acciones a las opciones del menu superior de la actividad
-
         // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         notaDAO = SQLiteFactory.getNotaDao(getActivity());
@@ -66,13 +62,18 @@ public class ListNotasFragment extends Fragment {
 
         listaNotas = new ArrayList<>();
 
-        // Se carga la base de datos en memoria
-        if (libreta == null) {
+        loadData();
+        createComponents(view);
+        eventRecorder();
+
+        return view;
+    }
+
+    public void loadData() {
+        if (libreta == null) { // Se carga la base de datos en memoria
             notaDAO.getAllNotas(listaNotas);
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Todas las notas");
         } else {
             libretaDAO.getAllNotasFrom(libreta.getId(), listaNotas);
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
         }
 
         Collections.sort(listaNotas, new Comparator<Nota>() { // Se ordenan las notas por fecha descendente
@@ -81,10 +82,26 @@ public class ListNotasFragment extends Fragment {
                 return o2.getFechaCreacion().compareTo(o1.getFechaCreacion());
             }
         });
+    }
+
+    public void createComponents(View view) {
+        setHasOptionsMenu(true); // Habilita la modificacion del menu superior aniadido en la actividad
+                                 // Permite añadir acciones a las opciones del menu superior de la actividad
+
+        if (libreta == null) {
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Todas las notas");
+        } else {
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
+        }
 
         adaptador = new AdaptadorListNotas(getActivity(), listaNotas);
         lv = (ListView) view.findViewById(R.id.listViewNotas);
         lv.setAdapter(adaptador);
+
+        registerForContextMenu(lv);
+    }
+
+    public void eventRecorder() {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // VER NOTA
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -93,10 +110,6 @@ public class ListNotasFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
-        registerForContextMenu(lv);
-
-        return view;
     }
 
     public Libreta getLibreta() {
@@ -104,19 +117,7 @@ public class ListNotasFragment extends Fragment {
     }
 
     private void resetListaNotas() {
-        if (libreta == null) {
-            notaDAO.getAllNotas(listaNotas);
-        } else {
-            libretaDAO.getAllNotasFrom(libreta.getId(), listaNotas);
-        }
-
-        Collections.sort(listaNotas, new Comparator<Nota>() { // Se ordenan las notas por fecha descendente
-            @Override
-            public int compare(Nota o1, Nota o2) {
-                return o2.getFechaCreacion().compareTo(o1.getFechaCreacion());
-            }
-        });
-
+        loadData();
         adaptador.notifyDataSetChanged();
     }
 
@@ -150,7 +151,6 @@ public class ListNotasFragment extends Fragment {
                 }
 
                 adaptador.notifyDataSetChanged();
-
                 return false;
             }
 

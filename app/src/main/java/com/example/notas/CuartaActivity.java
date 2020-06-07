@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
-import com.example.notas.data.Nota;
 
 public class CuartaActivity extends AppCompatActivity {
     private Libreta libreta;
@@ -26,16 +25,12 @@ public class CuartaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cuarta);
 
-        getSupportActionBar().setTitle("Nueva libreta");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
 
-        titulo = (EditText) findViewById(R.id.editTextTituloLibreta);
-
         editando = false;
+
+        createComponents();
 
         if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("editable")) {
             getSupportActionBar().setTitle("Editar libreta");
@@ -43,6 +38,14 @@ public class CuartaActivity extends AppCompatActivity {
             titulo.setText(libreta.getTitulo());
             editando = true;
         }
+    }
+
+    public void createComponents() {
+        getSupportActionBar().setTitle("Nueva libreta");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        titulo = (EditText) findViewById(R.id.editTextTituloLibreta);
     }
 
     @Override

@@ -23,15 +23,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-    private FloatingActionButton fab;
     private Toolbar toolbar;
     private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private NavigationView navigationView;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createComponents(savedInstanceState);
+        eventRecorder();
+    }
+
+    public void createComponents(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, new ListNotasFragment()).commit();
             getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
@@ -43,12 +50,18 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Todas las notas");
 
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close); // Integrar el menu drawer con el toolbar mediante el icono "hamburguesa"
-        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
+
+        fab = findViewById(R.id.fab);  // Boton flotante para crear nueva nota o una nueva libreta
+    }
+
+    public void eventRecorder() {
+        drawer.addDrawerListener(toggle);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -76,8 +89,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Boton flotante para crear nueva nota o una nueva libreta
-        fab = findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

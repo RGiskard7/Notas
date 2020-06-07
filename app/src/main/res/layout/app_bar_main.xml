@@ -32,7 +32,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorPrimary"
         app:backgroundTintMode="src_in"
-        app:maxImageSize="@android:dimen/notification_large_icon_width"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:maxImageSize="@android:dimen/notification_large_icon_height"
+        app:srcCompat="@mipmap/ic_icon_add2_foreground" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

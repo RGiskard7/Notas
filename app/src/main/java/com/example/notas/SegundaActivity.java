@@ -32,40 +32,22 @@ public class SegundaActivity extends AppCompatActivity {
     private FactoryDAO SQLiteFactory;
     private ILibretaDAO libretaDAO;
     private INotaDAO notaDAO;
+    private List<Libreta> libretasDisponibles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_segunda);
 
-        getSupportActionBar().setTitle("Nueva nota");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
-        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
-        spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
-
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
 
-        List<Libreta> libretasDisponibles = new ArrayList<>();
-        libretaDAO.getAllLibretas(libretasDisponibles);
-        
-        AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), libretasDisponibles);
-        adaptador.setIsSpinner(true);
-        spinnerLibretas.setAdapter(adaptador);
-        spinnerLibretas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                libreta = (Libreta) parent.getItemAtPosition(position);
-            }
+        editando = false;
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        createComponents();
+        eventRecorder();
+
         // Para que aparezca en el spinner como opcion seleccionada la libreta desde donde se esta creando la nota
         if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("nueva")) {
             if (getIntent().getExtras().containsKey("libretaPadre")) {
@@ -82,17 +64,55 @@ public class SegundaActivity extends AppCompatActivity {
             }
         }
 
-
-        editando = false;
-
         if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("editable")) {
             getSupportActionBar().setTitle("Editar nota");
             nota = (Nota) getIntent().getSerializableExtra("nota");
             titulo.setText(nota.getTitulo());
             texto.setText(nota.getTexto());
             oldLibreta = notaDAO.getLibreta(nota.getId());
+
+            // Para que aparezca en el spinner como opcion seleccionada la libreta donde se encuentra la nota a editar
+            int i = 0;
+            for (Libreta lib : libretasDisponibles) {
+                if (lib.getId() == oldLibreta.getId()) {
+                    spinnerLibretas.setSelection(i);
+                    break;
+                }
+                i++;
+            }
+
             editando = true;
         }
+    }
+
+    public void createComponents() {
+        getSupportActionBar().setTitle("Nueva nota");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
+        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
+        spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
+
+        libretasDisponibles = new ArrayList<>();
+        libretaDAO.getAllLibretas(libretasDisponibles);
+
+        AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), libretasDisponibles);
+        adaptador.setIsSpinner(true);
+        spinnerLibretas.setAdapter(adaptador);
+    }
+
+    public void eventRecorder() {
+        spinnerLibretas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                libreta = (Libreta) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     @Override

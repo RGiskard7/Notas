@@ -21,12 +21,25 @@ public class TerceraActivity extends AppCompatActivity {
     private TextView fecha;
     private TextView Txlibreta;
     private Nota nota;
+    private Libreta libreta;
+    private FactoryDAO SQLiteFactory;
+    private INotaDAO notaDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tercera);
 
+        SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+        notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
+
+        nota = (Nota) getIntent().getSerializableExtra("nota");
+        libreta = notaDAO.getLibreta(nota.getId());
+
+        createComponents();
+    }
+
+    public void createComponents() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -36,15 +49,9 @@ public class TerceraActivity extends AppCompatActivity {
         fecha = (TextView) findViewById(R.id.textViewFechaNota);
         Txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
 
-        nota = (Nota) getIntent().getSerializableExtra("nota");
-
         titulo.setText(nota.getTitulo());
         texto.setText(nota.getTexto());
         fecha.setText(nota.getFechaCreacion());
-
-        FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-        INotaDAO notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
-        Libreta libreta = notaDAO.getLibreta(nota.getId());
 
         Txlibreta.setText(libreta.getTitulo());
     }

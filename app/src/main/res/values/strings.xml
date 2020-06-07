@@ -11,7 +11,7 @@
     <!-- String used for activity_segunda.xml -->
     <string name="editTextHintAs">"Título de la nota"</string>
     <string name="editTextHintAs2">"Contenido"</string>
-    <string name="textViewAs">"Libreta"</string>
+    <string name="textViewAs">"Libreta:"</string>
     <!-- String used for activity_cuarta.xml -->
     <string name="editTextHintAc">"Nombre"</string>
 </resources>
