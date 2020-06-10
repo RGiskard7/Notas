@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -42,6 +43,9 @@ public class SegundaActivity extends AppCompatActivity {
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
+
+        libretasDisponibles = new ArrayList<>();
+        libretaDAO.getAllLibretas(libretasDisponibles);
 
         editando = false;
 
@@ -94,9 +98,6 @@ public class SegundaActivity extends AppCompatActivity {
         titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
         texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
         spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
-
-        libretasDisponibles = new ArrayList<>();
-        libretaDAO.getAllLibretas(libretasDisponibles);
 
         AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), libretasDisponibles);
         adaptador.setIsSpinner(true);
