@@ -65,13 +65,11 @@ public class AdaptadorListLibretas extends BaseAdapter {
             if (item == null) {
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
                 item = layoutInflater.inflate(R.layout.libreta_item_spinner, null);
-
-                TextView titulo = (TextView)item.findViewById(R.id.tituloLibretaSpinner);
-                titulo.setText(listaLibretas.get(position).getTitulo());
             }
 
+            TextView titulo = (TextView)item.findViewById(R.id.tituloLibretaSpinner);
+            titulo.setText(listaLibretas.get(position).getTitulo());
         }
-
         return item;
     }
 }
