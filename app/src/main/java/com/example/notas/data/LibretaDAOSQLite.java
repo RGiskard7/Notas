@@ -37,6 +37,14 @@ public class LibretaDAOSQLite implements ILibretaDAO {
     }
 
     @Override
+    public Libreta getLibreta(int id) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " +
+                "libretas WHERE libreta_id = ? ", new String[]{Integer.toString(id)});
+        cursor.moveToFirst();
+        return new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+    }
+
+    @Override
     public void deleteLibreta(int id) {
         db.execSQL("DELETE FROM libretas WHERE libreta_id = '" + id + "'"); // Eliminar libreta por id
         db.execSQL("DELETE FROM libretaNotas WHERE libreta_id = '" + id + "'");
@@ -78,7 +86,7 @@ public class LibretaDAOSQLite implements ILibretaDAO {
 
         if (cursor.moveToFirst()) {
             do {
-                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(idLibreta), cursor.getString(3)));
             } while (cursor.moveToNext());
         }
     }

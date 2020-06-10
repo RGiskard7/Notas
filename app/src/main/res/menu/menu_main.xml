@@ -18,22 +18,22 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_filtrar"
-        android:title="Ordenar por"
-        android:orderInCategory="100" >
+            android:id="@+id/action_filtrar"
+            android:title="Ordenar por"
+            android:orderInCategory="100" >
 
-        <menu>
-            <item
-                android:id="@+id/action_filtrar_fecha_asc"
-                android:orderInCategory="100"
-                android:title="Fecha ascendente" />
+            <menu>
+                <item
+                    android:id="@+id/action_filtrar_fecha_asc"
+                    android:orderInCategory="100"
+                    android:title="Fecha ascendente" />
 
-            <item
-                android:id="@+id/action_filtrar_fecha_des"
-                android:orderInCategory="100"
-                android:title="Fecha descendente" />
+                <item
+                    android:id="@+id/action_filtrar_fecha_des"
+                    android:orderInCategory="100"
+                    android:title="Fecha descendente" />
 
-            <item
+                <item
                 android:id="@+id/action_filtrar_titulo_asc"
                 android:orderInCategory="100"
                 android:title="Título ascendente" />

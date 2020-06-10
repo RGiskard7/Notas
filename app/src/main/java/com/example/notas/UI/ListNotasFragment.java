@@ -1,5 +1,6 @@
 package com.example.notas.UI;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.notas.MainActivity;
@@ -225,14 +227,23 @@ public class ListNotasFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         switch (item.getItemId()) {
             case R.id.itemEliminar:
-                Nota notaEliminar = listaNotas.get(info.position);
-                notaDAO.deleteNota(notaEliminar.getId()); // Eliminar nota por id
-                resetListaNotas();
-                Toast.makeText(getActivity(), "Nota eliminada", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.messageAlertDialog).setTitle(R.string.titleAlertDialog);
+                builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Nota notaEliminar = listaNotas.get(info.position);
+                        notaDAO.deleteNota(notaEliminar.getId()); // Eliminar nota por id
+                        resetListaNotas();
+                        Toast.makeText(getActivity(), "Nota eliminada", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
+                builder.create().show();
 
                 return true;
 

@@ -41,6 +41,14 @@ public class NotaDAOSQLite implements INotaDAO {
     }
 
     @Override
+    public Nota getNota(int id) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " +
+                "notas WHERE nota_id = ? ", new String[]{Integer.toString(id)});
+        cursor.moveToFirst();
+        return new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(id), cursor.getString(3));
+    }
+
+    @Override
     public Libreta getLibreta(int idNota) {
         Cursor cursor = db.rawQuery("SELECT DISTINCT libretas.libreta_id, libretas.titulo, libretas.fecha_creacion FROM " +
                 "libretas NATURAL JOIN libretaNotas WHERE nota_id = ? ", new String[]{Integer.toString(idNota)});
@@ -76,6 +84,10 @@ public class NotaDAOSQLite implements INotaDAO {
             do {
                 list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
             } while (cursor.moveToNext());
+        }
+
+        for(Nota nota : list) {
+            nota.setLibreta(getLibreta(nota.getId()));
         }
     }
 }

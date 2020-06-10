@@ -69,7 +69,8 @@ public class SegundaActivity extends AppCompatActivity {
             nota = (Nota) getIntent().getSerializableExtra("nota");
             titulo.setText(nota.getTitulo());
             texto.setText(nota.getTexto());
-            oldLibreta = notaDAO.getLibreta(nota.getId());
+            // oldLibreta = notaDAO.getLibreta(nota.getId());
+            oldLibreta = nota.getLibreta();
 
             // Para que aparezca en el spinner como opcion seleccionada la libreta donde se encuentra la nota a editar
             int i = 0;
@@ -145,6 +146,7 @@ public class SegundaActivity extends AppCompatActivity {
                     notaDAO.deleteLibreta(nota.getId(), oldLibreta.getId());
                     libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
                     Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                 } else {
                     if (notaDAO.existTitulo(titulo.getText().toString())) {
                         Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();

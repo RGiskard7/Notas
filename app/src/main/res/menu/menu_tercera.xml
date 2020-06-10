@@ -18,4 +18,15 @@
         android:title="action_Editar"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_export_pdf"
+        android:title="Exportar en PDF"
+        android:orderInCategory="100"/>
+
+    <item
+        android:id="@+id/action_compartir"
+        android:orderInCategory="101"
+        android:title="Compartir"
+        app:showAsAction="never" />
+
 </menu>

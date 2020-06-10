@@ -1,5 +1,6 @@
 package com.example.notas.UI;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -200,31 +202,39 @@ public class ListLibretasFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         switch (item.getItemId()) {
             case R.id.itemEliminar:
-                Libreta libretaEliminar = listaLibretas.get(info.position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.messageAlertDialog2).setTitle(R.string.titleAlertDialog);
+                builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Libreta libretaEliminar = listaLibretas.get(info.position);
 
-                if (libretaEliminar.getId() != 1 && libretaEliminar.getTitulo() != "Default") {
-                    List<Nota> listaNotas = new ArrayList<>();
-                    libretaDAO.getAllNotasFrom(libretaEliminar.getId(), listaNotas);
-                    libretaDAO.deleteLibreta(libretaEliminar.getId());
+                        if (libretaEliminar.getId() != 1 && libretaEliminar.getTitulo() != "Default") {
+                            List<Nota> listaNotas = new ArrayList<>();
+                            libretaDAO.getAllNotasFrom(libretaEliminar.getId(), listaNotas);
+                            libretaDAO.deleteLibreta(libretaEliminar.getId());
 
-                    if (!listaNotas.isEmpty()) {
-                        for(Nota nota: listaNotas) {
-                            libretaDAO.addNotaToLibreta(1, nota.getId());
+                            if (!listaNotas.isEmpty()) {
+                                for(Nota nota: listaNotas) {
+                                    libretaDAO.addNotaToLibreta(1, nota.getId());
+                                }
+                                Toast.makeText(getActivity(), "Libreta eliminada, todas las notas han sido movidas a 'Default'", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Libreta eliminada", Toast.LENGTH_SHORT).show();
+                            }
+                            resetListaLibretas();
+                        } else {
+                            Toast.makeText(getActivity(), "No se puede eliminar la libreta 'Default'", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getActivity(), "Libreta eliminada, todas las notas han sido movidas a 'Default'", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "Libreta eliminada", Toast.LENGTH_SHORT).show();
                     }
+                });
 
-                    resetListaLibretas();
-
-                } else {
-                    Toast.makeText(getActivity(), "No se puede eliminar la libreta 'Default'", Toast.LENGTH_SHORT).show();
-                }
+                builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
+                builder.create().show();
 
                 return true;
 
