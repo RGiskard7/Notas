@@ -19,14 +19,14 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_export_pdf"
-        android:title="Exportar en PDF"
+        android:id="@+id/action_export_txt"
+        android:title="Exportar a TXT"
         android:orderInCategory="100"/>
 
-    <item
+    <!--<item
         android:id="@+id/action_compartir"
         android:orderInCategory="101"
         android:title="Compartir"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
 </menu>

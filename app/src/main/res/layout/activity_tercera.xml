@@ -21,6 +21,7 @@
             android:textSize="12sp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
             android:textAlignment="center"
             android:textStyle="italic" />
 
@@ -66,7 +67,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView2"
                 app:layout_constraintTop_toTopOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View style="@style/Divider"/>
@@ -78,10 +78,8 @@
             android:ems="10"
             android:textSize="18sp"
             android:scrollbars = "vertical"
+            android:textStyle="normal"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="15dp"
-            android:textStyle="normal" />
-
+            android:layout_marginBottom="30dp" />
     </LinearLayout>
-
 </ScrollView>

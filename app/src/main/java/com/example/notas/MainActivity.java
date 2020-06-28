@@ -1,6 +1,8 @@
 package com.example.notas;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.example.notas.UI.ListLibretasFragment;
@@ -13,14 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -33,6 +39,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            //Verificamos si tenemos los permisos necesarios escribir en tarjeta SD
+            int permisoEscritura = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (permisoEscritura != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "No tiene permiso para acceder a EXTERNAL_STORAGE", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
+            } else {
+                Log.i("Mensaje", "Se tiene permiso para acceso a EXTERNAL_STORAGE");
+            }
+
+        } catch (Exception e){
+            Toast.makeText(getApplicationContext(), "No podrá acceder a EXTERNAL_STORAGE, verifique permisos." + e.getMessage().toString(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
 
         createComponents(savedInstanceState);
         eventRecorder();
