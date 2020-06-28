@@ -3,15 +3,14 @@ package com.example.notas;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -22,17 +21,15 @@ import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 
-import org.w3c.dom.Document;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 public class TerceraActivity extends AppCompatActivity {
     private TextView titulo;
     private TextView texto;
     private TextView fecha;
-    private TextView Txlibreta;
+    private TextView txlibreta;
     private Nota nota;
     private Libreta libreta;
     private FactoryDAO SQLiteFactory;
@@ -47,10 +44,8 @@ public class TerceraActivity extends AppCompatActivity {
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
 
         nota = (Nota) getIntent().getSerializableExtra("nota");
-        // libreta = notaDAO.getLibreta(nota.getId());
         libreta = nota.getLibreta();
 
-        // loadData();
         createComponents();
         fillComponents();
     }
@@ -63,27 +58,22 @@ public class TerceraActivity extends AppCompatActivity {
         texto = (TextView) findViewById(R.id.textViewTextoNota);
         texto.setMovementMethod(new ScrollingMovementMethod());
         fecha = (TextView) findViewById(R.id.textViewFechaNota);
-        Txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
+        txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
 
         titulo.setText(nota.getTitulo());
         texto.setText(nota.getTexto());
         fecha.setText(nota.getFechaCreacion());
 
-        Txlibreta.setText(libreta.getTitulo());
+        txlibreta.setText(libreta.getTitulo());
     }
-
-    /*public void loadData() {
-        int nota_id = (Nota) getIntent().getSerializableExtra("nota");
-        nota = notaDAO.getNota(nota_id);
-        // libreta = notaDAO.getLibreta(nota.getId());
-        libreta = nota.getLibreta();
-    }*/
 
     public void fillComponents() {
         titulo.setText(nota.getTitulo());
+        titulo.setTextIsSelectable(true);
         texto.setText(nota.getTexto());
+        texto.setTextIsSelectable(true);
         fecha.setText(nota.getFechaCreacion());
-        Txlibreta.setText(libreta.getTitulo());
+        txlibreta.setText(libreta.getTitulo());
     }
 
     @Override
@@ -116,23 +106,34 @@ public class TerceraActivity extends AppCompatActivity {
             builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
             builder.create().show();
 
-        } else if (id == R.id.action_export_pdf) {
-            /*String nomArchivo = "Nota";
-            Document documento;
-            File archivo = new File("/" + nomArchivo + ".pdf");
-            int i = 0;
-            while(archivo.exists()) {
-                i++;
-                nomArchivo += i;
-            }
+        } else if (id == R.id.action_export_txt) {
             try {
-                FileOutputStream streamPdf = new FileOutputStream(archivo.getAbsolutePath());
-                PdfWriter writer = PdfWriter.getInstance(documento, ficheroPdf);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }*/
-        }
+                File newFolder = new File(Environment.getExternalStorageDirectory(), "Gilinote");
+                if (!newFolder.exists()) {
+                    newFolder.mkdirs();
+                }
 
+                File[] files = newFolder.listFiles();
+                String nameFile = "Nota";
+
+                if (files != null) {
+                    nameFile += files.length;
+                }
+
+                File file = new File(newFolder , nameFile + ".txt");
+                OutputStreamWriter stream = new OutputStreamWriter(new FileOutputStream(file));
+
+                stream.write(fecha.getText() + "\n\n" + titulo.getText() + "\n\n" + txlibreta.getText() + "\n\n" + texto.getText());
+                stream.flush();
+                stream.close();
+
+                Toast.makeText(getApplicationContext(), "Nota exportada en carpeta 'Gilinote'", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.e("Error", "e: " + e);
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error al exportar la nota", Toast.LENGTH_SHORT).show();
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
