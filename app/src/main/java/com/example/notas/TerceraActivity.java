@@ -20,8 +20,16 @@ import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
@@ -108,29 +116,81 @@ public class TerceraActivity extends AppCompatActivity {
 
         } else if (id == R.id.action_export_txt) {
             try {
-                File newFolder = new File(Environment.getExternalStorageDirectory(), "Gilinote");
-                if (!newFolder.exists()) {
-                    newFolder.mkdirs();
+                File folder = new File(Environment.getExternalStorageDirectory(), "Gilinote");
+                String nameFile = "Nota";
+                File[] files;
+                File file;
+
+                if (!folder.exists()) {
+                    folder.mkdirs();
                 }
 
-                File[] files = newFolder.listFiles();
-                String nameFile = "Nota";
-
-                if (files != null) {
+                files = folder.listFiles();
+                if (files != null && files.length > 0) {
                     nameFile += files.length;
                 }
 
-                File file = new File(newFolder , nameFile + ".txt");
+                file = new File(folder , nameFile + ".txt");
                 OutputStreamWriter stream = new OutputStreamWriter(new FileOutputStream(file));
 
                 stream.write(fecha.getText() + "\n\n" + titulo.getText() + "\n\n" + txlibreta.getText() + "\n\n" + texto.getText());
                 stream.flush();
                 stream.close();
 
-                Toast.makeText(getApplicationContext(), "Nota exportada en carpeta 'Gilinote'", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Nota txt exportada en carpeta 'Gilinote'", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Log.e("Error", "e: " + e);
                 e.printStackTrace();
+                Log.e("Error", "e: " + e);
+                Toast.makeText(getApplicationContext(), "Error al exportar la nota", Toast.LENGTH_SHORT).show();
+            }
+        } else if (id == R.id.action_export_pdf) {
+            File folder = new File(Environment.getExternalStorageDirectory(), "Gilinote");
+            Document document = new Document(PageSize.A4);
+            String nameFile = "Nota";
+            File[] files;
+            File pdfFile;
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            files = folder.listFiles();
+            if (files != null && files.length > 0) {
+                nameFile += files.length;
+            }
+
+            pdfFile = new File(folder, nameFile + ".pdf");
+
+            try {
+                PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+                document.open();
+
+                document.addTitle(titulo.getText().toString());
+                document.addCreationDate();
+                document.addAuthor("Gilinote");
+
+                Paragraph paragraph = new Paragraph(fecha.getText().toString());
+                paragraph.setAlignment(Element.ALIGN_CENTER);
+                document.add(paragraph);
+
+                paragraph = new Paragraph(titulo.getText().toString(), new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD));
+                paragraph.setAlignment(Element.ALIGN_CENTER);
+                document.add(paragraph);
+
+                paragraph = new Paragraph(txlibreta.getText().toString(), new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD));
+                paragraph.setAlignment(Element.ALIGN_CENTER);
+                document.add(paragraph);
+
+                paragraph = new Paragraph(texto.getText().toString(), new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD));
+                paragraph.setSpacingAfter(5);
+                paragraph.setSpacingBefore(5);
+                document.add(paragraph);
+
+                document.close();
+                Toast.makeText(getApplicationContext(), "Nota pdf exportada en carpeta 'Gilinote'", Toast.LENGTH_SHORT).show();
+            } catch (DocumentException | FileNotFoundException e) {
+                e.printStackTrace();
+                Log.e("Error", e.toString());
                 Toast.makeText(getApplicationContext(), "Error al exportar la nota", Toast.LENGTH_SHORT).show();
             }
         }

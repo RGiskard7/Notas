@@ -18,15 +18,27 @@
         android:title="action_Editar"
         app:showAsAction="ifRoom" />
 
+
     <item
-        android:id="@+id/action_export_txt"
-        android:title="Exportar a TXT"
-        android:orderInCategory="100"/>
+        android:id="@+id/action_exportar"
+        android:title="Exportar"
+        android:orderInCategory="100" >
 
-    <!--<item
-        android:id="@+id/action_compartir"
-        android:orderInCategory="101"
-        android:title="Compartir"
-        app:showAsAction="never" />-->
+        <menu>
+            <item
+                android:id="@+id/action_export_txt"
+                android:title="Archivo TXT"
+                android:orderInCategory="100"/>
 
+            <item
+                android:id="@+id/action_export_pdf"
+                android:title="Archivo PDF"
+                android:orderInCategory="100" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_duplicar"
+        android:orderInCategory="100"
+        android:title="Duplicar" />
 </menu>
