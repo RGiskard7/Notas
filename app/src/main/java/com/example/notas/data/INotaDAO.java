@@ -1,5 +1,8 @@
 package com.example.notas.data;
 
+import android.content.Context;
+import android.widget.CheckBox;
+
 import java.util.List;
 
 public interface INotaDAO {
@@ -11,4 +14,6 @@ public interface INotaDAO {
     public void deleteLibreta(int idNota, int idLibreta);
     public void deleteNota(int id);
     public void getAllNotas(List<Nota> list);
+    public void addCheckBoxToNota(int idNota, CheckBox checkBox);
+    public void getAllCheckBoxsFrom(Context context, int idNota, List<CheckBox> list);
 }

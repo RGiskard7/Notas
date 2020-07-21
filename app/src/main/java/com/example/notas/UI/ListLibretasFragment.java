@@ -76,7 +76,6 @@ public class ListLibretasFragment extends Fragment {
         lv = (ListView) view.findViewById(R.id.listViewLibretas);
         lv.setAdapter(adaptador);
 
-
         registerForContextMenu(lv);
     }
 
@@ -86,6 +85,7 @@ public class ListLibretasFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Libreta libreta = (Libreta) parent.getItemAtPosition(position);
                 ListNotasFragment fragment = new ListNotasFragment(libreta); // Listar las notas de la libreta
+
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
                 DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout); // Cerrar la pestaña al presionar
                 drawer.closeDrawer(GravityCompat.START);

@@ -1,15 +1,28 @@
 package com.example.notas;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.BulletSpan;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.notas.UI.AdaptadorListLibretas;
@@ -18,6 +31,7 @@ import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +43,20 @@ public class SegundaActivity extends AppCompatActivity {
     private EditText titulo;
     private EditText texto;
     private Spinner spinnerLibretas;
+    BottomNavigationView bottomNavigationView;
     private boolean editando;
     private FactoryDAO SQLiteFactory;
     private ILibretaDAO libretaDAO;
     private INotaDAO notaDAO;
     private List<Libreta> libretasDisponibles;
+    //private List<CheckBox> checkBoxes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_segunda);
 
+        // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
@@ -73,7 +90,6 @@ public class SegundaActivity extends AppCompatActivity {
             nota = (Nota) getIntent().getSerializableExtra("nota");
             titulo.setText(nota.getTitulo());
             texto.setText(nota.getTexto());
-            // oldLibreta = notaDAO.getLibreta(nota.getId());
             oldLibreta = nota.getLibreta();
 
             // Para que aparezca en el spinner como opcion seleccionada la libreta donde se encuentra la nota a editar
@@ -102,6 +118,10 @@ public class SegundaActivity extends AppCompatActivity {
         AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), libretasDisponibles);
         adaptador.setIsSpinner(true);
         spinnerLibretas.setAdapter(adaptador);
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        //checkBoxes = new ArrayList<>();
     }
 
     public void eventRecorder() {
@@ -115,6 +135,66 @@ public class SegundaActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        if (item.getItemId() == R.id.action_vinietas) {
+                            if (texto.getSelectionStart() == 0) {
+                                //Si no esta posicionado el cursor dentro del edittext
+                                if (TextUtils.isEmpty(texto.getText())) {
+                                    texto.getText().insert(texto.getText().length(),"\t\t\u2022 ");
+                                } else {
+                                    texto.getText().insert(texto.getText().length(),"\n\t\t\u2022 ");
+                                }
+                            } else {
+                                // Si esta posicionado el cursor dentro del edittext
+                                if (TextUtils.isEmpty(texto.getText())) {
+                                    texto.getText().insert(texto.getSelectionStart(),"\t\t\u2022 ");
+                                } else {
+                                    if (texto.getText().toString().charAt(texto.getSelectionStart() - 1) >= 32 &&
+                                            texto.getText().toString().charAt(texto.getSelectionStart() - 1) <= 255 ||
+                                            texto.getText().toString().charAt(texto.getSelectionStart() - 2) == 0x2022) {
+                                        // Si esta posicionado el cursor, el texto no esta vacio, y el texto anterior
+                                        // a la posicion del cursor es codigo ascii o una viñeta
+                                        texto.getText().insert(texto.getSelectionStart(),"\n\t\t\u2022 ");
+                                    } else {
+                                        texto.getText().insert(texto.getSelectionStart(),"\t\t\u2022 ");
+                                    }
+                                }
+                            }
+                        } /*else if (item.getItemId() == R.id.action_checkbox) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SegundaActivity.this);
+                            final EditText input = new EditText(SegundaActivity.this);
+
+                            input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                            builder.setTitle("Nuevo CheckBox");
+                            builder.setView(input);
+
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    CheckBox checkBox = new CheckBox(SegundaActivity.this);
+                                    checkBox.setText(input.getText().toString());
+                                    LinearLayout contenedor = findViewById(R.id.linLayoutCheckBox);
+                                    contenedor.addView(checkBox);
+                                    checkBoxes.add(checkBox);
+                                }
+                            });
+                            builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            builder.create().show();
+                        }*/
+                        return true;
+                    }
+                });
     }
 
     @Override
@@ -137,7 +217,7 @@ public class SegundaActivity extends AppCompatActivity {
 
         if (id == R.id.action_guardar) {
             if (titulo.getText().toString().compareTo("") != 0 || texto.getText().toString().compareTo("") != 0) {
-                if (titulo.getText().toString().compareTo("") == 0 && texto.getText().toString().compareTo("") != 0) {
+                if (titulo.getText().toString().compareTo("") == 0) {
                     titulo.setText("Nota sin título");
                 }
 
@@ -149,13 +229,18 @@ public class SegundaActivity extends AppCompatActivity {
                     Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                 } else {
-                    if (notaDAO.existTitulo(titulo.getText().toString())) {
+                    /*if (notaDAO.existTitulo(titulo.getText().toString())) {
                         Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
                         return false;
-                    }
+                    }*/
                     int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
                     libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
-                    Toast.makeText(this, "Nota creada", Toast.LENGTH_SHORT).show();
+                    /*if (!checkBoxes.isEmpty()) {
+                        for(CheckBox ch : checkBoxes) {
+                            notaDAO.addCheckBoxToNota(idNewNota, ch);
+                        }
+                    }*/
+                    // Toast.makeText(this, "Nota creada", Toast.LENGTH_SHORT).show();
                 }
 
             } else {

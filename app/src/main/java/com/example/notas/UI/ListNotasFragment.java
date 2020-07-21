@@ -239,7 +239,7 @@ public class ListNotasFragment extends Fragment {
                         Nota notaEliminar = listaNotas.get(info.position);
                         notaDAO.deleteNota(notaEliminar.getId()); // Eliminar nota por id
                         resetListaNotas();
-                        Toast.makeText(getActivity(), "Nota eliminada", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getActivity(), "Nota eliminada", Toast.LENGTH_SHORT).show();
                     }
                 });
                 builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);

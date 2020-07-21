@@ -3,6 +3,7 @@ package com.example.notas.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.CheckBox;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,7 +46,8 @@ public class NotaDAOSQLite implements INotaDAO {
         Cursor cursor = db.rawQuery("SELECT * FROM " +
                 "notas WHERE nota_id = ? ", new String[]{Integer.toString(id)});
         cursor.moveToFirst();
-        return new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(id), cursor.getString(3));
+        return new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                getLibreta(id), cursor.getString(3));
     }
 
     @Override
@@ -73,6 +75,34 @@ public class NotaDAOSQLite implements INotaDAO {
     @Override
     public void deleteNota(int id) {
         db.execSQL("DELETE FROM notas WHERE nota_id = '" + id + "'"); // Eliminar nota por id
+    }
+
+    @Override
+    public void addCheckBoxToNota(int idNota, CheckBox checkBox) {
+        int control = (checkBox.isSelected()) ? 1:0;
+
+        db.execSQL("INSERT INTO checkBoxNotas (nota_id, texto, control) VALUES ('" + checkBox.getText() + "','" +
+                idNota + "','" + control + "')");
+    }
+
+    @Override
+    public void getAllCheckBoxsFrom(Context context, int idNota, List<CheckBox> list) {
+        list.clear();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT checkBoxNotas.texto, checkBoxNotas.control FROM " +
+                "checkBoxNotas NATURAL JOIN notas WHERE nota_id = ? ", new String[]{Integer.toString(idNota)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                CheckBox ch = new CheckBox(context);
+                ch.setText(cursor.getString(0));
+                if (cursor.getInt(1) == 1) {
+                    ch.setSelected(true);
+                } else {
+                    ch.setSelected(false);
+                }
+                list.add(ch);
+            } while (cursor.moveToNext());
+        }
     }
 
     @Override

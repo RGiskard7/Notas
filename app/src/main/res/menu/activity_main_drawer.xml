@@ -7,12 +7,14 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/allNotas"
+            android:icon="@mipmap/ic_nota3_foreground"
             android:title="Todas las notas">
 
         </item>
 
         <item
             android:id="@+id/allLibretas"
+            android:icon="@mipmap/ic_libreta3_foreground"
             android:title="Libretas">
         </item>
     </group>

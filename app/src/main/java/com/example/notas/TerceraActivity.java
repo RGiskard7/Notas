@@ -13,6 +13,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,14 +34,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TerceraActivity extends AppCompatActivity {
     private TextView titulo;
     private TextView texto;
     private TextView fecha;
     private TextView txlibreta;
+    private LinearLayout linLayoutCheckBoxes;
     private Nota nota;
     private Libreta libreta;
+    //List<CheckBox> checkBoxes;
     private FactoryDAO SQLiteFactory;
     private INotaDAO notaDAO;
 
@@ -48,11 +54,15 @@ public class TerceraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tercera);
 
+        // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
 
         nota = (Nota) getIntent().getSerializableExtra("nota");
         libreta = nota.getLibreta();
+
+        /*checkBoxes = new ArrayList<>();
+        notaDAO.getAllCheckBoxsFrom(TerceraActivity.this, nota.getId(), checkBoxes);*/
 
         createComponents();
         fillComponents();
@@ -72,6 +82,8 @@ public class TerceraActivity extends AppCompatActivity {
         texto.setText(nota.getTexto());
         fecha.setText(nota.getFechaCreacion());
 
+        //linLayoutCheckBoxes = findViewById(R.id.linLayoutCheckBox2);
+
         txlibreta.setText(libreta.getTitulo());
     }
 
@@ -82,6 +94,10 @@ public class TerceraActivity extends AppCompatActivity {
         texto.setTextIsSelectable(true);
         fecha.setText(nota.getFechaCreacion());
         txlibreta.setText(libreta.getTitulo());
+
+        /*for (CheckBox ch : checkBoxes) {
+            linLayoutCheckBoxes.addView(ch);
+        }*/
     }
 
     @Override

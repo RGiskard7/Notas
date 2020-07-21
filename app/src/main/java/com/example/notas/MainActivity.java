@@ -1,18 +1,23 @@
 package com.example.notas;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
+import com.example.notas.data.FactoryDAO;
+import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
+import com.example.notas.data.LibretaDAOSQLite;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -22,10 +27,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             int permisoEscritura = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             if (permisoEscritura != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getApplicationContext(), "No tiene permiso para acceder a EXTERNAL_STORAGE", Toast.LENGTH_LONG).show();
+                // Toast.makeText(getApplicationContext(), "No tiene permiso para acceder a EXTERNAL_STORAGE", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
             } else {
                 Log.i("Mensaje", "Se tiene permiso para acceso a EXTERNAL_STORAGE");
@@ -134,6 +141,39 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, CuartaActivity.class);
                     intent.putExtra("tipo", "nueva");
                     startActivity(intent);
+
+                    /*AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                    final EditText input = new EditText(MainActivity.this);
+
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    dialog.setTitle("Nueva libreta");
+                    dialog.setView(input);
+
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+                            ILibretaDAO libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
+
+                            if (libretaDAO.existTitulo(input.getText().toString())) {
+                                Toast.makeText(MainActivity.this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            libretaDAO.createLibreta(input.getText().toString()); // Añadir nueva libreta
+                            Toast.makeText(MainActivity.this, "Libreta guardada", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    dialog.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    dialog.create().show();
+                    ((ListLibretasFragment) currentFragment).resetListaLibretas();*/
                 }
             }
         });

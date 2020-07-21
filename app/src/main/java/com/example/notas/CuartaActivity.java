@@ -25,6 +25,7 @@ public class CuartaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cuarta);
 
+        // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
 
