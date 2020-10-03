@@ -17,6 +17,12 @@
             android:icon="@mipmap/ic_libreta3_foreground"
             android:title="Libretas">
         </item>
+
+        <item
+            android:id="@+id/allEtiquetas"
+            android:icon="@mipmap/ic_etiqueta2_foreground"
+            android:title="Etiquetas">
+        </item>
     </group>
 
 </menu>

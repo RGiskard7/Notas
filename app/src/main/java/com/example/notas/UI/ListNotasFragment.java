@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.notas.MainActivity;
+import com.example.notas.data.Etiqueta;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
@@ -43,14 +44,22 @@ public class ListNotasFragment extends Fragment {
     private INotaDAO notaDAO;
     private ILibretaDAO libretaDAO;
     private Libreta libreta;
+    private Etiqueta etiqueta;
     private SearchView searchView;
 
     public ListNotasFragment(Libreta libreta) {
         this.libreta = libreta;
+        etiqueta = null;
+    }
+
+    public ListNotasFragment(Etiqueta etiqueta) {
+        libreta = null;
+        this.etiqueta = etiqueta;
     }
 
     public ListNotasFragment() {
         libreta = null;
+        etiqueta = null;
     }
 
     @Override
@@ -69,6 +78,10 @@ public class ListNotasFragment extends Fragment {
         eventRecorder();
 
         return view;
+    }
+
+    public Libreta getLibreta() {
+        return libreta;
     }
 
     public void loadData() {
@@ -93,7 +106,7 @@ public class ListNotasFragment extends Fragment {
         if (libreta == null) {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Todas las notas");
         } else {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle(libreta.getTitulo() + " - notas");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas - " + libreta.getTitulo());
         }
 
         adaptador = new AdaptadorListNotas(getActivity(), listaNotas);
@@ -114,19 +127,9 @@ public class ListNotasFragment extends Fragment {
         });
     }
 
-    public Libreta getLibreta() {
-        return libreta;
-    }
-
     private void resetListaNotas() {
         loadData();
         adaptador.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        resetListaNotas();
     }
 
     @Override
@@ -258,5 +261,11 @@ public class ListNotasFragment extends Fragment {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        resetListaNotas();
     }
 }

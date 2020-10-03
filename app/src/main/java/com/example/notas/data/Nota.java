@@ -1,12 +1,17 @@
 package com.example.notas.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Nota implements Serializable {
     private int id;
     private String titulo;
     private String texto;
     private Libreta libreta;
+    private Set<Etiqueta> etiquetas;
     private String fechaCreacion;
 
     public Nota(int id, String titulo, String texto, String fechaCreacion) {
@@ -14,14 +19,16 @@ public class Nota implements Serializable {
         this.titulo = titulo;
         this.texto = texto;
         this.fechaCreacion = fechaCreacion;
+        etiquetas = new HashSet<>();
     }
 
-    public Nota(int id, String titulo, String texto, Libreta libreta, String fechaCreacion) {
+    public Nota(int id, String titulo, String texto, Libreta libreta, List<Etiqueta> etiquetas, String fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         this.texto = texto;
         this.libreta = libreta;
         this.fechaCreacion = fechaCreacion;
+        this.etiquetas = new HashSet<>(etiquetas);
     }
 
     public int getId() {
@@ -62,6 +69,14 @@ public class Nota implements Serializable {
 
     public void setLibreta(Libreta libreta) {
         this.libreta = libreta;
+    }
+
+    public Set<Etiqueta> getEtiquetas() {
+        return etiquetas;
+    }
+
+    public void setEtiquetas(Set<Etiqueta> etiquetas) {
+        this.etiquetas = etiquetas;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class CuartaActivity extends AppCompatActivity {
                     Toast.makeText(this, "Libreta editada", Toast.LENGTH_SHORT).show();
                 } else {
                     if (libretaDAO.existTitulo(titulo.getText().toString())) {
-                        Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Ya existe una libreta con ese título", Toast.LENGTH_SHORT).show();
                         return false;
                     }
                     libretaDAO.createLibreta(titulo.getText().toString()); // Añadir nueva libreta

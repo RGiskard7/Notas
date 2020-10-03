@@ -24,10 +24,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.notas.CuartaActivity;
 import com.example.notas.MainActivity;
-import com.example.notas.data.Libreta;
 import com.example.notas.R;
+import com.example.notas.data.Etiqueta;
 import com.example.notas.data.FactoryDAO;
+import com.example.notas.data.IEtiquetaDAO;
 import com.example.notas.data.ILibretaDAO;
+import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 
 import java.util.ArrayList;
@@ -35,23 +37,23 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ListLibretasFragment extends Fragment {
+public class ListEtiquetasFragment extends Fragment {
     private ListView lv;
-    private AdaptadorListLibretas adaptador;
-    private List<Libreta> listaLibretas;
+    private AdaptadorListEtiquetas adaptador;
+    private List<Etiqueta> listaEtiquetas;
     private FactoryDAO SQLiteFactory;
-    private ILibretaDAO libretaDAO;
+    private IEtiquetaDAO etiquetaDAO;
     private SearchView searchView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_libretas, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_etiquetas, container, false);
 
         // Conexion con el proveedor de datos a través del DAO
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-        libretaDAO = SQLiteFactory.getLibretaDao(getActivity());
+        etiquetaDAO = SQLiteFactory.getEtiquetaDao(getActivity());
 
-        listaLibretas = new ArrayList<>();
+        listaEtiquetas = new ArrayList<>();
 
         loadData();
         createComponents(view);
@@ -60,31 +62,31 @@ public class ListLibretasFragment extends Fragment {
         return view;
     }
 
-    public void loadData() {
-        libretaDAO.getAllLibretas(listaLibretas); // Se carga la base de datos en memoria
-        for (Libreta libreta : listaLibretas) {
-            libretaDAO.getAllNotasFrom(libreta.getId(), new ArrayList<Nota>());
+    private void loadData() {
+        etiquetaDAO.getAllEtiquetas(listaEtiquetas); // Se carga la base de datos en memoria
+        for (Etiqueta etiqueta : listaEtiquetas) {
+            etiquetaDAO.getAllNotasFrom(etiqueta.getId(), new ArrayList<Nota>());
         }
     }
 
-    public void createComponents(View view) {
+    private void createComponents(View view) {
         setHasOptionsMenu(true);
 
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas");
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Etiquetas");
 
-        adaptador = new AdaptadorListLibretas(getActivity(), listaLibretas);
-        lv = (ListView) view.findViewById(R.id.listViewLibretas);
+        adaptador = new AdaptadorListEtiquetas(getActivity(), listaEtiquetas);
+        lv = (ListView) view.findViewById(R.id.listViewEtiquetas);
         lv.setAdapter(adaptador);
 
         registerForContextMenu(lv);
     }
 
-    public void eventRecorder() {
+    private void eventRecorder() {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // VER NOTA
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Libreta libreta = (Libreta) parent.getItemAtPosition(position);
-                ListNotasFragment fragment = new ListNotasFragment(libreta); // Listar las notas de la libreta
+                Etiqueta etiqueta = (Etiqueta) parent.getItemAtPosition(position);
+                ListNotasFragment fragment = new ListNotasFragment(etiqueta); // Listar las notas de la libreta
 
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
                 DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
@@ -94,16 +96,24 @@ public class ListLibretasFragment extends Fragment {
         });
     }
 
-    private void resetListaLibretas() {
+    public void resetListaEtiquetas() {
         loadData();
         adaptador.notifyDataSetChanged();
+    }
+
+    public void multipleSelectionList(Boolean selection) {
+        if (selection) {
+            lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        } else {
+            lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
     }
 
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
+        /*menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
         menu.findItem(R.id.action_filtrar_fecha_des).setVisible(false);
 
         searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
@@ -138,14 +148,14 @@ public class ListLibretasFragment extends Fragment {
                 resetListaLibretas();
                 return false;
             }
-        });
+        });*/
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_filtrar_titulo_asc) {
+        /*if (id == R.id.action_filtrar_titulo_asc) {
             Collections.sort(listaLibretas, new Comparator<Libreta>() {
                 @Override
                 public int compare(Libreta o1, Libreta o2) {
@@ -187,7 +197,7 @@ public class ListLibretasFragment extends Fragment {
                 }
             });
             adaptador.notifyDataSetChanged();
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -204,7 +214,7 @@ public class ListLibretasFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        switch (item.getItemId()) {
+        /*switch (item.getItemId()) {
             case R.id.itemEliminar:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage(R.string.messageAlertDialog2).setTitle(R.string.titleAlertDialog);
@@ -253,12 +263,13 @@ public class ListLibretasFragment extends Fragment {
 
             default:
                 return super.onContextItemSelected(item);
-        }
+        }*/
+        return false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        resetListaLibretas();
+        resetListaEtiquetas();
     }
 }

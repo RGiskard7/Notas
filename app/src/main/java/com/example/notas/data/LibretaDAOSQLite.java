@@ -86,7 +86,17 @@ public class LibretaDAOSQLite implements ILibretaDAO {
 
         if (cursor.moveToFirst()) {
             do {
-                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(idLibreta), cursor.getString(3)));
+                List<Etiqueta> etiquetasNota = new ArrayList<>();
+                Cursor cursor2 = db.rawQuery("SELECT DISTINCT etiquetas.etiqueta_id, etiquetas.titulo, etiquetas.fecha_creacion FROM " +
+                        "etiquetaNotas NATURAL JOIN etiquetas WHERE nota_id = ? ", new String[]{Integer.toString(cursor.getInt(0))});
+
+                if (cursor2.moveToFirst()) {
+                    do {
+                        etiquetasNota.add(new Etiqueta(cursor2.getInt(0), cursor2.getString(1), cursor2.getString(2)));
+                    } while (cursor2.moveToNext());
+                }
+
+                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(idLibreta), etiquetasNota, cursor.getString(3)));
             } while (cursor.moveToNext());
         }
     }

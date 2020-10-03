@@ -12,4 +12,9 @@ public class FactoryDAOSQLite extends FactoryDAO {
     public ILibretaDAO getLibretaDao(Context context) {
         return new LibretaDAOSQLite(context, "DBNevernote", null, 1);
     }
+
+    @Override
+    public IEtiquetaDAO getEtiquetaDao(Context context) {
+        return new EtiquetaDAOSQLite(context, "DBNevernote", null, 1);
+    }
 }

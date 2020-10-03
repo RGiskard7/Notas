@@ -3,30 +3,25 @@ package com.example.notas;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.BulletSpan;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.notas.UI.AdaptadorListLibretas;
+import com.example.notas.data.Etiqueta;
 import com.example.notas.data.FactoryDAO;
+import com.example.notas.data.IEtiquetaDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
@@ -34,7 +29,9 @@ import com.example.notas.data.Nota;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SegundaActivity extends AppCompatActivity {
     private Nota nota;
@@ -43,12 +40,19 @@ public class SegundaActivity extends AppCompatActivity {
     private EditText titulo;
     private EditText texto;
     private Spinner spinnerLibretas;
-    BottomNavigationView bottomNavigationView;
-    private boolean editando;
+    private ImageButton buttonEtiquetas;
+    private TextView numEtiquetas;
+    private BottomNavigationView bottomNavigationView;
+    private boolean editando = false;
     private FactoryDAO SQLiteFactory;
     private ILibretaDAO libretaDAO;
     private INotaDAO notaDAO;
-    private List<Libreta> libretasDisponibles;
+    private IEtiquetaDAO etiquetaDAO;
+    private List<Libreta> allLibretas;
+    private Set<Etiqueta> currentEtiquetasNota;
+    private List<Etiqueta> allEtiquetas;
+    private List<Etiqueta> newCheckedEtiquetasNota;
+    private List<Etiqueta> removedEtiquetasNota;
     //private List<CheckBox> checkBoxes;
 
     @Override
@@ -60,22 +64,66 @@ public class SegundaActivity extends AppCompatActivity {
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
         notaDAO = SQLiteFactory.getNotaDao(getApplicationContext());
+        etiquetaDAO = SQLiteFactory.getEtiquetaDao(getApplicationContext());
 
-        libretasDisponibles = new ArrayList<>();
-        libretaDAO.getAllLibretas(libretasDisponibles);
+        allLibretas = new ArrayList<>();
+        allEtiquetas = new ArrayList<>();
+        newCheckedEtiquetasNota = new ArrayList<>();
+        removedEtiquetasNota = new ArrayList<>();
+        currentEtiquetasNota = new HashSet<>();
 
-        editando = false;
+        if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("editable")) {
+            editando = true;
+        }
 
+        loadData();
         createComponents();
+        fillComponents();
         eventRecorder();
+    }
 
+    public void loadData() {
+        libretaDAO.getAllLibretas(allLibretas);
+        etiquetaDAO.getAllEtiquetas(allEtiquetas);
+        if (editando) {
+            List<Etiqueta> lista = new ArrayList<>();
+            nota = (Nota) getIntent().getSerializableExtra("nota");
+            notaDAO.getAllEtiquetasFrom(nota.getId(), lista);
+            currentEtiquetasNota.addAll(lista);
+        }
+    }
+
+    public void createComponents() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
+        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
+        spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
+        buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
+        numEtiquetas = (TextView) findViewById(R.id.textView3);
+        /*f (editando) {
+            numEtiquetas.setText(currentEtiquetasNota.size());
+        }*/
+
+        AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), allLibretas);
+        adaptador.setIsSpinner(true);
+        spinnerLibretas.setAdapter(adaptador);
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        //checkBoxes = new ArrayList<>();
+    }
+
+    public void fillComponents() {
         // Para que aparezca en el spinner como opcion seleccionada la libreta desde donde se esta creando la nota
-        if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("nueva")) {
+        if (!editando) {
+            getSupportActionBar().setTitle("Nueva nota");
             if (getIntent().getExtras().containsKey("libretaPadre")) {
                 libreta = (Libreta) getIntent().getExtras().get("libretaPadre");
 
                 int i = 0;
-                for (Libreta lib : libretasDisponibles) {
+                for (Libreta lib : allLibretas) {
                     if (lib.getId() == libreta.getId()) {
                         spinnerLibretas.setSelection(i);
                         break;
@@ -83,45 +131,23 @@ public class SegundaActivity extends AppCompatActivity {
                     i++;
                 }
             }
-        }
-
-        if (getIntent().getExtras() != null && getIntent().getExtras().get("tipo").toString().equals("editable")) {
+        } else {
             getSupportActionBar().setTitle("Editar nota");
-            nota = (Nota) getIntent().getSerializableExtra("nota");
             titulo.setText(nota.getTitulo());
             texto.setText(nota.getTexto());
             oldLibreta = nota.getLibreta();
 
             // Para que aparezca en el spinner como opcion seleccionada la libreta donde se encuentra la nota a editar
             int i = 0;
-            for (Libreta lib : libretasDisponibles) {
+            for (Libreta lib : allLibretas) {
                 if (lib.getId() == oldLibreta.getId()) {
                     spinnerLibretas.setSelection(i);
                     break;
                 }
                 i++;
             }
-
-            editando = true;
         }
-    }
-
-    public void createComponents() {
-        getSupportActionBar().setTitle("Nueva nota");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
-        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
-        spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
-
-        AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), libretasDisponibles);
-        adaptador.setIsSpinner(true);
-        spinnerLibretas.setAdapter(adaptador);
-
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
-        //checkBoxes = new ArrayList<>();
+        numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
     }
 
     public void eventRecorder() {
@@ -133,6 +159,76 @@ public class SegundaActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final int numChecked = 0;
+
+                if (!allEtiquetas.isEmpty()) {
+                    final String[] etiquetasName = new String[allEtiquetas.size()];
+                    final boolean[] checkedEtiquetas = new boolean[allEtiquetas.size()];
+
+                    for (int i = 0; i < allEtiquetas.size(); i++) {
+                        etiquetasName[i] = allEtiquetas.get(i).getTitulo();
+
+                        if (currentEtiquetasNota.contains(allEtiquetas.get(i))) {
+                            checkedEtiquetas[i] = true;
+                        } else {
+                            checkedEtiquetas[i] = false;
+                        }
+                    }
+
+                    AlertDialog.Builder builderDialog = new AlertDialog.Builder(SegundaActivity.this);
+                    builderDialog.setTitle("Elige etiquetas");
+                    builderDialog.setMultiChoiceItems(etiquetasName, checkedEtiquetas, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            if (isChecked) {
+                                for (Etiqueta etiqueta : allEtiquetas) {
+                                    if (etiqueta.getTitulo().equals(etiquetasName[which])) {
+                                        newCheckedEtiquetasNota.add(etiqueta);
+                                    }
+                                }
+                            } else {
+                                for (Etiqueta etiqueta : allEtiquetas) {
+                                    if (etiqueta.getTitulo().equals(etiquetasName[which])) {
+                                        if (newCheckedEtiquetasNota.contains(etiqueta)) {
+                                            newCheckedEtiquetasNota.remove(etiqueta);
+                                        }
+
+                                        if (currentEtiquetasNota.contains(etiqueta)) {
+                                            removedEtiquetasNota.add(etiqueta);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    builderDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!removedEtiquetasNota.isEmpty()) {
+                                currentEtiquetasNota.removeAll(removedEtiquetasNota);
+                            }
+
+                            if (!newCheckedEtiquetasNota.isEmpty()) {
+                                currentEtiquetasNota.addAll(newCheckedEtiquetasNota);
+                            }
+                            numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+                        }
+                    });
+
+                    builderDialog.setNegativeButton("CANCELAR", null);
+
+                    AlertDialog dialog = builderDialog.create();
+                    dialog.show();
+                } else {
+                    Toast.makeText(SegundaActivity.this, "No hay ninguna etiqueta disponible", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -217,6 +313,7 @@ public class SegundaActivity extends AppCompatActivity {
 
         if (id == R.id.action_guardar) {
             if (titulo.getText().toString().compareTo("") != 0 || texto.getText().toString().compareTo("") != 0) {
+                int idNota;
                 if (titulo.getText().toString().compareTo("") == 0) {
                     titulo.setText("Nota sin título");
                 }
@@ -226,15 +323,12 @@ public class SegundaActivity extends AppCompatActivity {
                     notaDAO.editNota(nota.getId(), titulo.getText().toString(), texto.getText().toString());
                     notaDAO.deleteLibreta(nota.getId(), oldLibreta.getId());
                     libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
+                    idNota = nota.getId();
+
                     Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
                 } else {
-                    /*if (notaDAO.existTitulo(titulo.getText().toString())) {
-                        Toast.makeText(this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }*/
-                    int idNewNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
-                    libretaDAO.addNotaToLibreta(libreta.getId(), idNewNota);
+                    idNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
+                    libretaDAO.addNotaToLibreta(libreta.getId(), idNota);
                     /*if (!checkBoxes.isEmpty()) {
                         for(CheckBox ch : checkBoxes) {
                             notaDAO.addCheckBoxToNota(idNewNota, ch);
@@ -242,6 +336,16 @@ public class SegundaActivity extends AppCompatActivity {
                     }*/
                     // Toast.makeText(this, "Nota creada", Toast.LENGTH_SHORT).show();
                 }
+
+                if (!removedEtiquetasNota.isEmpty()) {
+                    notaDAO.deletedEtiquetasFromNota(idNota, removedEtiquetasNota);
+                }
+
+                if (!newCheckedEtiquetasNota.isEmpty()) {
+                    notaDAO.addEtiquetasToNota(idNota, newCheckedEtiquetasNota);
+                }
+
+                setResult(RESULT_OK);
 
             } else {
                 Toast.makeText(this, "No se puede guardar una nota vacía", Toast.LENGTH_SHORT).show();

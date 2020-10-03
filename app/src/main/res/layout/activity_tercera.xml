@@ -34,15 +34,15 @@
             android:textSize="24sp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="15dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="15dp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!--<androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="22dp"
+                android:layout_width="27dp"
                 android:layout_height="27dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
@@ -67,7 +67,54 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView2"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginLeft="1dp"
+            android:layout_marginBottom="15dp">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                app:srcCompat="@mipmap/ic_libreta3_foreground" />
+
+            <TextView
+                android:id="@+id/textViewLibretaNota"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="2dp"
+                android:drawablePadding="5dp"
+                android:ems="5"
+                android:scrollbars="vertical"
+                android:textSize="15sp"
+                android:textStyle="normal" />
+
+            <ImageButton
+                android:id="@+id/buttonEtiquetas"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                app:srcCompat="@mipmap/ic_etiqueta2_foreground" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="0"
+                android:textStyle="normal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
 
         <View style="@style/Divider"/>
 

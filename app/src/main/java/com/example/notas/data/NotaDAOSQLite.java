@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.CheckBox;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class NotaDAOSQLite implements INotaDAO {
         return c.getInt(0);
     }
 
-    @Override
+    /*@Override
     public Boolean existTitulo(String titulo) {
         titulo = titulo.replace("'", "''");
         Cursor c = db.rawQuery("select count(*) from notas where titulo = ?", new String[]{titulo});
@@ -39,15 +40,19 @@ public class NotaDAOSQLite implements INotaDAO {
             return true;
         }
         return false;
-    }
+    }*/
 
     @Override
     public Nota getNota(int id) {
         Cursor cursor = db.rawQuery("SELECT * FROM " +
                 "notas WHERE nota_id = ? ", new String[]{Integer.toString(id)});
         cursor.moveToFirst();
+
+        List<Etiqueta> etiquetas = new ArrayList<>();
+        getAllEtiquetasFrom(cursor.getInt(0), etiquetas);
+
         return new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
-                getLibreta(id), cursor.getString(3));
+                getLibreta(id), etiquetas, cursor.getString(3));
     }
 
     @Override
@@ -77,15 +82,15 @@ public class NotaDAOSQLite implements INotaDAO {
         db.execSQL("DELETE FROM notas WHERE nota_id = '" + id + "'"); // Eliminar nota por id
     }
 
-    @Override
+    /*@Override
     public void addCheckBoxToNota(int idNota, CheckBox checkBox) {
         int control = (checkBox.isSelected()) ? 1:0;
 
         db.execSQL("INSERT INTO checkBoxNotas (nota_id, texto, control) VALUES ('" + checkBox.getText() + "','" +
                 idNota + "','" + control + "')");
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void getAllCheckBoxsFrom(Context context, int idNota, List<CheckBox> list) {
         list.clear();
         Cursor cursor = db.rawQuery("SELECT DISTINCT checkBoxNotas.texto, checkBoxNotas.control FROM " +
@@ -103,7 +108,7 @@ public class NotaDAOSQLite implements INotaDAO {
                 list.add(ch);
             } while (cursor.moveToNext());
         }
-    }
+    }*/
 
     @Override
     public void getAllNotas(List<Nota> list) {
@@ -112,12 +117,42 @@ public class NotaDAOSQLite implements INotaDAO {
 
         if (cursor.moveToFirst()) {
             do {
-                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+                List<Etiqueta> etiquetas = new ArrayList<>();
+                getAllEtiquetasFrom(cursor.getInt(0), etiquetas);
+                list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(cursor.getInt(0)), etiquetas, cursor.getString(3)));
             } while (cursor.moveToNext());
         }
 
-        for(Nota nota : list) {
+        /*for(Nota nota : list) {
             nota.setLibreta(getLibreta(nota.getId()));
+        }*/
+    }
+
+    @Override
+    public void addEtiquetasToNota(int idNota, List<Etiqueta> etiquetas) {
+        for (Etiqueta etiqueta : etiquetas) {
+            db.execSQL("INSERT INTO etiquetaNotas (etiqueta_id, nota_id) VALUES ('" + etiqueta.getId() + "','" +
+                    idNota + "')");
+        }
+    }
+
+    @Override
+    public void deletedEtiquetasFromNota(int idNota, List<Etiqueta> etiquetas) {
+        for (Etiqueta etiqueta : etiquetas) {
+            db.execSQL("DELETE FROM etiquetaNotas WHERE nota_id = '" + idNota + "'" + "AND etiqueta_id = '" + etiqueta.getId() + "'");
+        }
+    }
+
+    @Override
+    public void getAllEtiquetasFrom(int idNota, List<Etiqueta> list) {
+        list.clear();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT etiquetas.etiqueta_id, etiquetas.titulo, etiquetas.fecha_creacion FROM " +
+                "etiquetaNotas NATURAL JOIN etiquetas WHERE nota_id = ? ", new String[]{Integer.toString(idNota)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(new Etiqueta(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
+            } while (cursor.moveToNext());
         }
     }
 }

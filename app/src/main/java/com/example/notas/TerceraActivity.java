@@ -13,11 +13,14 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.notas.data.Etiqueta;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
@@ -35,16 +38,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TerceraActivity extends AppCompatActivity {
     private TextView titulo;
     private TextView texto;
     private TextView fecha;
     private TextView txlibreta;
+    private TextView numEtiquetas;
     private LinearLayout linLayoutCheckBoxes;
     private Nota nota;
     private Libreta libreta;
+    private List<Etiqueta> currentEtiquetasNota;
+    private ImageButton buttonEtiquetas;
     //List<CheckBox> checkBoxes;
     private FactoryDAO SQLiteFactory;
     private INotaDAO notaDAO;
@@ -66,6 +74,7 @@ public class TerceraActivity extends AppCompatActivity {
 
         createComponents();
         fillComponents();
+        eventRecorder();
     }
 
     public void createComponents() {
@@ -77,10 +86,12 @@ public class TerceraActivity extends AppCompatActivity {
         texto.setMovementMethod(new ScrollingMovementMethod());
         fecha = (TextView) findViewById(R.id.textViewFechaNota);
         txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
+        numEtiquetas = (TextView) findViewById(R.id.textView3);
+        buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
 
-        titulo.setText(nota.getTitulo());
+        /*titulo.setText(nota.getTitulo());
         texto.setText(nota.getTexto());
-        fecha.setText(nota.getFechaCreacion());
+        fecha.setText(nota.getFechaCreacion());*/
 
         //linLayoutCheckBoxes = findViewById(R.id.linLayoutCheckBox2);
 
@@ -95,9 +106,41 @@ public class TerceraActivity extends AppCompatActivity {
         fecha.setText(nota.getFechaCreacion());
         txlibreta.setText(libreta.getTitulo());
 
+        currentEtiquetasNota = new ArrayList<>();
+        notaDAO.getAllEtiquetasFrom(nota.getId(), currentEtiquetasNota);
+
+        numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+
         /*for (CheckBox ch : checkBoxes) {
             linLayoutCheckBoxes.addView(ch);
         }*/
+    }
+
+    public void eventRecorder() {
+        buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final int numChecked = 0;
+
+                if (!currentEtiquetasNota.isEmpty()) {
+                    final String[] etiquetasName = new String[currentEtiquetasNota.size()];
+
+                    for (int i = 0; i < currentEtiquetasNota.size(); i++) {
+                        etiquetasName[i] = currentEtiquetasNota.get(i).getTitulo();
+                    }
+
+                    AlertDialog.Builder builderDialog = new AlertDialog.Builder(TerceraActivity.this);
+                    builderDialog.setTitle("Etiquetas");
+                    builderDialog.setItems(etiquetasName, null);
+                    builderDialog.setPositiveButton("OK", null);
+                    // builderDialog.setNegativeButton("CANCELAR", null);
+                    AlertDialog dialog = builderDialog.create();
+                    dialog.show();
+                } else {
+                    Toast.makeText(TerceraActivity.this, "No hay ninguna etiqueta asociada a esta nota", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -129,7 +172,6 @@ public class TerceraActivity extends AppCompatActivity {
             });
             builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
             builder.create().show();
-
         } else if (id == R.id.action_export_txt) {
             try {
                 File folder = new File(Environment.getExternalStorageDirectory(), "Gilinote");

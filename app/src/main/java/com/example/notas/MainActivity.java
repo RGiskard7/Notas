@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
 import com.example.notas.data.FactoryDAO;
+import com.example.notas.data.IEtiquetaDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.LibretaDAOSQLite;
@@ -103,17 +105,20 @@ public class MainActivity extends AppCompatActivity {
                 } else if (menuItem.getItemId() == R.id.allLibretas) {
                     fragment = new ListLibretasFragment();
                     fragmentSelected = true;
+                } else if (menuItem.getItemId() == R.id.allEtiquetas) {
+                    fragment = new ListEtiquetasFragment();
+                    fragmentSelected = true;
                 }
 
                 if (fragmentSelected) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit(); // Anniadir fragment select a la pila de fragmentos
                     getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
-                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout); // Cerrar la pestaña al presionar
-                    drawer.closeDrawer(GravityCompat.START);
+
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START); // Cerrar la pestaña al presionar
 
                     return true;
                 }
-
                 return false;
             }
         });
@@ -127,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentFragment instanceof ListNotasFragment) { // Nueva nota
                     Libreta libreta = null;
-
                     Intent intent = new Intent(MainActivity.this, SegundaActivity.class);
                     intent.putExtra("tipo", "nueva");
 
@@ -174,6 +178,41 @@ public class MainActivity extends AppCompatActivity {
 
                     dialog.create().show();
                     ((ListLibretasFragment) currentFragment).resetListaLibretas();*/
+
+                } else if (currentFragment instanceof  ListEtiquetasFragment) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                    final EditText input = new EditText(MainActivity.this);
+                    final ListEtiquetasFragment listEtiquetasFragment = (ListEtiquetasFragment) currentFragment;
+
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    dialog.setTitle("Nueva etiqueta");
+                    dialog.setView(input);
+
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+                            IEtiquetaDAO etiquetaDAO = SQLiteFactory.getEtiquetaDao(getApplicationContext());
+
+                            if (etiquetaDAO.existTitulo(input.getText().toString())) {
+                                Toast.makeText(MainActivity.this, "Ya existe una etiqueta con ese título", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            etiquetaDAO.createEtiqueta(input.getText().toString()); // Añadir nueva etiqueta
+                            listEtiquetasFragment.resetListaEtiquetas();
+                            Toast.makeText(MainActivity.this, "Etiqueta guardada", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    dialog.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    dialog.create().show();
                 }
             }
         });

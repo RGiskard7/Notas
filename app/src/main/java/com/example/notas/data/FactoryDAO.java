@@ -9,6 +9,8 @@ public abstract class FactoryDAO {
 
     public abstract  ILibretaDAO getLibretaDao(Context context);
 
+    public abstract IEtiquetaDAO getEtiquetaDao(Context context);
+
     public static FactoryDAO getFactory(int keyFactory) {
         switch(keyFactory) {
             case SQLITE_FACTORY:

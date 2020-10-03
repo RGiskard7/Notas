@@ -16,13 +16,20 @@ public class DB extends SQLiteOpenHelper {
     private static final String crearTablaLibretas = "CREATE TABLE libretas(libreta_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "titulo TEXT NOT NULL UNIQUE, fecha_creacion TEXT)";
 
+    private static final String crearTablaEtiquetas = "CREATE TABLE etiquetas(etiqueta_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "titulo TEXT NOT NULL UNIQUE, fecha_creacion TEXT)";
+
     private static final String libretaNotas = "CREATE TABLE libretaNotas(id INTEGER PRIMARY KEY AUTOINCREMENT, libreta_id INTEGER, " +
             "nota_id INTEGER, FOREIGN  KEY (libreta_id) REFERENCES libretas(libreta_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE, " +
             "FOREIGN  KEY (nota_id) REFERENCES notas(nota_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)";
 
-    private static final String checkBoxNotas = "CREATE TABLE checkBoxNotas(id INTEGER PRIMARY KEY AUTOINCREMENT, texto TEXT NOT NULL, " +
+    private static final String etiquetaNotas = "CREATE TABLE etiquetaNotas(id INTEGER PRIMARY KEY AUTOINCREMENT, etiqueta_id INTEGER, " +
+            "nota_id INTEGER, FOREIGN  KEY (etiqueta_id) REFERENCES etiquetas(etiqueta_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE, " +
+            "FOREIGN  KEY (nota_id) REFERENCES notas(nota_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)";
+
+    /* private static final String checkBoxNotas = "CREATE TABLE checkBoxNotas(id INTEGER PRIMARY KEY AUTOINCREMENT, texto TEXT NOT NULL, " +
             "nota_id INTEGER NOT NULL, control INTEGER, CHECK (control in (0,1)), FOREIGN  KEY (nota_id) REFERENCES notas(nota_id) MATCH SIMPLE " +
-            "ON UPDATE CASCADE ON DELETE CASCADE)";
+            "ON UPDATE CASCADE ON DELETE CASCADE)"; */
 
     public DB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -32,8 +39,10 @@ public class DB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(crearTablaNotas);
         db.execSQL(crearTablaLibretas);
+        db.execSQL(crearTablaEtiquetas);
         db.execSQL(libretaNotas);
-        db.execSQL(checkBoxNotas);
+        db.execSQL(etiquetaNotas);
+        // db.execSQL(checkBoxNotas);
 
         db.execSQL("INSERT INTO libretas (titulo, fecha_creacion) VALUES ('Default','" +
                 dtf.format(Calendar.getInstance().getTime()) + "')");
@@ -43,7 +52,9 @@ public class DB extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(crearTablaNotas);
         db.execSQL(crearTablaLibretas);
+        db.execSQL(crearTablaEtiquetas);
         db.execSQL(libretaNotas);
-        db.execSQL(checkBoxNotas);
+        db.execSQL(etiquetaNotas);
+        // db.execSQL(checkBoxNotas);
     }
 }
