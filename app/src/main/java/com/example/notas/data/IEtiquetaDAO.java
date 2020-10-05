@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface IEtiquetaDAO {
     public void createEtiqueta(String titulo);
+    public void closeDB();
     public Etiqueta getEtiqueta(int id);
     public void getAllEtiquetas(List<Etiqueta> list);
     public void deleteEtiqueta(int id);

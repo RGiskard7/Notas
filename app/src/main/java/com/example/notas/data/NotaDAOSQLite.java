@@ -20,6 +20,11 @@ public class NotaDAOSQLite implements INotaDAO {
     }
 
     @Override
+    public void closeDB() {
+        db.close();
+    }
+
+    @Override
     public int createNota(String titulo, String texto) {
         titulo = titulo.replace("'", "''");
         texto = texto.replace("'", "''");
@@ -28,7 +33,10 @@ public class NotaDAOSQLite implements INotaDAO {
 
         Cursor c = db.rawQuery("SELECT last_insert_rowid();", null);
         c.moveToFirst();
-        return c.getInt(0);
+        int id = c.getInt(0);
+        c.close();
+
+        return id;
     }
 
     /*@Override
@@ -51,8 +59,13 @@ public class NotaDAOSQLite implements INotaDAO {
         List<Etiqueta> etiquetas = new ArrayList<>();
         getAllEtiquetasFrom(cursor.getInt(0), etiquetas);
 
-        return new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
-                getLibreta(id), etiquetas, cursor.getString(3));
+        String titulo = cursor.getString(1);
+        String texto = cursor.getString(2);
+        String fechaCreacion = cursor.getString(3);
+
+        cursor.close();
+
+        return new Nota(id, titulo, texto, getLibreta(id), etiquetas, fechaCreacion);
     }
 
     @Override
@@ -60,7 +73,13 @@ public class NotaDAOSQLite implements INotaDAO {
         Cursor cursor = db.rawQuery("SELECT DISTINCT libretas.libreta_id, libretas.titulo, libretas.fecha_creacion FROM " +
                 "libretas NATURAL JOIN libretaNotas WHERE nota_id = ? ", new String[]{Integer.toString(idNota)});
         cursor.moveToFirst();
-        return new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+
+        String titulo = cursor.getString(1);
+        String fechaCreacion = cursor.getString(2);
+
+        cursor.close();
+
+        return new Libreta(idNota, titulo, fechaCreacion);
     }
 
     @Override
@@ -74,7 +93,6 @@ public class NotaDAOSQLite implements INotaDAO {
         texto = texto.replace("'", "''");
         db.execSQL("UPDATE notas SET titulo = '" + titulo + "'," + "texto = '" + texto + "'," +
                 "fecha_creacion = '" + dtf.format(Calendar.getInstance().getTime()) + "' WHERE nota_id = '" + id + "'"); // Actualizar nota
-
     }
 
     @Override
@@ -123,9 +141,7 @@ public class NotaDAOSQLite implements INotaDAO {
             } while (cursor.moveToNext());
         }
 
-        /*for(Nota nota : list) {
-            nota.setLibreta(getLibreta(nota.getId()));
-        }*/
+        cursor.close();
     }
 
     @Override
@@ -154,5 +170,7 @@ public class NotaDAOSQLite implements INotaDAO {
                 list.add(new Etiqueta(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
     }
 }

@@ -19,7 +19,7 @@
         app:showAsAction="ifRoom" />
 
 
-    <item
+    <!--<item
         android:id="@+id/action_exportar"
         android:title="Exportar"
         android:orderInCategory="100" >
@@ -40,5 +40,5 @@
     <item
         android:id="@+id/action_duplicar"
         android:orderInCategory="100"
-        android:title="Duplicar" />
+        android:title="Duplicar" />-->
 </menu>

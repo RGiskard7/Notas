@@ -3,6 +3,7 @@ package com.example.notas.UI;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -86,12 +88,11 @@ public class ListEtiquetasFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Etiqueta etiqueta = (Etiqueta) parent.getItemAtPosition(position);
-                ListNotasFragment fragment = new ListNotasFragment(etiqueta); // Listar las notas de la libreta
+                ListNotasFragment fragment = new ListNotasFragment(etiqueta); // Listar las notas de la etiqueta
 
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
                 DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START); // Cerrar la pestaña al presionar
-                // ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas - " + libreta.getTitulo());
             }
         });
     }
@@ -113,21 +114,21 @@ public class ListEtiquetasFragment extends Fragment {
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        /*menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
         menu.findItem(R.id.action_filtrar_fecha_des).setVisible(false);
 
         searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                libretaDAO.getAllLibretas(listaLibretas);
-                List<Libreta> listaLibretasCopy = new ArrayList<>(listaLibretas);
-                listaLibretas.clear();
+                etiquetaDAO.getAllEtiquetas(listaEtiquetas);
+                List<Etiqueta> listaEtiquetasCopy = new ArrayList<>(listaEtiquetas);
+                listaEtiquetas.clear();
 
                 if (!TextUtils.isEmpty(query)) {
-                    for (Libreta libreta : listaLibretasCopy) {
-                        if (libreta.getTitulo().contains(query)) {
-                            listaLibretas.add(libreta);
+                    for (Etiqueta etiqueta : listaEtiquetasCopy) {
+                        if (etiqueta.getTitulo().contains(query)) {
+                            listaEtiquetas.add(etiqueta);
                         }
                     }
                 }
@@ -145,20 +146,20 @@ public class ListEtiquetasFragment extends Fragment {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                resetListaLibretas();
+                resetListaEtiquetas();
                 return false;
             }
-        });*/
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        /*if (id == R.id.action_filtrar_titulo_asc) {
-            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+        if (id == R.id.action_filtrar_titulo_asc) {
+            Collections.sort(listaEtiquetas, new Comparator<Etiqueta>() {
                 @Override
-                public int compare(Libreta o1, Libreta o2) {
+                public int compare(Etiqueta o1, Etiqueta o2) {
                     return o1.getTitulo().compareToIgnoreCase(o2.getTitulo());
                 }
             });
@@ -166,9 +167,9 @@ public class ListEtiquetasFragment extends Fragment {
         }
 
         if (id == R.id.action_filtrar_titulo_des) {
-            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+            Collections.sort(listaEtiquetas, new Comparator<Etiqueta>() {
                 @Override
-                public int compare(Libreta o1, Libreta o2) {
+                public int compare(Etiqueta o1, Etiqueta o2) {
                     return o2.getTitulo().compareToIgnoreCase(o1.getTitulo());
                 }
             });
@@ -176,9 +177,9 @@ public class ListEtiquetasFragment extends Fragment {
         }
 
         if (id == R.id.action_recuento_notas_asc) {
-            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+            Collections.sort(listaEtiquetas, new Comparator<Etiqueta>() {
                 @Override
-                public int compare(Libreta o1, Libreta o2) {
+                public int compare(Etiqueta o1, Etiqueta o2) {
                     Integer v1 = o1.getNotas().size();
                     Integer v2 = o2.getNotas().size();
                     return v1.compareTo(v2);
@@ -188,16 +189,16 @@ public class ListEtiquetasFragment extends Fragment {
         }
 
         if (id == R.id.action_recuento_notas_des) {
-            Collections.sort(listaLibretas, new Comparator<Libreta>() {
+            Collections.sort(listaEtiquetas, new Comparator<Etiqueta>() {
                 @Override
-                public int compare(Libreta o1, Libreta o2) {
+                public int compare(Etiqueta o1, Etiqueta o2) {
                     Integer v1 = o1.getNotas().size();
                     Integer v2 = o2.getNotas().size();
                     return v2.compareTo(v1);
                 }
             });
             adaptador.notifyDataSetChanged();
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -214,31 +215,18 @@ public class ListEtiquetasFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        /*switch (item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.itemEliminar:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.messageAlertDialog2).setTitle(R.string.titleAlertDialog);
+                builder.setMessage(R.string.messageAlertDialog3).setTitle(R.string.titleAlertDialog);
                 builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Libreta libretaEliminar = listaLibretas.get(info.position);
-                        if (libretaEliminar.getId() != 1 && libretaEliminar.getTitulo() != "Default") {
-                            List<Nota> listaNotas = new ArrayList<>();
-                            libretaDAO.getAllNotasFrom(libretaEliminar.getId(), listaNotas);
-                            libretaDAO.deleteLibreta(libretaEliminar.getId());
-
-                            if (!listaNotas.isEmpty()) {
-                                for(Nota nota: listaNotas) {
-                                    libretaDAO.addNotaToLibreta(1, nota.getId());
-                                }
-                                Toast.makeText(getActivity(), "Libreta eliminada, todas las notas han sido movidas a 'Default'", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getActivity(), "Libreta eliminada", Toast.LENGTH_SHORT).show();
-                            }
-                            resetListaLibretas();
-                        } else {
-                            Toast.makeText(getActivity(), "No se puede eliminar la libreta 'Default'", Toast.LENGTH_SHORT).show();
-                        }
+                        Etiqueta etiquetaEliminar = listaEtiquetas.get(info.position);
+                        List<Nota> listaNotas = new ArrayList<>();
+                        etiquetaDAO.deleteEtiqueta(etiquetaEliminar.getId());
+                        Toast.makeText(getActivity(), "Etiqueta eliminada", Toast.LENGTH_SHORT).show();
+                        resetListaEtiquetas();
                     }
                 });
 
@@ -248,28 +236,59 @@ public class ListEtiquetasFragment extends Fragment {
                 return true;
 
             case R.id.itemEditar:
-                Libreta libretaEditar = listaLibretas.get(info.position);
+                final Etiqueta etiquetaEditar = listaEtiquetas.get(info.position);
 
-                if (libretaEditar.getId() != 1 && libretaEditar.getTitulo() != "Default") {
-                    Intent intent = new Intent(getActivity(), CuartaActivity.class);
-                    intent.putExtra("libreta", libretaEditar);
-                    intent.putExtra("tipo", "editable");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "No se puede editar la libreta 'Default'", Toast.LENGTH_SHORT).show();
-                }
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                final EditText input = new EditText(getActivity());
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setText(etiquetaEditar.getTitulo());
+
+                dialog.setTitle("Editar etiqueta");
+                dialog.setView(input);
+
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
+                        IEtiquetaDAO etiquetaDAO = SQLiteFactory.getEtiquetaDao(getActivity());
+
+                        if (etiquetaDAO.existTitulo(input.getText().toString())) {
+                            Toast.makeText(getActivity(), "Ya existe una etiqueta con ese título", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        etiquetaDAO.editEtiqueta(etiquetaEditar.getId(), input.getText().toString()); // Editar etiqueta
+                        etiquetaDAO.closeDB();
+                        resetListaEtiquetas();
+
+                        Toast.makeText(getActivity(), "Etiqueta editada", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dialog.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.create().show();
 
                 return true;
 
             default:
                 return super.onContextItemSelected(item);
-        }*/
-        return false;
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         resetListaEtiquetas();
+    }
+
+    @Override
+    public void onDestroy() {
+        etiquetaDAO.closeDB();
+        super.onDestroy();
     }
 }

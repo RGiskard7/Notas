@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.notas.MainActivity;
 import com.example.notas.data.Etiqueta;
+import com.example.notas.data.IEtiquetaDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
@@ -43,6 +44,7 @@ public class ListNotasFragment extends Fragment {
     private FactoryDAO SQLiteFactory;
     private INotaDAO notaDAO;
     private ILibretaDAO libretaDAO;
+    private IEtiquetaDAO etiquetaDAO;
     private Libreta libreta;
     private Etiqueta etiqueta;
     private SearchView searchView;
@@ -70,6 +72,7 @@ public class ListNotasFragment extends Fragment {
         SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
         notaDAO = SQLiteFactory.getNotaDao(getActivity());
         libretaDAO = SQLiteFactory.getLibretaDao(getActivity());
+        etiquetaDAO = SQLiteFactory.getEtiquetaDao(getActivity());
 
         listaNotas = new ArrayList<>();
 
@@ -84,11 +87,17 @@ public class ListNotasFragment extends Fragment {
         return libreta;
     }
 
+    public Etiqueta getEtiqueta() {
+        return etiqueta;
+    }
+
     public void loadData() {
-        if (libreta == null) { // Se carga la base de datos en memoria
-            notaDAO.getAllNotas(listaNotas);
-        } else {
+        if (libreta != null) {
             libretaDAO.getAllNotasFrom(libreta.getId(), listaNotas);
+        } else if (etiqueta != null) {
+            etiquetaDAO.getAllNotasFrom(etiqueta.getId(), listaNotas);
+        } else {
+            notaDAO.getAllNotas(listaNotas);
         }
 
         Collections.sort(listaNotas, new Comparator<Nota>() { // Se ordenan las notas por fecha descendente
@@ -102,12 +111,20 @@ public class ListNotasFragment extends Fragment {
     public void createComponents(View view) {
         setHasOptionsMenu(true); // Habilita la modificacion del menu superior aniadido en la actividad
                                  // Permite añadir acciones a las opciones del menu superior de la actividad
+        String titulo;
 
-        if (libreta == null) {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Todas las notas");
+        if (libreta != null) {
+            // ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas - " + libreta.getTitulo());
+            titulo = "Libretas - " + libreta.getTitulo();
+        } else if (etiqueta != null) {
+            // ((MainActivity) getActivity()).getSupportActionBar().setTitle("Etiquetas - " + etiqueta.getTitulo());
+            titulo = "Etiquetas - " + etiqueta.getTitulo();
         } else {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Libretas - " + libreta.getTitulo());
+            // ((MainActivity) getActivity()).getSupportActionBar().setTitle("Todas las notas");
+            titulo = "Todas las notas";
         }
+
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(titulo);
 
         adaptador = new AdaptadorListNotas(getActivity(), listaNotas);
         lv = (ListView) view.findViewById(R.id.listViewNotas);
@@ -267,5 +284,13 @@ public class ListNotasFragment extends Fragment {
     public void onResume() {
         super.onResume();
         resetListaNotas();
+    }
+
+    @Override
+    public void onDestroy() {
+        notaDAO.closeDB();
+        etiquetaDAO.closeDB();
+        libretaDAO.closeDB();
+        super.onDestroy();
     }
 }

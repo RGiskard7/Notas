@@ -261,4 +261,10 @@ public class ListLibretasFragment extends Fragment {
         super.onResume();
         resetListaLibretas();
     }
+
+    @Override
+    public void onDestroy() {
+        libretaDAO.closeDB();
+        super.onDestroy();
+    }
 }

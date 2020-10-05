@@ -19,6 +19,11 @@ public class LibretaDAOSQLite implements ILibretaDAO {
     }
 
     @Override
+    public void closeDB() {
+        db.close();
+    }
+
+    @Override
     public void createLibreta(String titulo) {
         titulo = titulo.replace("'", "''");
         db.execSQL("INSERT INTO libretas (titulo, fecha_creacion) VALUES ('" + titulo + "','" +
@@ -30,7 +35,10 @@ public class LibretaDAOSQLite implements ILibretaDAO {
         titulo = titulo.replace("'", "''");
         Cursor c = db.rawQuery("select count(*) from libretas where titulo = ?", new String[]{titulo});
         c.moveToFirst();
-        if (c.getInt(0) > 0) {
+        int num = c.getInt(0);
+        c.close();
+
+        if (num > 0) {
             return true;
         }
         return false;
@@ -41,7 +49,13 @@ public class LibretaDAOSQLite implements ILibretaDAO {
         Cursor cursor = db.rawQuery("SELECT * FROM " +
                 "libretas WHERE libreta_id = ? ", new String[]{Integer.toString(id)});
         cursor.moveToFirst();
-        return new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+
+        String titulo = cursor.getString(1);
+        String fechaCreacion = cursor.getString(2);
+
+        cursor.close();
+
+        return new Libreta(id, titulo, fechaCreacion);
     }
 
     @Override
@@ -65,29 +79,35 @@ public class LibretaDAOSQLite implements ILibretaDAO {
     @Override
     public void getAllLibretas(List<Libreta> list) {
         list.clear();
+        Libreta libreta;
+        List<Nota> listNotasLibreta;
         Cursor cursor = db.rawQuery("SELECT libreta_id, titulo, fecha_creacion FROM libretas", null);
 
         if (cursor.moveToFirst()) {
             do {
-                Libreta libreta = new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
-                List<Nota> listNotasLibreta = new ArrayList<>();
+                libreta = new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+                listNotasLibreta = new ArrayList<>();
                 getAllNotasFrom(libreta.getId(), listNotasLibreta);
                 libreta.setNotas(listNotasLibreta);
                 list.add(libreta);
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
     }
 
     @Override
     public void getAllNotasFrom(int idLibreta, List<Nota> list) {
         list.clear();
+        List<Etiqueta> etiquetasNota;
+        Cursor cursor2;
         Cursor cursor = db.rawQuery("SELECT DISTINCT notas.nota_id, notas.titulo, notas.texto, notas.fecha_creacion FROM " +
                 "libretaNotas NATURAL JOIN notas WHERE libreta_id = ? ", new String[]{Integer.toString(idLibreta)});
 
         if (cursor.moveToFirst()) {
             do {
-                List<Etiqueta> etiquetasNota = new ArrayList<>();
-                Cursor cursor2 = db.rawQuery("SELECT DISTINCT etiquetas.etiqueta_id, etiquetas.titulo, etiquetas.fecha_creacion FROM " +
+                etiquetasNota = new ArrayList<>();
+                cursor2 = db.rawQuery("SELECT DISTINCT etiquetas.etiqueta_id, etiquetas.titulo, etiquetas.fecha_creacion FROM " +
                         "etiquetaNotas NATURAL JOIN etiquetas WHERE nota_id = ? ", new String[]{Integer.toString(cursor.getInt(0))});
 
                 if (cursor2.moveToFirst()) {
@@ -96,8 +116,11 @@ public class LibretaDAOSQLite implements ILibretaDAO {
                     } while (cursor2.moveToNext());
                 }
 
+                cursor2.close();
                 list.add(new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), getLibreta(idLibreta), etiquetasNota, cursor.getString(3)));
             } while (cursor.moveToNext());
+
+            cursor.close();
         }
     }
 }

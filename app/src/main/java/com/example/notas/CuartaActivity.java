@@ -91,4 +91,11 @@ public class CuartaActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onDestroy() {
+        libretaDAO.closeDB();
+
+        super.onDestroy();
+    }
 }

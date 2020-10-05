@@ -18,6 +18,7 @@
     <string name="titleAlertDialog">"Aviso"</string>
     <string name="messageAlertDialog">"¿Seguro que quieres eliminar la nota?"</string>
     <string name="messageAlertDialog2">"¿Seguro que quieres eliminar la libreta?"</string>
+    <string name="messageAlertDialog3">"¿Seguro que quieres eliminar la etiqueta?"</string>
     <string name="positiveBtnAlertDialog">"ELIMINAR"</string>
     <string name="negativeBtnAlertDIalog">"CANCELAR"</string>
 </resources>

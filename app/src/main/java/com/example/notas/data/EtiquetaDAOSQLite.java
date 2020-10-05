@@ -21,6 +21,11 @@ public class EtiquetaDAOSQLite implements IEtiquetaDAO {
     }
 
     @Override
+    public void closeDB() {
+        db.close();
+    }
+
+    @Override
     public void createEtiqueta(String titulo) {
         titulo = titulo.replace("'", "''");
         db.execSQL("INSERT INTO etiquetas (titulo, fecha_creacion) VALUES ('" + titulo + "','" +
@@ -32,23 +37,33 @@ public class EtiquetaDAOSQLite implements IEtiquetaDAO {
         Cursor cursor = db.rawQuery("SELECT * FROM " +
                 "etiquetas WHERE etiqueta_id = ? ", new String[]{Integer.toString(id)});
         cursor.moveToFirst();
-        return new Etiqueta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+
+        String titulo = cursor.getString(1);
+        String fechaCreacion = cursor.getString(2);
+
+        cursor.close();
+
+        return new Etiqueta(id, titulo, fechaCreacion);
     }
 
     @Override
     public void getAllEtiquetas(List<Etiqueta> list) {
+        Etiqueta etiqueta;
+        List<Nota> listNotasEtiqueta;
         list.clear();
+
         Cursor cursor = db.rawQuery("SELECT etiqueta_id, titulo, fecha_creacion FROM etiquetas", null);
 
         if (cursor.moveToFirst()) {
             do {
-                Etiqueta etiqueta = new Etiqueta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
-                List<Nota> listNotasEtiqueta = new ArrayList<>();
+                etiqueta = new Etiqueta(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+                listNotasEtiqueta = new ArrayList<>();
                 getAllNotasFrom(etiqueta.getId(), listNotasEtiqueta);
                 etiqueta.setNotas(listNotasEtiqueta);
                 list.add(etiqueta);
             } while (cursor.moveToNext());
         }
+        cursor.close();
     }
 
     @Override
@@ -60,26 +75,32 @@ public class EtiquetaDAOSQLite implements IEtiquetaDAO {
     @Override
     public void editEtiqueta(int id, String titulo) {
         titulo = titulo.replace("'", "''");
-        db.execSQL("UPDATE letiquetas SET titulo = '" + titulo + "',"  +  "fecha_creacion = '" + dtf.format(Calendar.getInstance().getTime()) +
+        db.execSQL("UPDATE etiquetas SET titulo = '" + titulo + "',"  +  "fecha_creacion = '" + dtf.format(Calendar.getInstance().getTime()) +
                 "' WHERE etiqueta_id = '" + id + "'"); // Actualizar etiqueta
     }
 
     @Override
     public void getAllNotasFrom(int idEtiqueta, List<Nota> list) {
+        Nota nota;
+        Cursor cursor;
+        Cursor cursor2;
         list.clear();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT notas.nota_id, notas.titulo, notas.texto, notas.fecha_creacion FROM " +
+
+        cursor = db.rawQuery("SELECT DISTINCT notas.nota_id, notas.titulo, notas.texto, notas.fecha_creacion FROM " +
                 "etiquetaNotas NATURAL JOIN notas WHERE etiqueta_id = ? ", new String[]{Integer.toString(idEtiqueta)});
 
         if (cursor.moveToFirst()) {
             do {
-                Nota nota = new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
-                Cursor cursor2 = db.rawQuery("SELECT DISTINCT libretas.libreta_id, libretas.titulo, libretas.fecha_creacion FROM " +
+                nota = new Nota(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                cursor2 = db.rawQuery("SELECT DISTINCT libretas.libreta_id, libretas.titulo, libretas.fecha_creacion FROM " +
                         "libretas NATURAL JOIN libretaNotas WHERE nota_id = ? ", new String[]{Integer.toString(nota.getId())});
                 cursor2.moveToFirst();
-                nota.setLibreta(new Libreta(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
+                nota.setLibreta(new Libreta(cursor2.getInt(0), cursor2.getString(1), cursor2.getString(2)));
                 list.add(nota);
+                cursor2.close();
             } while (cursor.moveToNext());
         }
+        cursor.close();
     }
 
     @Override
@@ -87,7 +108,10 @@ public class EtiquetaDAOSQLite implements IEtiquetaDAO {
         titulo = titulo.replace("'", "''");
         Cursor c = db.rawQuery("select count(*) from etiquetas where titulo = ?", new String[]{titulo});
         c.moveToFirst();
-        if (c.getInt(0) > 0) {
+        int id = c.getInt(0);
+        c.close();
+
+        if (id > 0) {
             return true;
         }
         return false;

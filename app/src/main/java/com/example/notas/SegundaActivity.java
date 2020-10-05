@@ -165,8 +165,6 @@ public class SegundaActivity extends AppCompatActivity {
         buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int numChecked = 0;
-
                 if (!allEtiquetas.isEmpty()) {
                     final String[] etiquetasName = new String[allEtiquetas.size()];
                     final boolean[] checkedEtiquetas = new boolean[allEtiquetas.size()];
@@ -296,8 +294,9 @@ public class SegundaActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         setResult(Activity.RESULT_CANCELED);
-        super.onSupportNavigateUp();
-        return true;
+        // super.onSupportNavigateUp();
+        onBackPressed();
+        return false;
     }
 
 
@@ -324,8 +323,8 @@ public class SegundaActivity extends AppCompatActivity {
                     notaDAO.deleteLibreta(nota.getId(), oldLibreta.getId());
                     libretaDAO.addNotaToLibreta(libreta.getId(), nota.getId());
                     idNota = nota.getId();
-
                     Toast.makeText(this, "Nota editada", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                 } else {
                     idNota = notaDAO.createNota(titulo.getText().toString(), texto.getText().toString()); // Añadir nueva nota
                     libretaDAO.addNotaToLibreta(libreta.getId(), idNota);
@@ -344,9 +343,6 @@ public class SegundaActivity extends AppCompatActivity {
                 if (!newCheckedEtiquetasNota.isEmpty()) {
                     notaDAO.addEtiquetasToNota(idNota, newCheckedEtiquetasNota);
                 }
-
-                setResult(RESULT_OK);
-
             } else {
                 Toast.makeText(this, "No se puede guardar una nota vacía", Toast.LENGTH_SHORT).show();
             }
@@ -356,5 +352,14 @@ public class SegundaActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        libretaDAO.closeDB();
+        notaDAO.closeDB();
+        etiquetaDAO.closeDB();
+
+        super.onDestroy();
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface ILibretaDAO {
     public void createLibreta(String titulo);
+    public void closeDB();
     public Boolean existTitulo(String titulo);
     public Libreta getLibreta(int id);
     public void deleteLibreta(int id);

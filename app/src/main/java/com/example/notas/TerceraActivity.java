@@ -48,7 +48,7 @@ public class TerceraActivity extends AppCompatActivity {
     private TextView fecha;
     private TextView txlibreta;
     private TextView numEtiquetas;
-    private LinearLayout linLayoutCheckBoxes;
+    // private LinearLayout linLayoutCheckBoxes;
     private Nota nota;
     private Libreta libreta;
     private List<Etiqueta> currentEtiquetasNota;
@@ -80,6 +80,7 @@ public class TerceraActivity extends AppCompatActivity {
     public void createComponents() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Nota");
 
         titulo = (TextView) findViewById(R.id.textViewTituloNota);
         texto = (TextView) findViewById(R.id.textViewTextoNota);
@@ -88,10 +89,6 @@ public class TerceraActivity extends AppCompatActivity {
         txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
         numEtiquetas = (TextView) findViewById(R.id.textView3);
         buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
-
-        /*titulo.setText(nota.getTitulo());
-        texto.setText(nota.getTexto());
-        fecha.setText(nota.getFechaCreacion());*/
 
         //linLayoutCheckBoxes = findViewById(R.id.linLayoutCheckBox2);
 
@@ -120,8 +117,6 @@ public class TerceraActivity extends AppCompatActivity {
         buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int numChecked = 0;
-
                 if (!currentEtiquetasNota.isEmpty()) {
                     final String[] etiquetasName = new String[currentEtiquetasNota.size()];
 
@@ -172,7 +167,7 @@ public class TerceraActivity extends AppCompatActivity {
             });
             builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
             builder.create().show();
-        } else if (id == R.id.action_export_txt) {
+        } /*else if (id == R.id.action_export_txt) {
             try {
                 File folder = new File(Environment.getExternalStorageDirectory(), "Gilinote");
                 String nameFile = "Nota";
@@ -251,7 +246,7 @@ public class TerceraActivity extends AppCompatActivity {
                 Log.e("Error", e.toString());
                 Toast.makeText(getApplicationContext(), "Error al exportar la nota", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -266,5 +261,12 @@ public class TerceraActivity extends AppCompatActivity {
                 fillComponents();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        notaDAO.closeDB();
+
+        super.onDestroy();
     }
 }

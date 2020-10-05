@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface INotaDAO {
     public int createNota(String titulo, String texto);
+    public void closeDB();
     // public Boolean existTitulo(String titulo);
     public Nota getNota(int id);
     public void editNota(int id, String titulo, String texto);

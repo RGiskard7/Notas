@@ -197,11 +197,14 @@ public class MainActivity extends AppCompatActivity {
 
                             if (etiquetaDAO.existTitulo(input.getText().toString())) {
                                 Toast.makeText(MainActivity.this, "Ya existe una etiqueta con ese título", Toast.LENGTH_SHORT).show();
+                                etiquetaDAO.closeDB();
                                 return;
                             }
 
                             etiquetaDAO.createEtiqueta(input.getText().toString()); // Añadir nueva etiqueta
+                            etiquetaDAO.closeDB();
                             listEtiquetasFragment.resetListaEtiquetas();
+
                             Toast.makeText(MainActivity.this, "Etiqueta guardada", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -241,11 +244,17 @@ public class MainActivity extends AppCompatActivity {
                 navigationView.setCheckedItem(R.id.allLibretas);
                 getSupportActionBar().setTitle("Libretas");
                 exitApp = false;
+            } else if (((ListNotasFragment) currentFragment).getEtiqueta() != null) {
+                fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListEtiquetasFragment()).commit();
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.setCheckedItem(R.id.allEtiquetas);
+                getSupportActionBar().setTitle("Etiquetas");
+                exitApp = false;
             }
         }
 
-        // Volver a todas las notas desdel fragment de libretas al presionar atras
-        if (currentFragment instanceof  ListLibretasFragment) {
+        // Volver a todas las notas desde el fragment de libretas al presionar atras
+        if (currentFragment instanceof  ListLibretasFragment || currentFragment instanceof  ListEtiquetasFragment) {
             fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListNotasFragment()).commit();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setCheckedItem(R.id.allNotas);
@@ -257,6 +266,13 @@ public class MainActivity extends AppCompatActivity {
         if (exitApp == true) {
             super.onBackPressed();
         }
+
+        /*if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+        } else {
+            getSupportFragmentManager().popBackStack();
+            // getFragmentManager().popBackStack();
+        }*/
     }
 
     // OPCIONES MENU
