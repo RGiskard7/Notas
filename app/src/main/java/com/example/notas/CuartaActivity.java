@@ -95,7 +95,6 @@ public class CuartaActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         libretaDAO.closeDB();
-
         super.onDestroy();
     }
 }

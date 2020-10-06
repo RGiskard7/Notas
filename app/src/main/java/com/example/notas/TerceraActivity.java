@@ -266,7 +266,6 @@ public class TerceraActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         notaDAO.closeDB();
-
         super.onDestroy();
     }
 }

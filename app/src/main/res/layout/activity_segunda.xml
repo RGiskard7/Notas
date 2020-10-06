@@ -45,19 +45,6 @@
                 android:layout_marginBottom="2dp">
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/editTextContenidoNwNota"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/editTextHintAs2"
-                android:inputType="text|textMultiLine|textCapSentences"
-                android:singleLine="false"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="15dp"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -75,11 +62,14 @@
 
                 <Spinner
                     android:id="@+id/spinnerOpcionLibretas"
-                    android:layout_width="130dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="31dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textSize="15sp"
+                    android:maxLength="10"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:textStyle="italic" />
+                    android:layout_marginLeft="8dp" />
 
                 <ImageButton
                     android:id="@+id/buttonEtiquetas"
@@ -102,6 +92,19 @@
                     android:layout_marginTop="5dp"/>
 
             </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextContenidoNwNota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/editTextHintAs2"
+                android:inputType="text|textMultiLine|textCapSentences"
+                android:singleLine="false"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="15dp"/>
 
             <!--<androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

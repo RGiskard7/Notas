@@ -74,12 +74,13 @@ public class NotaDAOSQLite implements INotaDAO {
                 "libretas NATURAL JOIN libretaNotas WHERE nota_id = ? ", new String[]{Integer.toString(idNota)});
         cursor.moveToFirst();
 
+        int idLibreta = cursor.getInt(0);
         String titulo = cursor.getString(1);
         String fechaCreacion = cursor.getString(2);
 
         cursor.close();
 
-        return new Libreta(idNota, titulo, fechaCreacion);
+        return new Libreta(idLibreta, titulo, fechaCreacion);
     }
 
     @Override

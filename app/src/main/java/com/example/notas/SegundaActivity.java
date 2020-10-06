@@ -359,7 +359,6 @@ public class SegundaActivity extends AppCompatActivity {
         libretaDAO.closeDB();
         notaDAO.closeDB();
         etiquetaDAO.closeDB();
-
         super.onDestroy();
     }
 }
