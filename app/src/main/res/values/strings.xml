@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">Gilinote</string>
+    <string name="app_name">Nevernote</string>
     <string name="action_settings">Settings</string>
     <string name="search_hint">Búsqueda por título</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_cuarta">CuartaActivity</string>
     <!-- Strings used for nav_header_main.xml -->
-    <string name="textViewNav">Gilinote</string>
-    <string name="textViewNav2">Larga vida y prosperidad, gili</string>
+    <string name="textViewNav">Nevernote</string>
+    <string name="textViewNav2">Larga vida y prosperidad</string>
     <!-- String used for activity_segunda.xml -->
     <string name="editTextHintAs">"Título de la nota"</string>
     <string name="editTextHintAs2">"Contenido"</string>
