@@ -63,8 +63,26 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_salir"
+        android:id="@+id/action_establecer_pin"
         android:orderInCategory="101"
+        android:title="@string/establecer_pin"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_quitar_pin"
+        android:orderInCategory="102"
+        android:title="@string/quitar_pin"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_bloquear"
+        android:orderInCategory="103"
+        android:title="@string/bloquear_ahora"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_salir"
+        android:orderInCategory="104"
         android:title="@string/salir"
         app:showAsAction="never" />
 

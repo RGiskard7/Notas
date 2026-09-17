@@ -152,4 +152,19 @@ public interface INotaDAO {
      * @param idAdjunto identificador del adjunto.
      */
     public void deleteAdjunto(int idAdjunto);
+
+    /**
+     * Fija (o quita, con 0) el recordatorio de una nota.
+     *
+     * @param id     identificador de la nota.
+     * @param cuando fecha del recordatorio en milisegundos.
+     */
+    public void setRecordatorio(int id, long cuando);
+
+    /**
+     * Carga las notas que tienen un recordatorio pendiente.
+     *
+     * @param list lista de salida.
+     */
+    public void getNotasConRecordatorio(List<Nota> list);
 }

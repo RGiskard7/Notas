@@ -23,6 +23,7 @@ import com.example.notas.R;
 import com.example.notas.ViewNotaActivity;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.FragmentListNotasBinding;
+import com.example.notas.recordatorios.ProgramadorRecordatorios;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +107,11 @@ public class ListPapeleraFragment extends Fragment {
     }
 
     private void restaurar(int position) {
-        viewModel.restaurar(listaNotas.get(position).getId());
+        Nota nota = listaNotas.get(position);
+        viewModel.restaurar(nota.getId());
+        if (nota.getRecordatorio() > System.currentTimeMillis()) {
+            ProgramadorRecordatorios.programar(getActivity(), nota.getId(), nota.getRecordatorio(), nota.getTitulo());
+        }
         Toast.makeText(getActivity(), R.string.nota_restaurada, Toast.LENGTH_SHORT).show();
     }
 
@@ -116,6 +121,7 @@ public class ListPapeleraFragment extends Fragment {
         builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                ProgramadorRecordatorios.cancelar(getActivity(), listaNotas.get(position).getId());
                 viewModel.borrarDefinitivamente(listaNotas.get(position).getId());
                 Toast.makeText(getActivity(), R.string.nota_eliminada, Toast.LENGTH_SHORT).show();
             }

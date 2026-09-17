@@ -46,6 +46,7 @@ final class Mapper {
     static Nota toNota(NotaEntity entity, Libreta libreta, List<Etiqueta> etiquetas) {
         Nota nota = new Nota(entity.id, entity.titulo, entity.texto, libreta, etiquetas, entity.fechaCreacion);
         nota.setFechaModificacion(entity.fechaModificacion);
+        nota.setRecordatorio(entity.recordatorio);
         return nota;
     }
 

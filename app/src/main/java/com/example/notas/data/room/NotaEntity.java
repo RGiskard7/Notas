@@ -33,13 +33,17 @@ public class NotaEntity {
     @ColumnInfo(name = "eliminada_en")
     public long eliminadaEn;
 
+    @ColumnInfo(name = "recordatorio")
+    public long recordatorio;
+
     public NotaEntity(int id, @NonNull String titulo, String texto, long fechaCreacion,
-                      long fechaModificacion, long eliminadaEn) {
+                      long fechaModificacion, long eliminadaEn, long recordatorio) {
         this.id = id;
         this.titulo = titulo;
         this.texto = texto;
         this.fechaCreacion = fechaCreacion;
         this.fechaModificacion = fechaModificacion;
         this.eliminadaEn = eliminadaEn;
+        this.recordatorio = recordatorio;
     }
 }

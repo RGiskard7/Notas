@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -8,6 +10,10 @@
         android:roundIcon="@mipmap/ic_icon_notas"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".seguridad.BloqueoActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditLibretaActivity"
             android:parentActivityName=".MainActivity" />
@@ -32,6 +38,18 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
+        <receiver
+            android:name=".recordatorios.RecordatorioReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".recordatorios.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -24,6 +24,7 @@ public class Nota implements Serializable {
     private Set<Etiqueta> etiquetas;
     private long fechaCreacion;
     private long fechaModificacion;
+    private long recordatorio;
 
     /**
      * Crea una nota con todos sus datos.
@@ -83,6 +84,15 @@ public class Nota implements Serializable {
 
     public void setFechaModificacion(long fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
+    }
+
+    /** Fecha del recordatorio en milisegundos, o 0 si no tiene. */
+    public long getRecordatorio() {
+        return recordatorio;
+    }
+
+    public void setRecordatorio(long recordatorio) {
+        this.recordatorio = recordatorio;
     }
 
     public Libreta getLibreta() {

@@ -36,7 +36,7 @@ import java.util.Map;
                 NotaFts.class,
                 AdjuntoEntity.class
         },
-        version = 5,
+        version = 6,
         exportSchema = true)
 public abstract class NotasDatabase extends RoomDatabase {
 
@@ -109,6 +109,18 @@ public abstract class NotasDatabase extends RoomDatabase {
         }
     };
 
+    /**
+     * Migración de la versión 5 a la 6: añade los recordatorios de las notas.
+     *
+     * <p>0 significa que la nota no tiene recordatorio.</p>
+     */
+    static final Migration MIGRACION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE notas ADD COLUMN recordatorio INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
     public abstract NotaDao notaDao();
 
     public abstract LibretaDao libretaDao();
@@ -141,7 +153,7 @@ public abstract class NotasDatabase extends RoomDatabase {
         if (db == null) {
             final Context appContext = context.getApplicationContext();
             RoomDatabase.Builder<NotasDatabase> builder = Room.databaseBuilder(appContext, NotasDatabase.class, name)
-                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5)
+                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5, MIGRACION_5_6)
                     .addCallback(new Callback() {
                         @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase database) {

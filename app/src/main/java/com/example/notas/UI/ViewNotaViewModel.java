@@ -105,4 +105,9 @@ public class ViewNotaViewModel extends AndroidViewModel {
     public void actualizarTexto(int id, String titulo, String texto, Runnable onDone) {
         repositorio.actualizarTextoNota(id, titulo, texto, onDone);
     }
+
+    /** Fija (o quita, con 0) el recordatorio de la nota. */
+    public void ponerRecordatorio(int id, long cuando, Runnable onDone) {
+        repositorio.ponerRecordatorio(id, cuando, onDone);
+    }
 }

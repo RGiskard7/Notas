@@ -25,8 +25,20 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_exportar"
+        android:id="@+id/action_recordatorio"
         android:orderInCategory="102"
+        android:title="@string/recordatorio"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_quitar_recordatorio"
+        android:orderInCategory="103"
+        android:title="@string/quitar_recordatorio"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_exportar"
+        android:orderInCategory="104"
         android:title="@string/exportar"
         app:showAsAction="never" />
 

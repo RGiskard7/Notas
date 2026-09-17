@@ -28,6 +28,7 @@ import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.FragmentListNotasBinding;
+import com.example.notas.recordatorios.ProgramadorRecordatorios;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -302,6 +303,7 @@ public class ListNotasFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int id = listaNotas.get(position).getId();
+                ProgramadorRecordatorios.cancelar(getActivity(), id);
                 viewModel.eliminar(id);
                 mostrarDeshacer(id);
             }

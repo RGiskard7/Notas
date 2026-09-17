@@ -15,6 +15,8 @@ import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityMainBinding;
+import com.example.notas.seguridad.BloqueoActivity;
+import com.example.notas.seguridad.GestorPin;
 import com.example.notas.util.Markdown;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -76,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Si hay un PIN configurado y no se ha desbloqueado todavía, se pide.
+        if (GestorPin.hayPin(this) && !GestorPin.estaDesbloqueado()) {
+            startActivity(new Intent(this, BloqueoActivity.class));
+            finish();
+            return;
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -260,11 +270,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean hayPin = GestorPin.hayPin(this);
+        menu.findItem(R.id.action_quitar_pin).setVisible(hayPin);
+        menu.findItem(R.id.action_bloquear).setVisible(hayPin);
+        menu.findItem(R.id.action_establecer_pin).setTitle(hayPin ? R.string.cambiar_pin : R.string.establecer_pin);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_importar) {
             importarLauncher.launch(new String[]{"text/*", "text/markdown", "text/plain"});
+        } else if (id == R.id.action_establecer_pin) {
+            pedirNuevoPin();
+        } else if (id == R.id.action_quitar_pin) {
+            pedirPinParaQuitar();
+        } else if (id == R.id.action_bloquear) {
+            GestorPin.bloquear();
+            startActivity(new Intent(this, BloqueoActivity.class));
+            finish();
         } else if (id == R.id.action_salir) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
@@ -273,6 +300,53 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /** Pide un PIN nuevo y lo guarda. */
+    private void pedirNuevoPin() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        final EditText entrada = new EditText(this);
+        entrada.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        dialog.setTitle(R.string.pin_nuevo);
+        dialog.setView(entrada);
+        dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int which) {
+                String pin = entrada.getText().toString();
+                if (pin.length() < 4) {
+                    Toast.makeText(MainActivity.this, R.string.pin_corto, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                GestorPin.guardarPin(MainActivity.this, pin);
+                invalidateOptionsMenu();
+                Toast.makeText(MainActivity.this, R.string.pin_guardado, Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton(R.string.cancelar, null);
+        dialog.create().show();
+    }
+
+    /** Pide el PIN actual y, si es correcto, lo quita. */
+    private void pedirPinParaQuitar() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        final EditText entrada = new EditText(this);
+        entrada.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        dialog.setTitle(R.string.pin_actual);
+        dialog.setView(entrada);
+        dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int which) {
+                if (GestorPin.comprobar(MainActivity.this, entrada.getText().toString())) {
+                    GestorPin.quitarPin(MainActivity.this);
+                    invalidateOptionsMenu();
+                    Toast.makeText(MainActivity.this, R.string.pin_quitado, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.pin_incorrecto, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        dialog.setNegativeButton(R.string.cancelar, null);
+        dialog.create().show();
     }
 
     /** Lee el fichero elegido, lo interpreta como nota y la guarda en 'Default'. */

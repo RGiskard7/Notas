@@ -12,6 +12,18 @@
     <string name="ordenar_recuento_asc">Recuento de notas ascendente</string>
     <string name="ordenar_recuento_des">Recuento de notas descendente</string>
     <string name="salir">Salir</string>
+    <string name="pin_titulo">Introduce el PIN</string>
+    <string name="desbloquear">Desbloquear</string>
+    <string name="pin_incorrecto">PIN incorrecto</string>
+    <string name="establecer_pin">Establecer PIN</string>
+    <string name="cambiar_pin">Cambiar PIN</string>
+    <string name="quitar_pin">Quitar PIN</string>
+    <string name="bloquear_ahora">Bloquear ahora</string>
+    <string name="pin_nuevo">Nuevo PIN</string>
+    <string name="pin_actual">PIN actual</string>
+    <string name="pin_guardado">PIN guardado</string>
+    <string name="pin_quitado">PIN quitado</string>
+    <string name="pin_corto">El PIN debe tener al menos 4 dígitos</string>
 
     <!-- Strings used for nav_header_main.xml -->
     <string name="textViewNav">Nevernote</string>
@@ -58,6 +70,13 @@
     <string name="exportar">Exportar</string>
     <string name="importar">Importar</string>
     <string name="adjuntar_imagen">Adjuntar imagen</string>
+    <string name="recordatorio">Recordatorio</string>
+    <string name="quitar_recordatorio">Quitar recordatorio</string>
+    <string name="recordatorio_fijado">Recordatorio fijado</string>
+    <string name="recordatorio_quitado">Recordatorio quitado</string>
+    <string name="recordatorio_label">Recordatorio: %1$s</string>
+    <string name="recordatorio_aviso">Tienes un recordatorio</string>
+    <string name="canal_recordatorios">Recordatorios</string>
 
     <!-- Alert Dialog -->
     <string name="titleAlertDialog">"Aviso"</string>

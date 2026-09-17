@@ -80,6 +80,13 @@ public interface NotaDao {
     @Query("UPDATE notas SET eliminada_en = 0 WHERE nota_id = :id")
     void restaurarNota(int id);
 
+    @Query("UPDATE notas SET recordatorio = :cuando WHERE nota_id = :id")
+    void setRecordatorio(int id, long cuando);
+
+    @Transaction
+    @Query("SELECT * FROM notas WHERE recordatorio > 0 AND eliminada_en = 0 ORDER BY recordatorio ASC")
+    List<NotaConRelaciones> getNotasConRecordatorio();
+
     @Query("DELETE FROM notas WHERE nota_id = :id")
     void deleteNotaById(int id);
 

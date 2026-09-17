@@ -369,4 +369,52 @@ public class NotaDAORoomTest {
         notaDAO.getAdjuntosFrom(id, adjuntos);
         assertTrue(adjuntos.isEmpty());
     }
+
+    @Test
+    public void recordatorio_seFijaYSeLista() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        long cuando = System.currentTimeMillis() + 60000;
+
+        notaDAO.setRecordatorio(id, cuando);
+
+        List<Nota> conRecordatorio = new ArrayList<>();
+        notaDAO.getNotasConRecordatorio(conRecordatorio);
+        assertEquals(1, conRecordatorio.size());
+        assertEquals(id, conRecordatorio.get(0).getId());
+        assertEquals(cuando, conRecordatorio.get(0).getRecordatorio());
+    }
+
+    @Test
+    public void lasNotasSinRecordatorioNoAparecenEnLaLista() {
+        nuevaNotaEnLibretaDefault("T", "X");
+
+        List<Nota> conRecordatorio = new ArrayList<>();
+        notaDAO.getNotasConRecordatorio(conRecordatorio);
+
+        assertTrue(conRecordatorio.isEmpty());
+    }
+
+    @Test
+    public void quitarElRecordatorioLoEliminaDeLaLista() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        notaDAO.setRecordatorio(id, System.currentTimeMillis() + 60000);
+
+        notaDAO.setRecordatorio(id, 0);
+
+        List<Nota> conRecordatorio = new ArrayList<>();
+        notaDAO.getNotasConRecordatorio(conRecordatorio);
+        assertTrue(conRecordatorio.isEmpty());
+    }
+
+    @Test
+    public void unaNotaEnLaPapeleraNoApareceEnLosRecordatorios() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        notaDAO.setRecordatorio(id, System.currentTimeMillis() + 60000);
+
+        notaDAO.deleteNota(id);
+
+        List<Nota> conRecordatorio = new ArrayList<>();
+        notaDAO.getNotasConRecordatorio(conRecordatorio);
+        assertTrue(conRecordatorio.isEmpty());
+    }
 }

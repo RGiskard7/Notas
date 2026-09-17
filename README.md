@@ -19,6 +19,10 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
   al momento) y borrar definitivamente.
 - **Adjuntos**: se pueden añadir **imágenes** a una nota; se copian al almacenamiento
   interno y se ven en la pantalla de la nota.
+- **Recordatorios**: aviso por fecha y hora con notificación; se reprograman al
+  reiniciar el dispositivo.
+- **Bloqueo con PIN**: pantalla de bloqueo al abrir la app (el PIN se guarda con sal y
+  PBKDF2). Es un bloqueo de acceso, **no** cifra la base de datos.
 
 ## Arquitectura
 
@@ -60,13 +64,15 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-121 tests:
+135 tests:
 
-- **data/** (44): DAOs Room (CRUD, papelera, adjuntos, cascadas, duplicados, recuentos,
-  fechas, búsqueda FTS), migraciones 1->2, 2->3, 3->4 y 4->5, garantía de que producción
-  no consulta en el hilo principal y entrega asíncrona del repositorio.
+- **data/** (48): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
+  duplicados, recuentos, fechas, búsqueda FTS), migraciones 1->2 a 5->6, garantía de
+  que producción no consulta en el hilo principal y entrega asíncrona del repositorio.
 - **util/** (51): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
   negrita/cursiva), adjuntos, fechas, diff de etiquetas y viñetas.
+- **recordatorios/** (1): programación y cancelación de la alarma.
+- **seguridad/** (8): PIN (guardar, comprobar, cambiar, quitar) y pantalla de bloqueo.
 - **UI/** (26): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press),
   renderizado de notas, Activities de edición/visualización y persistencia de la
   búsqueda.
@@ -76,5 +82,6 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 - `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
 - Paquete `com.example.notas`; `app_name` "Nevernote".
-- Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS), 3->4 (papelera) y 4->5
-  (adjuntos), con tests.
+- Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS), 3->4 (papelera),
+  4->5 (adjuntos) y 5->6 (recordatorios), con tests.
+- El bloqueo con PIN no cifra los datos: la base de datos sigue sin cifrar.

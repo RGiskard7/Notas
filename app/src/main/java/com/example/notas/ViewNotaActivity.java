@@ -6,12 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.text.method.LinkMovementMethod;
@@ -20,14 +25,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.notas.UI.RenderizadorNota;
 import com.example.notas.UI.ViewNotaViewModel;
@@ -37,6 +46,7 @@ import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityViewNotaBinding;
+import com.example.notas.recordatorios.ProgramadorRecordatorios;
 import com.example.notas.util.Adjuntos;
 import com.example.notas.util.Fechas;
 import com.example.notas.util.FormatoNota;
@@ -47,6 +57,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -61,6 +72,7 @@ public class ViewNotaActivity extends AppCompatActivity {
     private TextView texto;
     private TextView fecha;
     private TextView fechaModificacion;
+    private TextView textViewRecordatorio;
     private TextView txlibreta;
     private TextView numEtiquetas;
     private Nota nota;
@@ -146,6 +158,7 @@ public class ViewNotaActivity extends AppCompatActivity {
         texto.setMovementMethod(new ScrollingMovementMethod());
         fecha = binding.textViewFechaNota;
         fechaModificacion = binding.textViewFechaModificacion;
+        textViewRecordatorio = binding.textViewRecordatorio;
         txlibreta = binding.textViewLibretaNota;
         numEtiquetas = binding.textView3;
         buttonEtiquetas = binding.buttonEtiquetas;
@@ -167,6 +180,7 @@ public class ViewNotaActivity extends AppCompatActivity {
         if (libreta != null) {
             txlibreta.setText(libreta.getTitulo());
         }
+        mostrarRecordatorio();
     }
 
     public void eventRecorder() {
@@ -200,6 +214,12 @@ public class ViewNotaActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_quitar_recordatorio).setVisible(nota.getRecordatorio() > 0);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -210,6 +230,10 @@ public class ViewNotaActivity extends AppCompatActivity {
             startActivityForResult(intent, 1);
         } else if (id == R.id.action_adjuntar) {
             adjuntarLauncher.launch(new String[]{"image/*"});
+        } else if (id == R.id.action_recordatorio) {
+            elegirFechaHora();
+        } else if (id == R.id.action_quitar_recordatorio) {
+            quitarRecordatorio();
         } else if (id == R.id.action_exportar) {
             exportarLauncher.launch(Markdown.nombreFichero(nota.getTitulo()));
         } else if (id == R.id.action_Eliminar) {
@@ -218,6 +242,7 @@ public class ViewNotaActivity extends AppCompatActivity {
             builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    ProgramadorRecordatorios.cancelar(ViewNotaActivity.this, nota.getId());
                     viewModel.eliminar(nota.getId(), new Runnable() {
                         @Override
                         public void run() {
@@ -332,6 +357,83 @@ public class ViewNotaActivity extends AppCompatActivity {
     private String mimeDe(Uri uri) {
         String tipo = getContentResolver().getType(uri);
         return tipo == null ? "image/*" : tipo;
+    }
+
+    /** Muestra u oculta la fecha del recordatorio. */
+    private void mostrarRecordatorio() {
+        if (nota.getRecordatorio() > 0) {
+            textViewRecordatorio.setText(getString(R.string.recordatorio_label, Fechas.formatearNota(nota.getRecordatorio())));
+            textViewRecordatorio.setVisibility(View.VISIBLE);
+        } else {
+            textViewRecordatorio.setVisibility(View.GONE);
+        }
+    }
+
+    /** Pide fecha y hora para el recordatorio. */
+    private void elegirFechaHora() {
+        Calendar calendario = Calendar.getInstance();
+        if (nota.getRecordatorio() > 0) {
+            calendario.setTimeInMillis(nota.getRecordatorio());
+        }
+
+        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int anio, int mes, int dia) {
+                elegirHora(anio, mes, dia);
+            }
+        }, calendario.get(Calendar.YEAR), calendario.get(Calendar.MONTH), calendario.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void elegirHora(final int anio, final int mes, final int dia) {
+        Calendar calendario = Calendar.getInstance();
+        if (nota.getRecordatorio() > 0) {
+            calendario.setTimeInMillis(nota.getRecordatorio());
+        }
+
+        new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hora, int minuto) {
+                Calendar elegido = Calendar.getInstance();
+                elegido.set(anio, mes, dia, hora, minuto, 0);
+                elegido.set(Calendar.MILLISECOND, 0);
+                fijarRecordatorio(elegido.getTimeInMillis());
+            }
+        }, calendario.get(Calendar.HOUR_OF_DAY), calendario.get(Calendar.MINUTE), true).show();
+    }
+
+    private void fijarRecordatorio(final long cuando) {
+        pedirPermisoNotificaciones();
+        viewModel.ponerRecordatorio(nota.getId(), cuando, new Runnable() {
+            @Override
+            public void run() {
+                nota.setRecordatorio(cuando);
+                ProgramadorRecordatorios.programar(ViewNotaActivity.this, nota.getId(), cuando, nota.getTitulo());
+                mostrarRecordatorio();
+                invalidateOptionsMenu();
+                Toast.makeText(ViewNotaActivity.this, R.string.recordatorio_fijado, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void quitarRecordatorio() {
+        viewModel.ponerRecordatorio(nota.getId(), 0, new Runnable() {
+            @Override
+            public void run() {
+                nota.setRecordatorio(0);
+                ProgramadorRecordatorios.cancelar(ViewNotaActivity.this, nota.getId());
+                mostrarRecordatorio();
+                invalidateOptionsMenu();
+                Toast.makeText(ViewNotaActivity.this, R.string.recordatorio_quitado, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /** Pide el permiso de notificaciones en Android 13 o superior. */
+    private void pedirPermisoNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 226);
+        }
     }
 
     /** Escribe la nota en Markdown en el fichero elegido por el usuario. */

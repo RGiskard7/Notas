@@ -417,6 +417,28 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Fija (o quita, con 0) el recordatorio de una nota. */
+    public void ponerRecordatorio(final int id, final long cuando, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.setRecordatorio(id, cuando);
+            }
+        }, onDone);
+    }
+
+    /** Carga las notas con recordatorio pendiente (para reprogramarlos). */
+    public void notasConRecordatorio(Callback<List<Nota>> callback) {
+        leer(new Tarea<List<Nota>>() {
+            @Override
+            public List<Nota> ejecutar() {
+                List<Nota> lista = new ArrayList<>();
+                notaDAO.getNotasConRecordatorio(lista);
+                return lista;
+            }
+        }, callback);
+    }
+
     /** Crea una libreta. */
     public void crearLibreta(final String titulo, Runnable onDone) {
         escribir(new Runnable() {
