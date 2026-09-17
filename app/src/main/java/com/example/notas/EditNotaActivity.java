@@ -28,6 +28,7 @@ import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.ActivityEditNotaBinding;
 import com.example.notas.util.EtiquetaSelection;
+import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Vinietas;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -252,6 +253,41 @@ public class EditNotaActivity extends AppCompatActivity {
         }
     }
 
+    /** Inserta una casilla de tarea en la posición del cursor. */
+    private void insertarCasilla() {
+        Editable contenido = texto.getText();
+        int cursor = texto.getSelectionStart();
+        if (cursor < 0) {
+            cursor = contenido.length();
+        }
+
+        String original = contenido.toString();
+        String nuevo = FormatoNota.insertarCasilla(original, cursor);
+        texto.setText(nuevo);
+        texto.setSelection(cursor + (nuevo.length() - original.length()));
+    }
+
+    /** Rodea el texto seleccionado con la marca indicada (negrita o cursiva). */
+    private void envolverSeleccion(String marca) {
+        int inicio = texto.getSelectionStart();
+        int fin = texto.getSelectionEnd();
+        if (inicio < 0) {
+            inicio = texto.getText().length();
+        }
+        if (fin < inicio) {
+            fin = inicio;
+        }
+
+        Editable contenido = texto.getText();
+        contenido.insert(fin, marca);
+        contenido.insert(inicio, marca);
+        if (fin == inicio) {
+            texto.setSelection(inicio + marca.length());
+        } else {
+            texto.setSelection(fin + 2 * marca.length());
+        }
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         setResult(Activity.RESULT_CANCELED);
@@ -269,6 +305,18 @@ public class EditNotaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if (id == R.id.action_casilla) {
+            insertarCasilla();
+            return true;
+        }
+        if (id == R.id.action_negrita) {
+            envolverSeleccion("**");
+            return true;
+        }
+        if (id == R.id.action_cursiva) {
+            envolverSeleccion("*");
+            return true;
+        }
         if (id == R.id.action_guardar) {
             String tituloTexto = titulo.getText().toString();
             String textoContenido = texto.getText().toString();

@@ -10,6 +10,7 @@ import android.provider.OpenableColumns;
 import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
+import com.example.notas.UI.ListPapeleraFragment;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
@@ -132,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (menuItem.getItemId() == R.id.allEtiquetas) {
                     fragment = new ListEtiquetasFragment();
                     fragmentSelected = true;
+                } else if (menuItem.getItemId() == R.id.allPapelera) {
+                    fragment = new ListPapeleraFragment();
+                    fragmentSelected = true;
                 }
 
                 if (fragmentSelected) {
@@ -237,7 +241,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (currentFragment instanceof ListLibretasFragment || currentFragment instanceof ListEtiquetasFragment) {
+        if (currentFragment instanceof ListLibretasFragment || currentFragment instanceof ListEtiquetasFragment
+                || currentFragment instanceof ListPapeleraFragment) {
             fragmentManager.beginTransaction().replace(R.id.fragmentContainer, ListNotasFragment.newInstance()).commit();
             navigationView.setCheckedItem(R.id.allNotas);
             getSupportActionBar().setTitle(R.string.todas_las_notas);

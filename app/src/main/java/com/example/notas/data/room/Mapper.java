@@ -84,7 +84,7 @@ final class Mapper {
         Libreta libreta = new Libreta(
                 relacion.libreta.id,
                 relacion.libreta.titulo,
-                relacion.notas == null ? 0 : relacion.notas.size(),
+                contarActivas(relacion.notas),
                 relacion.libreta.fechaCreacion);
         libreta.setFechaModificacion(relacion.libreta.fechaModificacion);
         return libreta;
@@ -94,9 +94,23 @@ final class Mapper {
         Etiqueta etiqueta = new Etiqueta(
                 relacion.etiqueta.id,
                 relacion.etiqueta.titulo,
-                relacion.notas == null ? 0 : relacion.notas.size(),
+                contarActivas(relacion.notas),
                 relacion.etiqueta.fechaCreacion);
         etiqueta.setFechaModificacion(relacion.etiqueta.fechaModificacion);
         return etiqueta;
+    }
+
+    /** Cuenta las notas que no están en la papelera. */
+    private static int contarActivas(List<NotaEntity> notas) {
+        if (notas == null) {
+            return 0;
+        }
+        int activas = 0;
+        for (NotaEntity nota : notas) {
+            if (nota.eliminadaEn == 0) {
+                activas++;
+            }
+        }
+        return activas;
     }
 }

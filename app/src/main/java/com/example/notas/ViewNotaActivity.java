@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,12 +23,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import com.example.notas.UI.RenderizadorNota;
 import com.example.notas.UI.ViewNotaViewModel;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.ActivityViewNotaBinding;
 import com.example.notas.util.Fechas;
+import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Markdown;
 
 import java.io.IOException;
@@ -122,8 +125,7 @@ public class ViewNotaActivity extends AppCompatActivity {
     public void fillComponents() {
         titulo.setText(nota.getTitulo());
         titulo.setTextIsSelectable(true);
-        texto.setText(nota.getTexto());
-        texto.setTextIsSelectable(true);
+        mostrarTexto();
         fecha.setText(getString(R.string.fecha_creacion, Fechas.formatearNota(nota.getFechaCreacion())));
         if (nota.getFechaModificacion() != nota.getFechaCreacion()) {
             fechaModificacion.setText(getString(R.string.fecha_modificacion, Fechas.formatearNota(nota.getFechaModificacion())));
@@ -208,6 +210,24 @@ public class ViewNotaActivity extends AppCompatActivity {
                 viewModel.cargarEtiquetasDeNota(nota.getId());
             }
         }
+    }
+
+    /** Muestra el texto con casillas y formato, y permite marcar las tareas. */
+    private void mostrarTexto() {
+        texto.setMovementMethod(LinkMovementMethod.getInstance());
+        texto.setText(RenderizadorNota.renderizar(nota.getTexto(), new RenderizadorNota.OnTareaPulsada() {
+            @Override
+            public void onTareaPulsada(int numeroLinea) {
+                final String nuevo = FormatoNota.alternarTarea(nota.getTexto(), numeroLinea);
+                viewModel.actualizarTexto(nota.getId(), nota.getTitulo(), nuevo, new Runnable() {
+                    @Override
+                    public void run() {
+                        nota.setTexto(nuevo);
+                        mostrarTexto();
+                    }
+                });
+            }
+        }));
     }
 
     /** Escribe la nota en Markdown en el fichero elegido por el usuario. */

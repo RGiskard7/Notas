@@ -28,6 +28,7 @@ import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.FragmentListNotasBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -300,11 +301,25 @@ public class ListNotasFragment extends Fragment {
         builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                viewModel.eliminar(listaNotas.get(position).getId());
+                final int id = listaNotas.get(position).getId();
+                viewModel.eliminar(id);
+                mostrarDeshacer(id);
             }
         });
         builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
         builder.create().show();
+    }
+
+    /** Avisa de que la nota se ha movido a la papelera y ofrece deshacerlo. */
+    private void mostrarDeshacer(final int id) {
+        Snackbar.make(binding.getRoot(), R.string.nota_en_papelera, Snackbar.LENGTH_LONG)
+                .setAction(R.string.deshacer, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        viewModel.restaurar(id);
+                    }
+                })
+                .show();
     }
 
     @Override

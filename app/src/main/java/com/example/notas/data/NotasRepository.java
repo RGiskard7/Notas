@@ -291,8 +291,7 @@ public class NotasRepository {
 
     /** Crea una nota, la asocia a la libreta y le añade las etiquetas indicadas. */
     public void crearNota(final String titulo, final String texto, final int idLibreta,
-                          final List<Etiqueta> etiquetas, final Runnable onDone) {
-        escribir(new Runnable() {
+                          final List<Etiqueta> etiquetas, final Runnable onDone) {        escribir(new Runnable() {
             @Override
             public void run() {
                 int idNota = notaDAO.createNota(titulo, texto);
@@ -338,7 +337,17 @@ public class NotasRepository {
         }, onDone);
     }
 
-    /** Elimina una nota y sus vínculos. */
+    /** Actualiza solo el texto de una nota (por ejemplo al marcar una tarea). */
+    public void actualizarTextoNota(final int id, final String titulo, final String texto, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.editNota(id, titulo, texto);
+            }
+        }, onDone);
+    }
+
+    /** Envía una nota a la papelera (se puede deshacer). */
     public void eliminarNota(final int id, Runnable onDone) {
         escribir(new Runnable() {
             @Override
@@ -346,6 +355,38 @@ public class NotasRepository {
                 notaDAO.deleteNota(id);
             }
         }, onDone);
+    }
+
+    /** Saca una nota de la papelera. */
+    public void restaurarNota(final int id, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.restaurarNota(id);
+            }
+        }, onDone);
+    }
+
+    /** Borra una nota definitivamente, sin posibilidad de recuperarla. */
+    public void borrarNotaDefinitivamente(final int id, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.borrarNotaDefinitivamente(id);
+            }
+        }, onDone);
+    }
+
+    /** Carga las notas que están en la papelera. */
+    public void notasPapelera(Callback<List<Nota>> callback) {
+        leer(new Tarea<List<Nota>>() {
+            @Override
+            public List<Nota> ejecutar() {
+                List<Nota> lista = new ArrayList<>();
+                notaDAO.getNotasEliminadas(lista);
+                return lista;
+            }
+        }, callback);
     }
 
     /** Crea una libreta. */

@@ -168,18 +168,63 @@ public class NotaDAORoomTest {
     }
 
     @Test
-    public void deleteNota_eliminaLosVinculos() {
+    public void deleteNota_laMueveALaPapeleraYConservaLosVinculos() {
         int id = nuevaNotaEnLibretaDefault("T", "X");
         etiquetaDAO.createEtiqueta("E");
         notaDAO.addEtiquetasToNota(id, todasLasEtiquetas());
 
         notaDAO.deleteNota(id);
 
+        List<Nota> activas = new ArrayList<>();
+        notaDAO.getAllNotas(activas);
+        assertTrue(activas.isEmpty());
+
+        List<Nota> papelera = new ArrayList<>();
+        notaDAO.getNotasEliminadas(papelera);
+        assertEquals(1, papelera.size());
+        // Los vínculos se conservan para poder restaurarla tal cual estaba.
+        assertNotNull(notaDAO.getLibreta(id));
+        List<Etiqueta> etiquetas = new ArrayList<>();
+        notaDAO.getAllEtiquetasFrom(id, etiquetas);
+        assertEquals(1, etiquetas.size());
+    }
+
+    @Test
+    public void laLibretaNoCuentaLasNotasEnLaPapelera() {
+        int id = nuevaNotaEnLibretaDefault("A", "x");
+        assertEquals(1, libretaDAO.getLibreta(1).getNumNotas());
+
+        notaDAO.deleteNota(id);
+
+        assertEquals(0, libretaDAO.getLibreta(1).getNumNotas());
+    }
+
+    @Test
+    public void restaurarNota_laDevuelveAlListado() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        notaDAO.deleteNota(id);
+
+        notaDAO.restaurarNota(id);
+
+        List<Nota> activas = new ArrayList<>();
+        notaDAO.getAllNotas(activas);
+        assertEquals(1, activas.size());
+        List<Nota> papelera = new ArrayList<>();
+        notaDAO.getNotasEliminadas(papelera);
+        assertTrue(papelera.isEmpty());
+    }
+
+    @Test
+    public void borrarNotaDefinitivamente_laEliminaSinDejarRastro() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        notaDAO.deleteNota(id);
+
+        notaDAO.borrarNotaDefinitivamente(id);
+
+        List<Nota> papelera = new ArrayList<>();
+        notaDAO.getNotasEliminadas(papelera);
+        assertTrue(papelera.isEmpty());
         assertNull(notaDAO.getNota(id));
-        assertNull(notaDAO.getLibreta(id));
-        List<Etiqueta> restantes = new ArrayList<>();
-        notaDAO.getAllEtiquetasFrom(id, restantes);
-        assertTrue(restantes.isEmpty());
     }
 
     @Test

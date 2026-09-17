@@ -16,4 +16,22 @@
         android:orderInCategory="101"
         android:title="@string/guardar"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_casilla"
+        android:orderInCategory="102"
+        android:title="@string/casilla"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_negrita"
+        android:orderInCategory="103"
+        android:title="@string/negrita"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_cursiva"
+        android:orderInCategory="104"
+        android:title="@string/cursiva"
+        app:showAsAction="never" />
 </menu>

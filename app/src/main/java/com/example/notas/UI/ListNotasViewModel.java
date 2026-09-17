@@ -94,6 +94,16 @@ public class ListNotasViewModel extends AndroidViewModel {
         });
     }
 
+    /** Saca una nota de la papelera (para deshacer un borrado). */
+    public void restaurar(int id) {
+        repositorio.restaurarNota(id, new Runnable() {
+            @Override
+            public void run() {
+                recargar();
+            }
+        });
+    }
+
     private void buscarInterno() {
         String consulta = ConsultaFts.paraMatch(getConsulta());
         NotasRepository.Callback<List<Nota>> callback = new NotasRepository.Callback<List<Nota>>() {

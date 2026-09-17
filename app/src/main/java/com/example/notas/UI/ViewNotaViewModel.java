@@ -57,4 +57,9 @@ public class ViewNotaViewModel extends AndroidViewModel {
     public void eliminar(int id, Runnable onDone) {
         repositorio.eliminarNota(id, onDone);
     }
+
+    /** Guarda el texto de la nota (por ejemplo al marcar una tarea). */
+    public void actualizarTexto(int id, String titulo, String texto, Runnable onDone) {
+        repositorio.actualizarTextoNota(id, titulo, texto, onDone);
+    }
 }

@@ -40,12 +40,19 @@
     <string name="editar_etiqueta">Editar etiqueta</string>
     <string name="elige_etiquetas">Elige etiquetas</string>
     <string name="viñetas">Viñetas</string>
+    <string name="casilla">Casilla</string>
+    <string name="negrita">Negrita</string>
+    <string name="cursiva">Cursiva</string>
 
     <!-- Acciones -->
     <string name="ok">OK</string>
     <string name="cancelar">CANCELAR</string>
     <string name="editar">Editar</string>
     <string name="eliminar">Eliminar</string>
+    <string name="restaurar">Restaurar</string>
+    <string name="eliminar_definitivamente">Eliminar definitivamente</string>
+    <string name="deshacer">Deshacer</string>
+    <string name="papelera">Papelera</string>
     <string name="guardar">Guardar</string>
     <string name="anadir">Añadir</string>
     <string name="exportar">Exportar</string>
@@ -63,6 +70,8 @@
     <string name="nota_sin_titulo">Nota sin título</string>
     <string name="nota_editada">Nota editada</string>
     <string name="nota_eliminada">Nota eliminada</string>
+    <string name="nota_restaurada">Nota restaurada</string>
+    <string name="nota_en_papelera">Nota enviada a la papelera</string>
     <string name="nota_exportada">Nota exportada</string>
     <string name="nota_importada">Nota importada</string>
     <string name="error_exportar">No se pudo exportar la nota</string>

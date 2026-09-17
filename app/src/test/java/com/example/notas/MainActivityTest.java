@@ -20,10 +20,12 @@ import androidx.test.core.app.ApplicationProvider;
 import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
+import com.example.notas.UI.ListPapeleraFragment;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
+import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.data.room.NotasDatabase;
 import com.google.android.material.navigation.NavigationView;
@@ -195,6 +197,16 @@ public class MainActivityTest {
     }
 
     @Test
+    public void seleccionarPapelera_muestraElFragmentYElTitulo() {
+        MainActivity activity = lanzar();
+
+        seleccionarMenu(activity, R.id.allPapelera);
+
+        assertTrue(fragmentActual(activity) instanceof ListPapeleraFragment);
+        assertEquals("Papelera", activity.getSupportActionBar().getTitle().toString());
+    }
+
+    @Test
     public void mantenerPulsadaUnaNota_permiteEliminarla() {
         int id = notaDAO.createNota("Borrable", "x");
         libretaDAO.addNotaToLibreta(1, id);
@@ -219,6 +231,8 @@ public class MainActivityTest {
         confirmacion.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
         shadowOf(Looper.getMainLooper()).idle();
 
-        assertNull(notaDAO.getNota(id));
+        List<Nota> activas = new ArrayList<>();
+        notaDAO.getAllNotas(activas);
+        assertTrue(activas.isEmpty());
     }
 }

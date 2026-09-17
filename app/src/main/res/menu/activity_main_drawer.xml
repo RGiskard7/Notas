@@ -23,6 +23,12 @@
             android:icon="@mipmap/ic_etiqueta2_foreground"
             android:title="@string/etiquetas">
         </item>
+
+        <item
+            android:id="@+id/allPapelera"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:title="@string/papelera">
+        </item>
     </group>
 
 </menu>

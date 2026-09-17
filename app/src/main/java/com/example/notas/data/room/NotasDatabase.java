@@ -35,7 +35,7 @@ import java.util.Map;
                 EtiquetaNotaCrossRef.class,
                 NotaFts.class
         },
-        version = 3,
+        version = 4,
         exportSchema = true)
 public abstract class NotasDatabase extends RoomDatabase {
 
@@ -80,6 +80,19 @@ public abstract class NotasDatabase extends RoomDatabase {
         }
     };
 
+    /**
+     * Migración de la versión 3 a la 4: añade la papelera.
+     *
+     * <p>Las notas no se borran de golpe; se marcan con la fecha en que se
+     * enviaron a la papelera. El valor 0 significa que están activas.</p>
+     */
+    static final Migration MIGRACION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE notas ADD COLUMN eliminada_en INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
     public abstract NotaDao notaDao();
 
     public abstract LibretaDao libretaDao();
@@ -110,7 +123,7 @@ public abstract class NotasDatabase extends RoomDatabase {
         if (db == null) {
             final Context appContext = context.getApplicationContext();
             RoomDatabase.Builder<NotasDatabase> builder = Room.databaseBuilder(appContext, NotasDatabase.class, name)
-                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3)
+                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4)
                     .addCallback(new Callback() {
                         @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase database) {

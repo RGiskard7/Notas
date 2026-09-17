@@ -57,11 +57,34 @@ public interface INotaDAO {
     public void deleteLibreta(int idNota, int idLibreta);
 
     /**
-     * Elimina una nota y sus vínculos con libretas y etiquetas.
+     * Mueve una nota a la papelera (borrado lógico). Se puede recuperar con
+     * {@link #restaurarNota(int)}.
      *
      * @param id identificador de la nota.
      */
     public void deleteNota(int id);
+
+    /**
+     * Saca una nota de la papelera y la deja activa otra vez.
+     *
+     * @param id identificador de la nota.
+     */
+    public void restaurarNota(int id);
+
+    /**
+     * Borra una nota definitivamente, sin posibilidad de recuperarla.
+     *
+     * @param id identificador de la nota.
+     */
+    public void borrarNotaDefinitivamente(int id);
+
+    /**
+     * Carga las notas que están en la papelera, de la más reciente a la más
+     * antigua.
+     *
+     * @param list lista de salida.
+     */
+    public void getNotasEliminadas(List<Nota> list);
 
     /**
      * Carga todas las notas en la lista indicada, sustituyendo su contenido.

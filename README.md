@@ -12,8 +12,11 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 - **Etiquetas**: relación N:M con las notas.
 - **Búsqueda** por título y contenido (índice FTS4), respetando el ámbito
   (todas / libreta / etiqueta), y **ordenación** por fecha, título o número de notas.
-- Editor con inserción de viñetas.
+- Editor con inserción de viñetas, **casillas de tareas** y **negrita/cursiva**; en la
+  vista, las tareas se pueden marcar directamente.
 - **Exportar e importar** notas en **Markdown** (ficheros `.md`).
+- **Papelera**: las notas se borran de forma lógica, se pueden **restaurar** (o deshacer
+  al momento) y borrar definitivamente.
 
 ## Arquitectura
 
@@ -55,19 +58,20 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-98 tests:
+116 tests:
 
-- **data/** (37): DAOs Room (CRUD, cascadas, duplicados, recuentos, fechas, búsqueda
-  FTS), migraciones 1->2 y 2->3, garantía de que producción no consulta en el hilo
-  principal y entrega asíncrona del repositorio.
-- **util/** (39): filtro por título, consulta FTS, Markdown, formato de fechas, diff de
-  etiquetas y viñetas.
-- **UI/** (21): `MainActivity` (navegación, FAB, atrás, ámbito, long-press), las
-  Activities de edición/visualización y la persistencia de la búsqueda.
+- **data/** (40): DAOs Room (CRUD, papelera, cascadas, duplicados, recuentos, fechas,
+  búsqueda FTS), migraciones 1->2, 2->3 y 3->4, garantía de que producción no consulta
+  en el hilo principal y entrega asíncrona del repositorio.
+- **util/** (49): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
+  negrita/cursiva), fechas, diff de etiquetas y viñetas.
+- **UI/** (26): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press),
+  renderizado de notas, Activities de edición/visualización y persistencia de la
+  búsqueda.
 - Ejemplo de plantilla (1).
 
 ## Notas
 
 - `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
 - Paquete `com.example.notas`; `app_name` "Nevernote".
-- Migraciones de Room 1->2 (fechas a epoch) y 2->3 (índice FTS), con tests.
+- Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS) y 3->4 (papelera), con tests.

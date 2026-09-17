@@ -34,6 +34,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class ViewNotaActivityTest {
@@ -97,7 +100,7 @@ public class ViewNotaActivityTest {
     }
 
     @Test
-    public void eliminarNota_laBorraTrasConfirmar() {
+    public void eliminarNota_laMueveALaPapeleraTrasConfirmar() {
         Nota nota = crearNota("Para borrar", "x");
         ViewNotaActivity activity = lanzar(nota);
 
@@ -108,7 +111,13 @@ public class ViewNotaActivityTest {
         ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE).performClick();
         shadowOf(Looper.getMainLooper()).idle();
 
-        assertNull(notaDAO.getNota(nota.getId()));
+        List<Nota> activas = new ArrayList<>();
+        notaDAO.getAllNotas(activas);
+        assertTrue(activas.isEmpty());
+
+        List<Nota> papelera = new ArrayList<>();
+        notaDAO.getNotasEliminadas(papelera);
+        assertEquals(1, papelera.size());
     }
 
     @Test
