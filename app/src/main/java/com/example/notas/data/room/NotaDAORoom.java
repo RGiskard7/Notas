@@ -2,6 +2,7 @@ package com.example.notas.data.room;
 
 import android.content.Context;
 
+import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
@@ -27,6 +28,10 @@ public class NotaDAORoom implements INotaDAO {
 
     private NotaDao dao() {
         return NotasDatabase.get(context, name).notaDao();
+    }
+
+    private AdjuntoDao adjuntoDao() {
+        return NotasDatabase.get(context, name).adjuntoDao();
     }
 
     private long ahora() {
@@ -165,5 +170,23 @@ public class NotaDAORoom implements INotaDAO {
         for (NotaConRelaciones relacion : relaciones) {
             list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
         }
+    }
+
+    @Override
+    public int addAdjunto(int idNota, String ruta, String nombre, String mime) {
+        return (int) adjuntoDao().insertar(new AdjuntoEntity(0, idNota, ruta, nombre, mime, ahora()));
+    }
+
+    @Override
+    public void getAdjuntosFrom(int idNota, List<Adjunto> list) {
+        list.clear();
+        for (AdjuntoEntity entity : adjuntoDao().getDeNota(idNota)) {
+            list.add(new Adjunto(entity.id, entity.notaId, entity.ruta, entity.nombre, entity.mime, entity.fecha));
+        }
+    }
+
+    @Override
+    public void deleteAdjunto(int idAdjunto) {
+        adjuntoDao().eliminar(idAdjunto);
     }
 }

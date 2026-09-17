@@ -57,6 +57,7 @@
     <string name="anadir">Añadir</string>
     <string name="exportar">Exportar</string>
     <string name="importar">Importar</string>
+    <string name="adjuntar_imagen">Adjuntar imagen</string>
 
     <!-- Alert Dialog -->
     <string name="titleAlertDialog">"Aviso"</string>
@@ -76,6 +77,9 @@
     <string name="nota_importada">Nota importada</string>
     <string name="error_exportar">No se pudo exportar la nota</string>
     <string name="error_importar">No se pudo importar el fichero</string>
+    <string name="adjunto_anadido">Imagen adjuntada</string>
+    <string name="error_adjunto">No se pudo adjuntar la imagen</string>
+    <string name="messageAlertDialogAdjunto">"¿Seguro que quieres eliminar el adjunto?"</string>
     <string name="nota_vacia">No se puede guardar una nota vacía</string>
     <string name="fecha_creacion">Creada: %1$s</string>
     <string name="fecha_modificacion">Modificada: %1$s</string>

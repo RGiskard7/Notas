@@ -1,13 +1,23 @@
 package com.example.notas.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.example.notas.util.Adjuntos;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,16 +48,22 @@ public class NotasRepository {
         T ejecutar();
     }
 
+    // El singleton guarda el contexto de la aplicación (no de una Activity), por
+    // lo que no supone una fuga de memoria.
+    @SuppressLint("StaticFieldLeak")
     private static volatile NotasRepository INSTANCE;
     private static boolean sincronoParaTests = false;
 
     private final INotaDAO notaDAO;
     private final ILibretaDAO libretaDAO;
     private final IEtiquetaDAO etiquetaDAO;
+    private final Context context;
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
 
     private NotasRepository(Context context) {
+        this.context = context;
         FactoryDAO factory = FactoryDAO.getFactory(FactoryDAO.ROOM_FACTORY);
         notaDAO = factory.getNotaDao(context);
         libretaDAO = factory.getLibretaDao(context);
@@ -89,13 +105,25 @@ public class NotasRepository {
 
     private <T> void leer(final Tarea<T> tarea, final Callback<T> callback) {
         if (sincronoParaTests) {
-            callback.onResult(tarea.ejecutar());
+            T resultado;
+            try {
+                resultado = tarea.ejecutar();
+            } catch (RuntimeException e) {
+                resultado = null;
+            }
+            callback.onResult(resultado);
             return;
         }
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                final T resultado = tarea.ejecutar();
+                T valor;
+                try {
+                    valor = tarea.ejecutar();
+                } catch (RuntimeException e) {
+                    valor = null;
+                }
+                final T resultado = valor;
                 main.post(new Runnable() {
                     @Override
                     public void run() {
@@ -432,5 +460,75 @@ public class NotasRepository {
                 etiquetaDAO.deleteEtiqueta(id);
             }
         }, onDone);
+    }
+
+    /** Carga los adjuntos de una nota. */
+    public void adjuntosDeNota(final int idNota, Callback<List<Adjunto>> callback) {
+        leer(new Tarea<List<Adjunto>>() {
+            @Override
+            public List<Adjunto> ejecutar() {
+                List<Adjunto> lista = new ArrayList<>();
+                notaDAO.getAdjuntosFrom(idNota, lista);
+                return lista;
+            }
+        }, callback);
+    }
+
+    /**
+     * Copia el fichero elegido a la carpeta de adjuntos y lo asocia a la nota.
+     *
+     * @param idNota  nota a la que se añade.
+     * @param uri     fichero seleccionado por el usuario.
+     * @param nombre  nombre original del fichero.
+     * @param mime    tipo de contenido.
+     * @param callback recibe el adjunto creado, o {@code null} si falló la copia.
+     */
+    public void agregarAdjunto(final int idNota, final Uri uri, final String nombre, final String mime,
+                               Callback<Adjunto> callback) {
+        leer(new Tarea<Adjunto>() {
+            @Override
+            public Adjunto ejecutar() {
+                String ruta = copiarAdjunto(uri, nombre);
+                int id = notaDAO.addAdjunto(idNota, ruta, nombre, mime);
+                return new Adjunto(id, idNota, ruta, nombre, mime, System.currentTimeMillis());
+            }
+        }, callback);
+    }
+
+    /** Elimina un adjunto de la base de datos y su fichero. */
+    public void eliminarAdjunto(final Adjunto adjunto, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.deleteAdjunto(adjunto.getId());
+                File fichero = Adjuntos.fichero(context, adjunto.getRuta());
+                if (fichero.exists()) {
+                    fichero.delete();
+                }
+            }
+        }, onDone);
+    }
+
+    private String copiarAdjunto(Uri uri, String nombre) {
+        File carpeta = Adjuntos.carpeta(context);
+        if (!carpeta.exists() && !carpeta.mkdirs()) {
+            throw new IllegalStateException("No se pudo crear la carpeta de adjuntos");
+        }
+
+        String destino = UUID.randomUUID().toString() + Adjuntos.extension(nombre);
+        try (InputStream entrada = context.getContentResolver().openInputStream(uri);
+             OutputStream salida = new FileOutputStream(new File(carpeta, destino))) {
+            if (entrada == null) {
+                throw new IllegalStateException("No se pudo leer el fichero");
+            }
+            byte[] buffer = new byte[4096];
+            int leidos;
+            while ((leidos = entrada.read(buffer)) != -1) {
+                salida.write(buffer, 0, leidos);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("No se pudo copiar el adjunto", e);
+        }
+        return destino;
     }
 }

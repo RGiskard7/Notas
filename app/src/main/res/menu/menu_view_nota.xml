@@ -19,8 +19,14 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_exportar"
+        android:id="@+id/action_adjuntar"
         android:orderInCategory="101"
+        android:title="@string/adjuntar_imagen"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_exportar"
+        android:orderInCategory="102"
         android:title="@string/exportar"
         app:showAsAction="never" />
 

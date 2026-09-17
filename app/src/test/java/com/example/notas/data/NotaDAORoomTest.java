@@ -10,8 +10,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.example.notas.data.room.EtiquetaDAORoom;
-import com.example.notas.data.room.LibretaDAORoom;
+import com.example.notas.data.room.EtiquetaDAORoom;import com.example.notas.data.room.LibretaDAORoom;
 import com.example.notas.data.room.NotaDAORoom;
 import com.example.notas.data.room.NotaEntity;
 import com.example.notas.data.room.NotasDatabase;
@@ -314,5 +313,60 @@ public class NotaDAORoomTest {
         List<Nota> encontradas = new ArrayList<>();
         notaDAO.buscarNotas(consulta, -1, -1, encontradas);
         return encontradas;
+    }
+
+    @Test
+    public void adjuntos_seAnadenYSeListan() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+
+        int idAdjunto = notaDAO.addAdjunto(id, "foto.png", "foto.png", "image/png");
+
+        assertTrue(idAdjunto > 0);
+        List<Adjunto> adjuntos = new ArrayList<>();
+        notaDAO.getAdjuntosFrom(id, adjuntos);
+        assertEquals(1, adjuntos.size());
+        assertEquals("foto.png", adjuntos.get(0).getRuta());
+        assertEquals(id, adjuntos.get(0).getNotaId());
+    }
+
+    @Test
+    public void adjuntos_seBorraSoloElIndicado() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        int primero = notaDAO.addAdjunto(id, "a.png", "a.png", "image/png");
+        notaDAO.addAdjunto(id, "b.png", "b.png", "image/png");
+
+        notaDAO.deleteAdjunto(primero);
+
+        List<Adjunto> adjuntos = new ArrayList<>();
+        notaDAO.getAdjuntosFrom(id, adjuntos);
+        assertEquals(1, adjuntos.size());
+        assertEquals("b.png", adjuntos.get(0).getRuta());
+    }
+
+    @Test
+    public void losAdjuntosNoSeMezclanEntreNotas() {
+        int idUno = nuevaNotaEnLibretaDefault("A", "x");
+        int idDos = nuevaNotaEnLibretaDefault("B", "y");
+        notaDAO.addAdjunto(idUno, "a.png", "a.png", "image/png");
+        notaDAO.addAdjunto(idDos, "b.png", "b.png", "image/png");
+
+        List<Adjunto> deUno = new ArrayList<>();
+        notaDAO.getAdjuntosFrom(idUno, deUno);
+
+        assertEquals(1, deUno.size());
+        assertEquals("a.png", deUno.get(0).getRuta());
+    }
+
+    @Test
+    public void adjuntos_seEliminanAlBorrarLaNotaDefinitivamente() {
+        int id = nuevaNotaEnLibretaDefault("T", "X");
+        notaDAO.addAdjunto(id, "foto.png", "foto.png", "image/png");
+        notaDAO.deleteNota(id);
+
+        notaDAO.borrarNotaDefinitivamente(id);
+
+        List<Adjunto> adjuntos = new ArrayList<>();
+        notaDAO.getAdjuntosFrom(id, adjuntos);
+        assertTrue(adjuntos.isEmpty());
     }
 }

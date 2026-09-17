@@ -17,6 +17,8 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 - **Exportar e importar** notas en **Markdown** (ficheros `.md`).
 - **Papelera**: las notas se borran de forma lógica, se pueden **restaurar** (o deshacer
   al momento) y borrar definitivamente.
+- **Adjuntos**: se pueden añadir **imágenes** a una nota; se copian al almacenamiento
+  interno y se ven en la pantalla de la nota.
 
 ## Arquitectura
 
@@ -58,13 +60,13 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-116 tests:
+121 tests:
 
-- **data/** (40): DAOs Room (CRUD, papelera, cascadas, duplicados, recuentos, fechas,
-  búsqueda FTS), migraciones 1->2, 2->3 y 3->4, garantía de que producción no consulta
-  en el hilo principal y entrega asíncrona del repositorio.
-- **util/** (49): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
-  negrita/cursiva), fechas, diff de etiquetas y viñetas.
+- **data/** (44): DAOs Room (CRUD, papelera, adjuntos, cascadas, duplicados, recuentos,
+  fechas, búsqueda FTS), migraciones 1->2, 2->3, 3->4 y 4->5, garantía de que producción
+  no consulta en el hilo principal y entrega asíncrona del repositorio.
+- **util/** (51): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
+  negrita/cursiva), adjuntos, fechas, diff de etiquetas y viñetas.
 - **UI/** (26): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press),
   renderizado de notas, Activities de edición/visualización y persistencia de la
   búsqueda.
@@ -74,4 +76,5 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 - `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
 - Paquete `com.example.notas`; `app_name` "Nevernote".
-- Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS) y 3->4 (papelera), con tests.
+- Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS), 3->4 (papelera) y 4->5
+  (adjuntos), con tests.

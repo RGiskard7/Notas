@@ -1,12 +1,14 @@
 package com.example.notas.UI;
 
 import android.app.Application;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
@@ -16,11 +18,13 @@ import java.util.List;
 /**
  * ViewModel de la pantalla que muestra una nota.
  *
- * <p>Carga las etiquetas asociadas y permite eliminar la nota.</p>
+ * <p>Carga las etiquetas y los adjuntos, permite eliminarla y guardar cambios
+ * sueltos, como marcar una tarea o añadir una imagen.</p>
  */
 public class ViewNotaViewModel extends AndroidViewModel {
     private final NotasRepository repositorio;
     private final MutableLiveData<List<Etiqueta>> etiquetasDeNota = new MutableLiveData<>();
+    private final MutableLiveData<List<Adjunto>> adjuntos = new MutableLiveData<>();
     private final MutableLiveData<Nota> nota = new MutableLiveData<>();
 
     public ViewNotaViewModel(@NonNull Application application) {
@@ -30,6 +34,10 @@ public class ViewNotaViewModel extends AndroidViewModel {
 
     public LiveData<List<Etiqueta>> getEtiquetasDeNota() {
         return etiquetasDeNota;
+    }
+
+    public LiveData<List<Adjunto>> getAdjuntos() {
+        return adjuntos;
     }
 
     public LiveData<Nota> getNota() {
@@ -50,6 +58,41 @@ public class ViewNotaViewModel extends AndroidViewModel {
             @Override
             public void onResult(List<Etiqueta> valor) {
                 etiquetasDeNota.setValue(valor);
+            }
+        });
+    }
+
+    public void cargarAdjuntos(int idNota) {
+        repositorio.adjuntosDeNota(idNota, new NotasRepository.Callback<List<Adjunto>>() {
+            @Override
+            public void onResult(List<Adjunto> valor) {
+                adjuntos.setValue(valor);
+            }
+        });
+    }
+
+    /** Copia la imagen a la carpeta de adjuntos; el callback recibe true si se añadió. */
+    public void agregarAdjunto(final int idNota, Uri uri, String nombre, String mime,
+                               final NotasRepository.Callback<Boolean> callback) {
+        repositorio.agregarAdjunto(idNota, uri, nombre, mime, new NotasRepository.Callback<Adjunto>() {
+            @Override
+            public void onResult(Adjunto valor) {
+                if (valor != null) {
+                    cargarAdjuntos(idNota);
+                }
+                callback.onResult(valor != null);
+            }
+        });
+    }
+
+    public void eliminarAdjunto(final Adjunto adjunto, final Runnable onDone) {
+        repositorio.eliminarAdjunto(adjunto, new Runnable() {
+            @Override
+            public void run() {
+                cargarAdjuntos(adjunto.getNotaId());
+                if (onDone != null) {
+                    onDone.run();
+                }
             }
         });
     }

@@ -33,9 +33,10 @@ import java.util.Map;
                 EtiquetaEntity.class,
                 LibretaNotaCrossRef.class,
                 EtiquetaNotaCrossRef.class,
-                NotaFts.class
+                NotaFts.class,
+                AdjuntoEntity.class
         },
-        version = 4,
+        version = 5,
         exportSchema = true)
 public abstract class NotasDatabase extends RoomDatabase {
 
@@ -93,11 +94,28 @@ public abstract class NotasDatabase extends RoomDatabase {
         }
     };
 
+    /**
+     * Migración de la versión 4 a la 5: añade los adjuntos de las notas.
+     */
+    static final Migration MIGRACION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `adjuntos` (" +
+                    "`adjunto_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`nota_id` INTEGER NOT NULL, `ruta` TEXT NOT NULL, `nombre` TEXT, `mime` TEXT, " +
+                    "`fecha` INTEGER NOT NULL, " +
+                    "FOREIGN KEY(`nota_id`) REFERENCES `notas`(`nota_id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_adjuntos_nota_id` ON `adjuntos` (`nota_id`)");
+        }
+    };
+
     public abstract NotaDao notaDao();
 
     public abstract LibretaDao libretaDao();
 
     public abstract EtiquetaDao etiquetaDao();
+
+    public abstract AdjuntoDao adjuntoDao();
 
     private static final Map<String, NotasDatabase> INSTANCES = new HashMap<>();
     private static boolean permitirMainThreadParaTests = false;
@@ -123,7 +141,7 @@ public abstract class NotasDatabase extends RoomDatabase {
         if (db == null) {
             final Context appContext = context.getApplicationContext();
             RoomDatabase.Builder<NotasDatabase> builder = Room.databaseBuilder(appContext, NotasDatabase.class, name)
-                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4)
+                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5)
                     .addCallback(new Callback() {
                         @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase database) {

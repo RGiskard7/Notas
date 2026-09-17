@@ -108,5 +108,12 @@
             android:textStyle="normal"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="30dp" />
+
+        <LinearLayout
+            android:id="@+id/contenedorAdjuntos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp" />
     </LinearLayout>
 </ScrollView>

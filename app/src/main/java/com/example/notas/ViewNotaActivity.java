@@ -9,14 +9,20 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,14 +31,18 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.example.notas.UI.RenderizadorNota;
 import com.example.notas.UI.ViewNotaViewModel;
+import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityViewNotaBinding;
+import com.example.notas.util.Adjuntos;
 import com.example.notas.util.Fechas;
 import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Markdown;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -57,7 +67,20 @@ public class ViewNotaActivity extends AppCompatActivity {
     private Libreta libreta;
     private List<Etiqueta> currentEtiquetasNota;
     private ImageButton buttonEtiquetas;
+    private LinearLayout contenedorAdjuntos;
     private ViewNotaViewModel viewModel;
+
+    /** Abre el selector de imágenes para adjuntar una a la nota. */
+    private final ActivityResultLauncher<String[]> adjuntarLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            new androidx.activity.result.ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        adjuntarImagen(uri);
+                    }
+                }
+            });
 
     /** Abre el selector de fichero para exportar la nota a Markdown. */
     private final ActivityResultLauncher<String> exportarLauncher = registerForActivityResult(
@@ -100,9 +123,16 @@ public class ViewNotaActivity extends AppCompatActivity {
                 }
             }
         });
+        viewModel.getAdjuntos().observe(this, new Observer<List<Adjunto>>() {
+            @Override
+            public void onChanged(List<Adjunto> adjuntos) {
+                mostrarAdjuntos(adjuntos);
+            }
+        });
 
         fillComponents();
         viewModel.cargarEtiquetasDeNota(nota.getId());
+        viewModel.cargarAdjuntos(nota.getId());
         eventRecorder();
     }
 
@@ -120,6 +150,7 @@ public class ViewNotaActivity extends AppCompatActivity {
         numEtiquetas = binding.textView3;
         buttonEtiquetas = binding.buttonEtiquetas;
         currentEtiquetasNota = new ArrayList<>();
+        contenedorAdjuntos = binding.contenedorAdjuntos;
     }
 
     public void fillComponents() {
@@ -177,6 +208,8 @@ public class ViewNotaActivity extends AppCompatActivity {
             intent.putExtra("nota", nota);
             intent.putExtra("tipo", "editable");
             startActivityForResult(intent, 1);
+        } else if (id == R.id.action_adjuntar) {
+            adjuntarLauncher.launch(new String[]{"image/*"});
         } else if (id == R.id.action_exportar) {
             exportarLauncher.launch(Markdown.nombreFichero(nota.getTitulo()));
         } else if (id == R.id.action_Eliminar) {
@@ -228,6 +261,77 @@ public class ViewNotaActivity extends AppCompatActivity {
                 });
             }
         }));
+    }
+
+    /** Dibuja las imágenes adjuntas de la nota. */
+    private void mostrarAdjuntos(List<Adjunto> adjuntos) {
+        contenedorAdjuntos.removeAllViews();
+        for (final Adjunto adjunto : adjuntos) {
+            ImageView vista = new ImageView(this);
+            vista.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            vista.setAdjustViewBounds(true);
+
+            File fichero = Adjuntos.fichero(this, adjunto.getRuta());
+            if (fichero.exists()) {
+                vista.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
+            }
+
+            vista.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    confirmarEliminarAdjunto(adjunto);
+                    return true;
+                }
+            });
+            contenedorAdjuntos.addView(vista);
+        }
+    }
+
+    /** Copia la imagen elegida y la asocia a la nota. */
+    private void adjuntarImagen(Uri uri) {
+        viewModel.agregarAdjunto(nota.getId(), uri, nombreFichero(uri), mimeDe(uri),
+                new NotasRepository.Callback<Boolean>() {
+                    @Override
+                    public void onResult(Boolean anadido) {
+                        if (anadido) {
+                            Toast.makeText(ViewNotaActivity.this, R.string.adjunto_anadido, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ViewNotaActivity.this, R.string.error_adjunto, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void confirmarEliminarAdjunto(final Adjunto adjunto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.messageAlertDialogAdjunto).setTitle(R.string.titleAlertDialog);
+        builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewModel.eliminarAdjunto(adjunto, null);
+            }
+        });
+        builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
+        builder.create().show();
+    }
+
+    private String nombreFichero(Uri uri) {
+        String nombre = null;
+        try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columna = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columna >= 0) {
+                    nombre = cursor.getString(columna);
+                }
+            }
+        }
+        return nombre == null ? "imagen" : nombre;
+    }
+
+    private String mimeDe(Uri uri) {
+        String tipo = getContentResolver().getType(uri);
+        return tipo == null ? "image/*" : tipo;
     }
 
     /** Escribe la nota en Markdown en el fichero elegido por el usuario. */

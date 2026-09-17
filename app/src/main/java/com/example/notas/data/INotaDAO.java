@@ -126,4 +126,30 @@ public interface INotaDAO {
      * @param list       lista de salida.
      */
     public void buscarNotas(String consulta, int idLibreta, int idEtiqueta, List<Nota> list);
+
+    /**
+     * Añade un adjunto a una nota.
+     *
+     * @param idNota identificador de la nota.
+     * @param ruta   nombre del fichero dentro de la carpeta de adjuntos.
+     * @param nombre nombre original del fichero.
+     * @param mime   tipo de contenido.
+     * @return el identificador del adjunto.
+     */
+    public int addAdjunto(int idNota, String ruta, String nombre, String mime);
+
+    /**
+     * Carga en la lista los adjuntos de una nota.
+     *
+     * @param idNota identificador de la nota.
+     * @param list   lista de salida.
+     */
+    public void getAdjuntosFrom(int idNota, List<Adjunto> list);
+
+    /**
+     * Elimina un adjunto.
+     *
+     * @param idAdjunto identificador del adjunto.
+     */
+    public void deleteAdjunto(int idAdjunto);
 }
