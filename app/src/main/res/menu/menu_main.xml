@@ -11,47 +11,47 @@
 
     <item
         android:id="@+id/app_bar_search"
-        android:title="Buscar"
+        android:title="@string/buscar"
         android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="100"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom|collapseActionView" />
 
     <item
             android:id="@+id/action_filtrar"
-            android:title="Ordenar por"
+            android:title="@string/ordenar_por"
             android:orderInCategory="100" >
 
             <menu>
                 <item
                     android:id="@+id/action_filtrar_fecha_asc"
                     android:orderInCategory="100"
-                    android:title="Fecha ascendente" />
+                    android:title="@string/ordenar_fecha_asc" />
 
                 <item
                     android:id="@+id/action_filtrar_fecha_des"
                     android:orderInCategory="100"
-                    android:title="Fecha descendente" />
+                    android:title="@string/ordenar_fecha_des" />
 
                 <item
                 android:id="@+id/action_filtrar_titulo_asc"
                 android:orderInCategory="100"
-                android:title="Título ascendente" />
+                android:title="@string/ordenar_titulo_asc" />
 
             <item
                 android:id="@+id/action_filtrar_titulo_des"
                 android:orderInCategory="100"
-                android:title="Título descendente" />
+                android:title="@string/ordenar_titulo_des" />
 
             <item
                 android:id="@+id/action_recuento_notas_asc"
                 android:orderInCategory="100"
-                android:title="Recuento de notas ascendente" />
+                android:title="@string/ordenar_recuento_asc" />
 
             <item
                 android:id="@+id/action_recuento_notas_des"
                 android:orderInCategory="100"
-                android:title="Recuento de notas descendente" />
+                android:title="@string/ordenar_recuento_des" />
         </menu>
 
     </item>
@@ -59,7 +59,7 @@
     <item
         android:id="@+id/action_salir"
         android:orderInCategory="101"
-        android:title="Salir"
+        android:title="@string/salir"
         app:showAsAction="never" />
 
 </menu>

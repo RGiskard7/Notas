@@ -1,9 +1,5 @@
 package com.example.notas.data;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +10,14 @@ public class Etiqueta implements Serializable {
     private String titulo;
     private List<Nota> notas;
     private String fechaCreacion;
+    private String fechaModificacion;
 
     public Etiqueta(int id, String titulo, String fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         notas = new ArrayList<Nota>();
         this.fechaCreacion = fechaCreacion;
+        this.fechaModificacion = fechaCreacion;
     }
 
     public Etiqueta(int id, String titulo, List<Nota> notas, String fechaCreacion) {
@@ -27,6 +25,7 @@ public class Etiqueta implements Serializable {
         this.titulo = titulo;
         this.notas = notas;
         this.fechaCreacion = fechaCreacion;
+        this.fechaModificacion = fechaCreacion;
     }
 
     public int getId() {
@@ -61,6 +60,14 @@ public class Etiqueta implements Serializable {
         this.fechaCreacion = fechaCreacion;
     }
 
+    public String getFechaModificacion() {
+        return fechaModificacion;
+    }
+
+    public void setFechaModificacion(String fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+
     public Boolean isEmpty() {
         if (notas.isEmpty()) {
             return true;
@@ -76,7 +83,6 @@ public class Etiqueta implements Serializable {
         return titulo.equals(etiqueta.titulo);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
         return Objects.hash(titulo);

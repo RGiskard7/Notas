@@ -1,24 +1,87 @@
 <resources>
     <string name="app_name">Nevernote</string>
-    <string name="action_settings">Settings</string>
     <string name="search_hint">Búsqueda por título</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_cuarta">CuartaActivity</string>
+    <string name="buscar">Buscar</string>
+    <string name="ordenar_por">Ordenar por</string>
+    <string name="ordenar_fecha_asc">Fecha ascendente</string>
+    <string name="ordenar_fecha_des">Fecha descendente</string>
+    <string name="ordenar_titulo_asc">Título ascendente</string>
+    <string name="ordenar_titulo_des">Título descendente</string>
+    <string name="ordenar_recuento_asc">Recuento de notas ascendente</string>
+    <string name="ordenar_recuento_des">Recuento de notas descendente</string>
+    <string name="salir">Salir</string>
+
     <!-- Strings used for nav_header_main.xml -->
     <string name="textViewNav">Nevernote</string>
     <string name="textViewNav2">Larga vida y prosperidad</string>
-    <!-- String used for activity_segunda.xml -->
+
+    <!-- Navegación -->
+    <string name="todas_las_notas">Todas las notas</string>
+    <string name="libretas">Libretas</string>
+    <string name="etiquetas">Etiquetas</string>
+    <string name="libretas_con_titulo">Libretas - %1$s</string>
+    <string name="etiquetas_con_titulo">Etiquetas - %1$s</string>
+
+    <!-- String used for activity_edit_nota.xml -->
     <string name="editTextHintAs">"Título de la nota"</string>
     <string name="editTextHintAs2">"Contenido"</string>
-    <string name="textViewAs">"Libreta:"</string>
-    <!-- String used for activity_cuarta.xml -->
+    <!-- String used for activity_edit_libreta.xml -->
     <string name="editTextHintAc">"Nombre"</string>
-    <!-- String used for Alert Dialog delete note -->
+
+    <!-- Títulos de pantalla -->
+    <string name="nueva_nota">Nueva nota</string>
+    <string name="editar_nota">Editar nota</string>
+    <string name="ver_nota">Nota</string>
+    <string name="nueva_libreta">Nueva libreta</string>
+    <string name="editar_libreta">Editar libreta</string>
+    <string name="nueva_etiqueta">Nueva etiqueta</string>
+    <string name="editar_etiqueta">Editar etiqueta</string>
+    <string name="elige_etiquetas">Elige etiquetas</string>
+    <string name="viñetas">Viñetas</string>
+
+    <!-- Acciones -->
+    <string name="ok">OK</string>
+    <string name="cancelar">CANCELAR</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="guardar">Guardar</string>
+    <string name="anadir">Añadir</string>
+
+    <!-- Alert Dialog -->
     <string name="titleAlertDialog">"Aviso"</string>
     <string name="messageAlertDialog">"¿Seguro que quieres eliminar la nota?"</string>
     <string name="messageAlertDialog2">"¿Seguro que quieres eliminar la libreta?"</string>
     <string name="messageAlertDialog3">"¿Seguro que quieres eliminar la etiqueta?"</string>
     <string name="positiveBtnAlertDialog">"ELIMINAR"</string>
     <string name="negativeBtnAlertDIalog">"CANCELAR"</string>
+
+    <!-- Notas -->
+    <string name="nota_sin_titulo">Nota sin título</string>
+    <string name="nota_editada">Nota editada</string>
+    <string name="nota_eliminada">Nota eliminada</string>
+    <string name="nota_vacia">No se puede guardar una nota vacía</string>
+    <string name="no_etiquetas_disponibles">No hay ninguna etiqueta disponible</string>
+    <string name="no_etiquetas_en_nota">No hay ninguna etiqueta asociada a esta nota</string>
+
+    <!-- Libretas -->
+    <string name="libreta_guardada">Libreta guardada</string>
+    <string name="libreta_editada">Libreta editada</string>
+    <string name="libreta_eliminada">Libreta eliminada</string>
+    <string name="libreta_eliminada_movidas">Libreta eliminada, todas las notas han sido movidas a \'Default\'</string>
+    <string name="libreta_sin_nombre">No se puede guardar una libreta sin nombre</string>
+    <string name="libreta_duplicada">Ya existe una libreta con ese título</string>
+    <string name="no_editar_default">No se puede editar la libreta \'Default\'</string>
+    <string name="no_eliminar_default">No se puede eliminar la libreta \'Default\'</string>
+    <plurals name="notas">
+        <item quantity="one">1 Nota</item>
+        <item quantity="other">%1$d Notas</item>
+    </plurals>
+
+    <!-- Etiquetas -->
+    <string name="etiqueta_guardada">Etiqueta guardada</string>
+    <string name="etiqueta_editada">Etiqueta editada</string>
+    <string name="etiqueta_eliminada">Etiqueta eliminada</string>
+    <string name="etiqueta_duplicada">Ya existe una etiqueta con ese título</string>
 </resources>

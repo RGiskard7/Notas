@@ -8,20 +8,20 @@
         <item
             android:id="@+id/allNotas"
             android:icon="@mipmap/ic_nota3_foreground"
-            android:title="Todas las notas">
+            android:title="@string/todas_las_notas">
 
         </item>
 
         <item
             android:id="@+id/allLibretas"
             android:icon="@mipmap/ic_libreta3_foreground"
-            android:title="Libretas">
+            android:title="@string/libretas">
         </item>
 
         <item
             android:id="@+id/allEtiquetas"
             android:icon="@mipmap/ic_etiqueta2_foreground"
-            android:title="Etiquetas">
+            android:title="@string/etiquetas">
         </item>
     </group>
 

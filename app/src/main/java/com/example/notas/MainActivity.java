@@ -1,36 +1,29 @@
 package com.example.notas;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
-import com.example.notas.data.FactoryDAO;
-import com.example.notas.data.IEtiquetaDAO;
-import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.Libreta;
-import com.example.notas.data.LibretaDAOSQLite;
+import com.example.notas.data.NotasRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,21 +42,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            //Verificamos si tenemos los permisos necesarios escribir en tarjeta SD
-            int permisoEscritura = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-            if (permisoEscritura != PackageManager.PERMISSION_GRANTED) {
-                // Toast.makeText(getApplicationContext(), "No tiene permiso para acceder a EXTERNAL_STORAGE", Toast.LENGTH_LONG).show();
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
-            } else {
-                Log.i("Mensaje", "Se tiene permiso para acceso a EXTERNAL_STORAGE");
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (manejarAtras()) {
+                    return;
+                }
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+                setEnabled(true);
             }
-
-        } catch (Exception e){
-            Toast.makeText(getApplicationContext(), "No podrá acceder a EXTERNAL_STORAGE, verifique permisos." + e.getMessage().toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        });
 
         createComponents(savedInstanceState);
         eventRecorder();
@@ -71,14 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void createComponents(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, new ListNotasFragment()).commit();
-            getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, ListNotasFragment.newInstance()).commit();
         }
 
         // Configuracion de los menus (drawer y toolbar)
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Todas las notas");
+        getSupportActionBar().setTitle(R.string.todas_las_notas);
 
         drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -100,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 Boolean fragmentSelected = false;
 
                 if (menuItem.getItemId() == R.id.allNotas) {
-                    fragment = new ListNotasFragment();
+                    fragment = ListNotasFragment.newInstance();
                     fragmentSelected = true;
                 } else if (menuItem.getItemId() == R.id.allLibretas) {
                     fragment = new ListLibretasFragment();
@@ -112,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (fragmentSelected) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit(); // Anniadir fragment select a la pila de fragmentos
-                    getSupportFragmentManager().beginTransaction().addToBackStack(null); // Pila de fragment
 
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START); // Cerrar la pestaña al presionar
@@ -132,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentFragment instanceof ListNotasFragment) { // Nueva nota
                     Libreta libreta = null;
-                    Intent intent = new Intent(MainActivity.this, SegundaActivity.class);
+                    Intent intent = new Intent(MainActivity.this, EditNotaActivity.class);
                     intent.putExtra("tipo", "nueva");
 
                     // Si se esta dentro del listado de notas de una libreta
@@ -142,42 +129,9 @@ public class MainActivity extends AppCompatActivity {
 
                     startActivity(intent);
                 } else if (currentFragment instanceof  ListLibretasFragment) { // Nueva libreta
-                    Intent intent = new Intent(MainActivity.this, CuartaActivity.class);
+                    Intent intent = new Intent(MainActivity.this, EditLibretaActivity.class);
                     intent.putExtra("tipo", "nueva");
                     startActivity(intent);
-
-                    /*AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    final EditText input = new EditText(MainActivity.this);
-
-                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-
-                    dialog.setTitle("Nueva libreta");
-                    dialog.setView(input);
-
-                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-                            ILibretaDAO libretaDAO = SQLiteFactory.getLibretaDao(getApplicationContext());
-
-                            if (libretaDAO.existTitulo(input.getText().toString())) {
-                                Toast.makeText(MainActivity.this, "Ya existe una nota con ese título", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            libretaDAO.createLibreta(input.getText().toString()); // Añadir nueva libreta
-                            Toast.makeText(MainActivity.this, "Libreta guardada", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    dialog.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    dialog.create().show();
-                    ((ListLibretasFragment) currentFragment).resetListaLibretas();*/
 
                 } else if (currentFragment instanceof  ListEtiquetasFragment) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
@@ -186,29 +140,28 @@ public class MainActivity extends AppCompatActivity {
 
                     input.setInputType(InputType.TYPE_CLASS_TEXT);
 
-                    dialog.setTitle("Nueva etiqueta");
+                    dialog.setTitle(R.string.nueva_etiqueta);
                     dialog.setView(input);
 
-                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            FactoryDAO SQLiteFactory = FactoryDAO.getFactory(FactoryDAO.SQLITE_FACTORY);
-                            IEtiquetaDAO etiquetaDAO = SQLiteFactory.getEtiquetaDao(getApplicationContext());
-
-                            if (etiquetaDAO.existTitulo(input.getText().toString())) {
-                                Toast.makeText(MainActivity.this, "Ya existe una etiqueta con ese título", Toast.LENGTH_SHORT).show();
-                                etiquetaDAO.closeDB();
-                                return;
-                            }
-
-                            etiquetaDAO.createEtiqueta(input.getText().toString()); // Añadir nueva etiqueta
-                            etiquetaDAO.closeDB();
-                            listEtiquetasFragment.resetListaEtiquetas();
-
-                            Toast.makeText(MainActivity.this, "Etiqueta guardada", Toast.LENGTH_SHORT).show();
+                            final String nombre = input.getText().toString();
+                            NotasRepository.get(MainActivity.this).crearEtiquetaSiNoExiste(nombre,
+                                    new NotasRepository.Callback<Boolean>() {
+                                        @Override
+                                        public void onResult(Boolean creada) {
+                                            if (!creada) {
+                                                Toast.makeText(MainActivity.this, R.string.etiqueta_duplicada, Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                            listEtiquetasFragment.resetListaEtiquetas();
+                                            Toast.makeText(MainActivity.this, R.string.etiqueta_guardada, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                         }
                     });
-                    dialog.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                    dialog.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -221,58 +174,41 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Al pulsarse el botón back si el menú está desplegado debería ocultarse. Este comportamiento es
-    // necesario implementarlo en la Activity.
-    @Override
-    public void onBackPressed() {
+    // Gestiona el botón atrás: cierra el menú, retrocede entre listados o deja salir de la app.
+    // Devuelve true si ha consumido el evento.
+    private boolean manejarAtras() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
-        Boolean exitApp = true;
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        // Cerrar el menu lateral al presinar el boton atras si este menu esta desplegado
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-            exitApp = false;
+            return true;
         }
 
-        // Volver a la lista de libretas desde la lista de notas de una libreta dando al boton de atras
         if (currentFragment instanceof ListNotasFragment) {
-            if (((ListNotasFragment) currentFragment).getLibreta() != null) { // Si es el listado de notas de una libreta
+            if (((ListNotasFragment) currentFragment).getLibreta() != null) { // Notas de una libreta
                 fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListLibretasFragment()).commit();
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.setCheckedItem(R.id.allLibretas);
-                getSupportActionBar().setTitle("Libretas");
-                exitApp = false;
-            } else if (((ListNotasFragment) currentFragment).getEtiqueta() != null) {
+                getSupportActionBar().setTitle(R.string.libretas);
+                return true;
+            } else if (((ListNotasFragment) currentFragment).getEtiqueta() != null) { // Notas de una etiqueta
                 fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListEtiquetasFragment()).commit();
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.setCheckedItem(R.id.allEtiquetas);
-                getSupportActionBar().setTitle("Etiquetas");
-                exitApp = false;
+                getSupportActionBar().setTitle(R.string.etiquetas);
+                return true;
             }
         }
 
-        // Volver a todas las notas desde el fragment de libretas al presionar atras
-        if (currentFragment instanceof  ListLibretasFragment || currentFragment instanceof  ListEtiquetasFragment) {
-            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListNotasFragment()).commit();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (currentFragment instanceof ListLibretasFragment || currentFragment instanceof ListEtiquetasFragment) {
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, ListNotasFragment.newInstance()).commit();
             navigationView.setCheckedItem(R.id.allNotas);
-            getSupportActionBar().setTitle("Todas las notas");
-            exitApp = false;
+            getSupportActionBar().setTitle(R.string.todas_las_notas);
+            return true;
         }
 
-        // Salir de la app al presionar atras si no se da ninguna de las condiciones anteriores
-        if (exitApp == true) {
-            super.onBackPressed();
-        }
-
-        /*if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            super.onBackPressed();
-        } else {
-            getSupportFragmentManager().popBackStack();
-            // getFragmentManager().popBackStack();
-        }*/
+        return false;
     }
 
     // OPCIONES MENU

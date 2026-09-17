@@ -3,7 +3,7 @@ package com.example.notas.data;
 import android.content.Context;
 
 public abstract class FactoryDAO {
-    public static final int SQLITE_FACTORY = 1;
+    public static final int ROOM_FACTORY = 1;
 
     public abstract INotaDAO getNotaDao(Context context);
 
@@ -13,8 +13,8 @@ public abstract class FactoryDAO {
 
     public static FactoryDAO getFactory(int keyFactory) {
         switch(keyFactory) {
-            case SQLITE_FACTORY:
-                return new FactoryDAOSQLite();
+            case ROOM_FACTORY:
+                return new FactoryDAORoom();
             default:
                 throw new IllegalArgumentException();
         }

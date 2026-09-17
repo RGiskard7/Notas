@@ -13,12 +13,14 @@ public class Nota implements Serializable {
     private Libreta libreta;
     private Set<Etiqueta> etiquetas;
     private String fechaCreacion;
+    private String fechaModificacion;
 
     public Nota(int id, String titulo, String texto, String fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         this.texto = texto;
         this.fechaCreacion = fechaCreacion;
+        this.fechaModificacion = fechaCreacion;
         etiquetas = new HashSet<>();
     }
 
@@ -28,6 +30,7 @@ public class Nota implements Serializable {
         this.texto = texto;
         this.libreta = libreta;
         this.fechaCreacion = fechaCreacion;
+        this.fechaModificacion = fechaCreacion;
         this.etiquetas = new HashSet<>(etiquetas);
     }
 
@@ -61,6 +64,14 @@ public class Nota implements Serializable {
 
     public void setFechaCreacion(String fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getFechaModificacion() {
+        return fechaModificacion;
+    }
+
+    public void setFechaModificacion(String fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
     }
 
     public Libreta getLibreta() {

@@ -7,28 +7,18 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.notas.data.Libreta;
 import com.example.notas.R;
+import com.example.notas.data.Libreta;
 
 import java.util.List;
 
 public class AdaptadorListLibretas extends BaseAdapter {
-    private Context context;
-    private List<Libreta> listaLibretas;
-    private Boolean isSpinner;
+    private final Context context;
+    private final List<Libreta> listaLibretas;
 
     public AdaptadorListLibretas(Context context, List<Libreta> listaLibretas) {
         this.context = context;
         this.listaLibretas = listaLibretas;
-        isSpinner = false;
-    }
-
-    public void setIsSpinner(Boolean opcion) {
-        isSpinner = opcion;
-    }
-
-    public Boolean isSpinner() {
-        return isSpinner;
     }
 
     @Override
@@ -49,27 +39,13 @@ public class AdaptadorListLibretas extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View item = convertView;
-
-        if (!isSpinner) {
-            if (item == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(context);
-                item = layoutInflater.inflate(R.layout.libreta_item, null);
-            }
-
-            TextView titulo = (TextView)item.findViewById(R.id.textViewTitulo2);
-            titulo.setText(listaLibretas.get(position).getTitulo());
-
-            TextView notas = (TextView)item.findViewById(R.id.textViewNotas);
-            notas.setText(listaLibretas.get(position).getNotas().size() + " Notas");
-        } else {
-            if (item == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(context);
-                item = layoutInflater.inflate(R.layout.libreta_item_spinner, null);
-            }
-
-            TextView titulo = (TextView)item.findViewById(R.id.tituloLibretaSpinner);
-            titulo.setText(listaLibretas.get(position).getTitulo());
+        if (item == null) {
+            LayoutInflater layoutInflater = LayoutInflater.from(context);
+            item = layoutInflater.inflate(R.layout.libreta_item_spinner, parent, false);
         }
+
+        TextView titulo = item.findViewById(R.id.tituloLibretaSpinner);
+        titulo.setText(listaLibretas.get(position).getTitulo());
         return item;
     }
 }

@@ -1,0 +1,172 @@
+package com.example.notas;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.notas.UI.ViewNotaViewModel;
+import com.example.notas.data.Etiqueta;
+import com.example.notas.data.Libreta;
+import com.example.notas.data.Nota;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ViewNotaActivity extends AppCompatActivity {
+    private TextView titulo;
+    private TextView texto;
+    private TextView fecha;
+    private TextView txlibreta;
+    private TextView numEtiquetas;
+    private Nota nota;
+    private Libreta libreta;
+    private List<Etiqueta> currentEtiquetasNota;
+    private ImageButton buttonEtiquetas;
+    private ViewNotaViewModel viewModel;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_nota);
+
+        nota = (Nota) getIntent().getSerializableExtra("nota");
+        libreta = nota.getLibreta();
+
+        createComponents();
+
+        viewModel = new ViewModelProvider(this).get(ViewNotaViewModel.class);
+        viewModel.getEtiquetasDeNota().observe(this, new Observer<List<Etiqueta>>() {
+            @Override
+            public void onChanged(List<Etiqueta> etiquetas) {
+                currentEtiquetasNota = etiquetas;
+                numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+            }
+        });
+        viewModel.getNota().observe(this, new Observer<Nota>() {
+            @Override
+            public void onChanged(Nota actualizada) {
+                if (actualizada != null) {
+                    nota = actualizada;
+                    libreta = nota.getLibreta();
+                    fillComponents();
+                }
+            }
+        });
+
+        fillComponents();
+        viewModel.cargarEtiquetasDeNota(nota.getId());
+        eventRecorder();
+    }
+
+    public void createComponents() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle(R.string.ver_nota);
+
+        titulo = (TextView) findViewById(R.id.textViewTituloNota);
+        texto = (TextView) findViewById(R.id.textViewTextoNota);
+        texto.setMovementMethod(new ScrollingMovementMethod());
+        fecha = (TextView) findViewById(R.id.textViewFechaNota);
+        txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
+        numEtiquetas = (TextView) findViewById(R.id.textView3);
+        buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
+        currentEtiquetasNota = new ArrayList<>();
+    }
+
+    public void fillComponents() {
+        titulo.setText(nota.getTitulo());
+        titulo.setTextIsSelectable(true);
+        texto.setText(nota.getTexto());
+        texto.setTextIsSelectable(true);
+        fecha.setText(nota.getFechaCreacion());
+        if (libreta != null) {
+            txlibreta.setText(libreta.getTitulo());
+        }
+    }
+
+    public void eventRecorder() {
+        buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!currentEtiquetasNota.isEmpty()) {
+                    final String[] etiquetasName = new String[currentEtiquetasNota.size()];
+
+                    for (int i = 0; i < currentEtiquetasNota.size(); i++) {
+                        etiquetasName[i] = currentEtiquetasNota.get(i).getTitulo();
+                    }
+
+                    AlertDialog.Builder builderDialog = new AlertDialog.Builder(ViewNotaActivity.this);
+                    builderDialog.setTitle(R.string.etiquetas);
+                    builderDialog.setItems(etiquetasName, null);
+                    builderDialog.setPositiveButton(R.string.ok, null);
+                    AlertDialog dialog = builderDialog.create();
+                    dialog.show();
+                } else {
+                    Toast.makeText(ViewNotaActivity.this, R.string.no_etiquetas_en_nota, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_view_nota, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_Editar) {
+            Intent intent = new Intent(this, EditNotaActivity.class);
+            intent.putExtra("nota", nota);
+            intent.putExtra("tipo", "editable");
+            startActivityForResult(intent, 1);
+        } else if (id == R.id.action_Eliminar) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ViewNotaActivity.this);
+            builder.setMessage(R.string.messageAlertDialog).setTitle(R.string.titleAlertDialog);
+            builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    viewModel.eliminar(nota.getId(), new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), R.string.nota_eliminada, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
+            builder.create().show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Se actualizan los datos de la nota en caso de que haya sido editada
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                viewModel.cargarNota(nota.getId());
+                viewModel.cargarEtiquetasDeNota(nota.getId());
+            }
+        }
+    }
+}
