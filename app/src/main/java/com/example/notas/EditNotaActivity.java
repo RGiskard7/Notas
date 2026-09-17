@@ -222,8 +222,15 @@ public class EditNotaActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        if (item.getItemId() == R.id.action_vinietas) {
+                        int id = item.getItemId();
+                        if (id == R.id.action_vinietas) {
                             insertarVinieta();
+                        } else if (id == R.id.action_casilla) {
+                            insertarCasilla();
+                        } else if (id == R.id.action_negrita) {
+                            envolverSeleccion("**");
+                        } else if (id == R.id.action_cursiva) {
+                            envolverSeleccion("*");
                         }
                         return true;
                     }
@@ -305,18 +312,6 @@ public class EditNotaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_casilla) {
-            insertarCasilla();
-            return true;
-        }
-        if (id == R.id.action_negrita) {
-            envolverSeleccion("**");
-            return true;
-        }
-        if (id == R.id.action_cursiva) {
-            envolverSeleccion("*");
-            return true;
-        }
         if (id == R.id.action_guardar) {
             String tituloTexto = titulo.getText().toString();
             String textoContenido = texto.getText().toString();

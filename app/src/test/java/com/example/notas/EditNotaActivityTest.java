@@ -17,6 +17,7 @@ import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.data.room.NotasDatabase;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -100,6 +101,30 @@ public class EditNotaActivityTest {
         List<Nota> notas = new ArrayList<>();
         notaDAO.getAllNotas(notas);
         assertTrue(notas.isEmpty());
+    }
+
+    @Test
+    public void elBotonDeCasillaDelMenuInferiorInsertaUnaTarea() {
+        EditNotaActivity activity = lanzarNueva();
+
+        BottomNavigationView menu = activity.findViewById(R.id.bottom_navigation);
+        menu.setSelectedItemId(R.id.action_casilla);
+
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        assertEquals("- [ ] ", contenido.getText().toString());
+    }
+
+    @Test
+    public void elBotonDeNegritaDelMenuInferiorRodeaLaSeleccion() {
+        EditNotaActivity activity = lanzarNueva();
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        contenido.setText("hola");
+        contenido.setSelection(0, 4);
+
+        BottomNavigationView menu = activity.findViewById(R.id.bottom_navigation);
+        menu.setSelectedItemId(R.id.action_negrita);
+
+        assertEquals("**hola**", contenido.getText().toString());
     }
 
     @Test

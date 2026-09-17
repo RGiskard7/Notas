@@ -12,8 +12,8 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 - **Etiquetas**: relación N:M con las notas.
 - **Búsqueda** por título y contenido (índice FTS4), respetando el ámbito
   (todas / libreta / etiqueta), y **ordenación** por fecha, título o número de notas.
-- Editor con inserción de viñetas, **casillas de tareas** y **negrita/cursiva**; en la
-  vista, las tareas se pueden marcar directamente.
+- Editor con inserción de viñetas, **casillas de tareas** y **negrita/cursiva** desde la
+  barra inferior; en la vista, las tareas se pueden marcar directamente.
 - **Exportar e importar** notas en **Markdown** (ficheros `.md`).
 - **Papelera**: las notas se borran de forma lógica, se pueden **restaurar** (o deshacer
   al momento) y borrar definitivamente.
@@ -64,7 +64,7 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-135 tests:
+137 tests:
 
 - **data/** (48): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
   duplicados, recuentos, fechas, búsqueda FTS), migraciones 1->2 a 5->6, garantía de
@@ -73,9 +73,9 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
   negrita/cursiva), adjuntos, fechas, diff de etiquetas y viñetas.
 - **recordatorios/** (1): programación y cancelación de la alarma.
 - **seguridad/** (8): PIN (guardar, comprobar, cambiar, quitar) y pantalla de bloqueo.
-- **UI/** (26): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press),
-  renderizado de notas, Activities de edición/visualización y persistencia de la
-  búsqueda.
+- **UI/** (28): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press),
+  renderizado de notas, barra de formato del editor, Activities de edición/visualización
+  y persistencia de la búsqueda.
 - Ejemplo de plantilla (1).
 
 ## Notas
