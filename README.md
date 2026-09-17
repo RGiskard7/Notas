@@ -13,6 +13,7 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 - **Búsqueda** por título y contenido (índice FTS4), respetando el ámbito
   (todas / libreta / etiqueta), y **ordenación** por fecha, título o número de notas.
 - Editor con inserción de viñetas.
+- **Exportar e importar** notas en **Markdown** (ficheros `.md`).
 
 ## Arquitectura
 
@@ -54,13 +55,13 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-90 tests:
+98 tests:
 
 - **data/** (37): DAOs Room (CRUD, cascadas, duplicados, recuentos, fechas, búsqueda
   FTS), migraciones 1->2 y 2->3, garantía de que producción no consulta en el hilo
   principal y entrega asíncrona del repositorio.
-- **util/** (31): filtro por título, consulta FTS, formato de fechas, diff de etiquetas
-  y viñetas.
+- **util/** (39): filtro por título, consulta FTS, Markdown, formato de fechas, diff de
+  etiquetas y viñetas.
 - **UI/** (21): `MainActivity` (navegación, FAB, atrás, ámbito, long-press), las
   Activities de edición/visualización y la persistencia de la búsqueda.
 - Ejemplo de plantilla (1).

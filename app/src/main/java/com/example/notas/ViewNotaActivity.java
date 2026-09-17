@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -18,13 +19,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
 import com.example.notas.UI.ViewNotaViewModel;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.ActivityViewNotaBinding;
 import com.example.notas.util.Fechas;
+import com.example.notas.util.Markdown;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +55,18 @@ public class ViewNotaActivity extends AppCompatActivity {
     private List<Etiqueta> currentEtiquetasNota;
     private ImageButton buttonEtiquetas;
     private ViewNotaViewModel viewModel;
+
+    /** Abre el selector de fichero para exportar la nota a Markdown. */
+    private final ActivityResultLauncher<String> exportarLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("text/markdown"),
+            new androidx.activity.result.ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        exportarMarkdown(uri);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +175,8 @@ public class ViewNotaActivity extends AppCompatActivity {
             intent.putExtra("nota", nota);
             intent.putExtra("tipo", "editable");
             startActivityForResult(intent, 1);
+        } else if (id == R.id.action_exportar) {
+            exportarLauncher.launch(Markdown.nombreFichero(nota.getTitulo()));
         } else if (id == R.id.action_Eliminar) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ViewNotaActivity.this);
             builder.setMessage(R.string.messageAlertDialog).setTitle(R.string.titleAlertDialog);
@@ -185,6 +207,19 @@ public class ViewNotaActivity extends AppCompatActivity {
                 viewModel.cargarNota(nota.getId());
                 viewModel.cargarEtiquetasDeNota(nota.getId());
             }
+        }
+    }
+
+    /** Escribe la nota en Markdown en el fichero elegido por el usuario. */
+    private void exportarMarkdown(Uri uri) {
+        try (OutputStream salida = getContentResolver().openOutputStream(uri)) {
+            if (salida == null) {
+                throw new IOException("No se pudo abrir el fichero");
+            }
+            salida.write(Markdown.exportar(nota.getTitulo(), nota.getTexto()).getBytes(StandardCharsets.UTF_8));
+            Toast.makeText(this, R.string.nota_exportada, Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.error_exportar, Toast.LENGTH_SHORT).show();
         }
     }
 }

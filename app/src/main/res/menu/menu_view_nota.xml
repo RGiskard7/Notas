@@ -18,6 +18,12 @@
         android:title="@string/editar"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_exportar"
+        android:orderInCategory="101"
+        android:title="@string/exportar"
+        app:showAsAction="never" />
+
 
     <!--<item
         android:id="@+id/action_exportar"

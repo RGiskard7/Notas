@@ -2,18 +2,26 @@ package com.example.notas;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 
 import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
+import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityMainBinding;
+import com.example.notas.util.Markdown;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -31,6 +39,12 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 /**
  * Pantalla principal de la aplicación.
  *
@@ -45,6 +59,18 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
     private FloatingActionButton fab;
+
+    /** Abre el selector de fichero para importar una nota desde Markdown. */
+    private final ActivityResultLauncher<String[]> importarLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        importarMarkdown(uri);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,7 +258,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_salir) {
+        if (id == R.id.action_importar) {
+            importarLauncher.launch(new String[]{"text/*", "text/markdown", "text/plain"});
+        } else if (id == R.id.action_salir) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -240,5 +268,63 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /** Lee el fichero elegido, lo interpreta como nota y la guarda en 'Default'. */
+    private void importarMarkdown(Uri uri) {
+        try {
+            String contenido = leerTexto(uri);
+            Markdown.NotaMarkdown importada = Markdown.importar(contenido, nombreFichero(uri));
+
+            NotasRepository.get(this).crearNota(importada.titulo, importada.texto, 1,
+                    new ArrayList<Etiqueta>(), new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.nota_importada, Toast.LENGTH_SHORT).show();
+                            recargarListadoActual();
+                        }
+                    });
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.error_importar, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void recargarListadoActual() {
+        Fragment actual = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if (actual instanceof ListNotasFragment) {
+            ((ListNotasFragment) actual).recargar();
+        } else if (actual instanceof ListLibretasFragment) {
+            ((ListLibretasFragment) actual).recargar();
+        } else if (actual instanceof ListEtiquetasFragment) {
+            ((ListEtiquetasFragment) actual).recargar();
+        }
+    }
+
+    private String leerTexto(Uri uri) throws IOException {
+        try (InputStream entrada = getContentResolver().openInputStream(uri)) {
+            if (entrada == null) {
+                throw new IOException("No se pudo abrir el fichero");
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] datos = new byte[4096];
+            int leidos;
+            while ((leidos = entrada.read(datos)) != -1) {
+                buffer.write(datos, 0, leidos);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private String nombreFichero(Uri uri) {
+        String nombre = null;
+        try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columna = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columna >= 0) {
+                    nombre = cursor.getString(columna);
+                }
+            }
+        }
+        return nombre == null ? "nota.md" : nombre;
     }
 }

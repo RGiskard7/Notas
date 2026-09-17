@@ -184,6 +184,13 @@ public class ListNotasFragment extends Fragment {
         viewModel.recargar();
     }
 
+    /** Vuelve a cargar el listado con el ámbito y la búsqueda actuales. */
+    public void recargar() {
+        if (viewModel != null) {
+            viewModel.recargar();
+        }
+    }
+
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);

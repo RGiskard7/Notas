@@ -123,6 +123,11 @@ public class ListEtiquetasFragment extends Fragment {
         }
     }
 
+    /** Vuelve a cargar el listado de etiquetas. */
+    public void recargar() {
+        resetListaEtiquetas();
+    }
+
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);

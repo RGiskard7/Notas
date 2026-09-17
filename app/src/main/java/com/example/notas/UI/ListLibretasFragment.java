@@ -90,7 +90,6 @@ public class ListLibretasFragment extends Fragment {
 
     public void createComponents(View view) {
         setHasOptionsMenu(true);
-
         ((MainActivity) getActivity()).getSupportActionBar().setTitle(R.string.libretas);
 
         adaptador = new LibretaAdapter(listaLibretas, new LibretaAdapter.OnLibretaClickListener() {
@@ -247,6 +246,13 @@ public class ListLibretasFragment extends Fragment {
         });
         builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
         builder.create().show();
+    }
+
+    /** Vuelve a cargar el listado de libretas. */
+    public void recargar() {
+        if (viewModel != null) {
+            viewModel.cargar();
+        }
     }
 
     @Override
