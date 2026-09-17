@@ -44,13 +44,8 @@ public class NotaDAORoom implements INotaDAO {
 
     @Override
     public Nota getNota(int id) {
-        NotaEntity entity = dao().getNotaById(id);
-        if (entity == null) {
-            return null;
-        }
-        Libreta libreta = Mapper.toLibreta(dao().getLibretaDeNota(id));
-        List<Etiqueta> etiquetas = Mapper.toEtiquetas(dao().getEtiquetasDeNota(id));
-        return Mapper.toNota(entity, libreta, etiquetas);
+        NotaConRelaciones relacion = dao().getNotaConRelaciones(id);
+        return relacion == null ? null : Mapper.toNota(relacion);
     }
 
     @Override
@@ -83,10 +78,8 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public void getAllNotas(List<Nota> list) {
         list.clear();
-        for (NotaEntity entity : dao().getAllNotas()) {
-            Libreta libreta = Mapper.toLibreta(dao().getLibretaDeNota(entity.id));
-            List<Etiqueta> etiquetas = Mapper.toEtiquetas(dao().getEtiquetasDeNota(entity.id));
-            list.add(Mapper.toNota(entity, libreta, etiquetas));
+        for (NotaConRelaciones relacion : dao().getAllNotasConRelaciones()) {
+            list.add(Mapper.toNota(relacion));
         }
     }
 

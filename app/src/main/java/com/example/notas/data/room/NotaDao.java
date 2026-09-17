@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
@@ -19,8 +20,24 @@ public interface NotaDao {
     @Query("SELECT * FROM notas WHERE nota_id = :id LIMIT 1")
     NotaEntity getNotaById(int id);
 
+    @Transaction
+    @Query("SELECT * FROM notas WHERE nota_id = :id LIMIT 1")
+    NotaConRelaciones getNotaConRelaciones(int id);
+
     @Query("SELECT * FROM notas ORDER BY nota_id ASC")
     List<NotaEntity> getAllNotas();
+
+    @Transaction
+    @Query("SELECT * FROM notas ORDER BY nota_id ASC")
+    List<NotaConRelaciones> getAllNotasConRelaciones();
+
+    @Transaction
+    @Query("SELECT notas.* FROM notas INNER JOIN libretaNotas ON notas.nota_id = libretaNotas.nota_id WHERE libretaNotas.libreta_id = :idLibreta ORDER BY notas.nota_id ASC")
+    List<NotaConRelaciones> getNotasDeLibretaConRelaciones(int idLibreta);
+
+    @Transaction
+    @Query("SELECT notas.* FROM notas INNER JOIN etiquetaNotas ON notas.nota_id = etiquetaNotas.nota_id WHERE etiquetaNotas.etiqueta_id = :idEtiqueta ORDER BY notas.nota_id ASC")
+    List<NotaConRelaciones> getNotasDeEtiquetaConRelaciones(int idEtiqueta);
 
     @Query("DELETE FROM notas WHERE nota_id = :id")
     void deleteNotaById(int id);

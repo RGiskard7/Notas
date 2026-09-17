@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public interface LibretaDao {
 
     @Query("SELECT * FROM libretas ORDER BY libreta_id ASC")
     List<LibretaEntity> getAllLibretas();
+
+    @Transaction
+    @Query("SELECT * FROM libretas ORDER BY libreta_id ASC")
+    List<LibretaConRelaciones> getAllLibretasConRelaciones();
 
     @Query("SELECT COUNT(*) FROM libretas WHERE titulo = :titulo")
     int countByTitulo(String titulo);

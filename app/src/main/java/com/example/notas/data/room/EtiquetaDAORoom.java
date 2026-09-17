@@ -35,12 +35,6 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
         return dtf.format(Calendar.getInstance().getTime());
     }
 
-    private Nota toNota(NotaEntity entity) {
-        Libreta libreta = Mapper.toLibreta(notaDao().getLibretaDeNota(entity.id));
-        List<Etiqueta> etiquetas = Mapper.toEtiquetas(notaDao().getEtiquetasDeNota(entity.id));
-        return Mapper.toNota(entity, libreta, etiquetas);
-    }
-
     @Override
     public void createEtiqueta(String titulo) {
         String ahora = ahora();
@@ -60,14 +54,8 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
     @Override
     public void getAllEtiquetas(List<Etiqueta> list) {
         list.clear();
-        for (EtiquetaEntity entity : dao().getAllEtiquetas()) {
-            Etiqueta etiqueta = Mapper.toEtiqueta(entity);
-            List<Nota> notas = new ArrayList<>();
-            for (NotaEntity notaEntity : dao().getNotasDeEtiqueta(entity.id)) {
-                notas.add(toNota(notaEntity));
-            }
-            etiqueta.setNotas(notas);
-            list.add(etiqueta);
+        for (EtiquetaConRelaciones relacion : dao().getAllEtiquetasConRelaciones()) {
+            list.add(Mapper.toEtiqueta(relacion));
         }
     }
 
@@ -90,8 +78,8 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
     @Override
     public void getAllNotasFrom(int idEtiqueta, List<Nota> list) {
         list.clear();
-        for (NotaEntity entity : dao().getNotasDeEtiqueta(idEtiqueta)) {
-            list.add(toNota(entity));
+        for (NotaConRelaciones relacion : notaDao().getNotasDeEtiquetaConRelaciones(idEtiqueta)) {
+            list.add(Mapper.toNota(relacion));
         }
     }
 

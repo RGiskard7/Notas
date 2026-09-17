@@ -133,6 +133,20 @@ public class EtiquetaDAORoomTest {
     }
 
     @Test
+    public void getAllEtiquetas_incluyeElRecuentoDeNotas() {
+        etiquetaDAO.createEtiqueta("Marcada");
+        Etiqueta etiqueta = buscarPorTitulo("Marcada");
+        int idNota = nuevaNotaEnLibretaDefault("Nota");
+        List<Etiqueta> etiquetas = new ArrayList<>();
+        etiquetas.add(etiqueta);
+        notaDAO.addEtiquetasToNota(idNota, etiquetas);
+
+        Etiqueta recargada = buscarPorTitulo("Marcada");
+
+        assertEquals(1, recargada.getNotas().size());
+    }
+
+    @Test
     public void getAllNotasFrom_devuelveLasNotasConEsaEtiqueta() {
         etiquetaDAO.createEtiqueta("Marcada");
         Etiqueta marcada = buscarPorTitulo("Marcada");

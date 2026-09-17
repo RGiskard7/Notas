@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public interface EtiquetaDao {
 
     @Query("SELECT * FROM etiquetas ORDER BY etiqueta_id ASC")
     List<EtiquetaEntity> getAllEtiquetas();
+
+    @Transaction
+    @Query("SELECT * FROM etiquetas ORDER BY etiqueta_id ASC")
+    List<EtiquetaConRelaciones> getAllEtiquetasConRelaciones();
 
     @Query("SELECT COUNT(*) FROM etiquetas WHERE titulo = :titulo")
     int countByTitulo(String titulo);

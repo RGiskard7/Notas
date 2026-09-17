@@ -35,11 +35,6 @@ public class LibretaDAORoom implements ILibretaDAO {
         return dtf.format(Calendar.getInstance().getTime());
     }
 
-    private Nota toNota(NotaEntity entity, Libreta libreta) {
-        List<Etiqueta> etiquetas = Mapper.toEtiquetas(notaDao().getEtiquetasDeNota(entity.id));
-        return Mapper.toNota(entity, libreta, etiquetas);
-    }
-
     @Override
     public void createLibreta(String titulo) {
         String ahora = ahora();
@@ -85,23 +80,16 @@ public class LibretaDAORoom implements ILibretaDAO {
     @Override
     public void getAllLibretas(List<Libreta> list) {
         list.clear();
-        for (LibretaEntity entity : dao().getAllLibretas()) {
-            Libreta libreta = Mapper.toLibreta(entity);
-            List<Nota> notas = new ArrayList<>();
-            for (NotaEntity notaEntity : dao().getNotasDeLibreta(entity.id)) {
-                notas.add(toNota(notaEntity, libreta));
-            }
-            libreta.setNotas(notas);
-            list.add(libreta);
+        for (LibretaConRelaciones relacion : dao().getAllLibretasConRelaciones()) {
+            list.add(Mapper.toLibreta(relacion));
         }
     }
 
     @Override
     public void getAllNotasFrom(int idLibreta, List<Nota> list) {
         list.clear();
-        Libreta libreta = getLibreta(idLibreta);
-        for (NotaEntity entity : dao().getNotasDeLibreta(idLibreta)) {
-            list.add(toNota(entity, libreta));
+        for (NotaConRelaciones relacion : notaDao().getNotasDeLibretaConRelaciones(idLibreta)) {
+            list.add(Mapper.toNota(relacion));
         }
     }
 }

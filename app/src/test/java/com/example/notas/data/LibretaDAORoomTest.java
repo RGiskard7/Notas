@@ -140,6 +140,20 @@ public class LibretaDAORoomTest {
     }
 
     @Test
+    public void getAllLibretas_incluyeElRecuentoDeNotas() {
+        libretaDAO.createLibreta("Con notas");
+        Libreta libreta = buscarPorTitulo("Con notas");
+        int idNota1 = notaDAO.createNota("N1", "x");
+        libretaDAO.addNotaToLibreta(libreta.getId(), idNota1);
+        int idNota2 = notaDAO.createNota("N2", "y");
+        libretaDAO.addNotaToLibreta(libreta.getId(), idNota2);
+
+        Libreta recargada = buscarPorTitulo("Con notas");
+
+        assertEquals(2, recargada.getNotas().size());
+    }
+
+    @Test
     public void getAllNotasFrom_devuelveSoloLasNotasDeLaLibreta() {
         libretaDAO.createLibreta("Destino");
         Libreta destino = buscarPorTitulo("Destino");

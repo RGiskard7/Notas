@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.util.EtiquetaSelection;
+import com.example.notas.util.Vinietas;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -211,29 +213,34 @@ public class EditNotaActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         if (item.getItemId() == R.id.action_vinietas) {
-                            if (texto.getSelectionStart() == 0) {
-                                if (TextUtils.isEmpty(texto.getText())) {
-                                    texto.getText().insert(texto.getText().length(), "\t\t\u2022 ");
-                                } else {
-                                    texto.getText().insert(texto.getText().length(), "\n\t\t\u2022 ");
-                                }
-                            } else {
-                                if (TextUtils.isEmpty(texto.getText())) {
-                                    texto.getText().insert(texto.getSelectionStart(), "\t\t\u2022 ");
-                                } else {
-                                    if (texto.getText().toString().charAt(texto.getSelectionStart() - 1) >= 32 &&
-                                            texto.getText().toString().charAt(texto.getSelectionStart() - 1) <= 255 ||
-                                            texto.getText().toString().charAt(texto.getSelectionStart() - 2) == 0x2022) {
-                                        texto.getText().insert(texto.getSelectionStart(), "\n\t\t\u2022 ");
-                                    } else {
-                                        texto.getText().insert(texto.getSelectionStart(), "\t\t\u2022 ");
-                                    }
-                                }
-                            }
+                            insertarVinieta();
                         }
                         return true;
                     }
                 });
+    }
+
+    private void insertarVinieta() {
+        Editable contenido = texto.getText();
+        int cursor = texto.getSelectionStart();
+        if (cursor < 0) {
+            cursor = contenido.length();
+        }
+
+        if (cursor == 0) {
+            // Sin texto antes del cursor: se añade al final.
+            if (TextUtils.isEmpty(contenido)) {
+                contenido.insert(contenido.length(), "\t\t\u2022 ");
+            } else {
+                contenido.insert(contenido.length(), "\n\t\t\u2022 ");
+            }
+        } else if (TextUtils.isEmpty(contenido)) {
+            contenido.insert(cursor, "\t\t\u2022 ");
+        } else if (Vinietas.necesitaSaltoDeLinea(contenido, cursor)) {
+            contenido.insert(cursor, "\n\t\t\u2022 ");
+        } else {
+            contenido.insert(cursor, "\t\t\u2022 ");
+        }
     }
 
     @Override
