@@ -1,5 +1,8 @@
 package com.example.notas.util;
 
+/**
+ * Lógica de inserción de viñetas en el editor de notas.
+ */
 public final class Vinietas {
     private static final char VINIETA = '\u2022';
 

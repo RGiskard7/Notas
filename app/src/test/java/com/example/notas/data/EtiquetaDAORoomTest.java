@@ -103,15 +103,15 @@ public class EtiquetaDAORoomTest {
         Etiqueta creada = buscarPorTitulo("Vieja");
 
         EtiquetaEntity entity = NotasDatabase.get(context, DB_NAME).etiquetaDao().getEtiquetaById(creada.getId());
-        entity.fechaCreacion = "01/01/2000 - 00:00";
+        entity.fechaCreacion = 946684800000L; // 01/01/2000 00:00 UTC
         NotasDatabase.get(context, DB_NAME).etiquetaDao().updateEtiqueta(entity);
 
         etiquetaDAO.editEtiqueta(creada.getId(), "Nueva");
 
         Etiqueta editada = buscarPorTitulo("Nueva");
         assertEquals(creada.getId(), editada.getId());
-        assertEquals("01/01/2000 - 00:00", editada.getFechaCreacion());
-        assertNotNull(editada.getFechaModificacion());
+        assertEquals(946684800000L, editada.getFechaCreacion());
+        assertTrue(editada.getFechaModificacion() > 0);
     }
 
     @Test

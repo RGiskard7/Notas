@@ -19,7 +19,7 @@ import java.util.Set;
 @Config(sdk = 34)
 public class EtiquetaSelectionTest {
     private Etiqueta etiqueta(String titulo) {
-        return new Etiqueta(0, titulo, "01/01/2020");
+        return new Etiqueta(0, titulo, 0L);
     }
 
     @Test

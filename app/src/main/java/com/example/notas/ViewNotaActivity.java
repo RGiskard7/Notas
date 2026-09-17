@@ -22,11 +22,20 @@ import com.example.notas.UI.ViewNotaViewModel;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.example.notas.databinding.ActivityViewNotaBinding;
+import com.example.notas.util.Fechas;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Pantalla que muestra una nota y permite editarla o eliminarla.
+ *
+ * <p>Presenta las fechas de creación y, si la nota se ha modificado, la de
+ * modificación.</p>
+ */
 public class ViewNotaActivity extends AppCompatActivity {
+    private ActivityViewNotaBinding binding;
     private TextView titulo;
     private TextView texto;
     private TextView fecha;
@@ -42,7 +51,8 @@ public class ViewNotaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_nota);
+        binding = ActivityViewNotaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         nota = (Nota) getIntent().getSerializableExtra("nota");
         libreta = nota.getLibreta();
@@ -78,14 +88,14 @@ public class ViewNotaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(R.string.ver_nota);
 
-        titulo = (TextView) findViewById(R.id.textViewTituloNota);
-        texto = (TextView) findViewById(R.id.textViewTextoNota);
+        titulo = binding.textViewTituloNota;
+        texto = binding.textViewTextoNota;
         texto.setMovementMethod(new ScrollingMovementMethod());
-        fecha = (TextView) findViewById(R.id.textViewFechaNota);
-        fechaModificacion = (TextView) findViewById(R.id.textViewFechaModificacion);
-        txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
-        numEtiquetas = (TextView) findViewById(R.id.textView3);
-        buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
+        fecha = binding.textViewFechaNota;
+        fechaModificacion = binding.textViewFechaModificacion;
+        txlibreta = binding.textViewLibretaNota;
+        numEtiquetas = binding.textView3;
+        buttonEtiquetas = binding.buttonEtiquetas;
         currentEtiquetasNota = new ArrayList<>();
     }
 
@@ -94,10 +104,9 @@ public class ViewNotaActivity extends AppCompatActivity {
         titulo.setTextIsSelectable(true);
         texto.setText(nota.getTexto());
         texto.setTextIsSelectable(true);
-        fecha.setText(getString(R.string.fecha_creacion, nota.getFechaCreacion()));
-        String modificacion = nota.getFechaModificacion();
-        if (modificacion != null && !modificacion.equals(nota.getFechaCreacion())) {
-            fechaModificacion.setText(getString(R.string.fecha_modificacion, modificacion));
+        fecha.setText(getString(R.string.fecha_creacion, Fechas.formatearNota(nota.getFechaCreacion())));
+        if (nota.getFechaModificacion() != nota.getFechaCreacion()) {
+            fechaModificacion.setText(getString(R.string.fecha_modificacion, Fechas.formatearNota(nota.getFechaModificacion())));
             fechaModificacion.setVisibility(View.VISIBLE);
         } else {
             fechaModificacion.setVisibility(View.GONE);

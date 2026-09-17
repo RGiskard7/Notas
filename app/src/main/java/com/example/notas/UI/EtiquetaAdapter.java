@@ -3,21 +3,27 @@ package com.example.notas.UI;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notas.R;
 import com.example.notas.data.Etiqueta;
+import com.example.notas.databinding.LibretaItemBinding;
 
 import java.util.List;
 
+/**
+ * Adapter del listado de etiquetas, con su recuento de notas.
+ */
 public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.EtiquetaViewHolder> {
 
+    /** Acciones sobre un elemento del listado. */
     public interface OnEtiquetaClickListener {
+        /** Se ha pulsado la etiqueta de esa posición. */
         void onEtiquetaClick(int position);
 
+        /** Se ha mantenido pulsada la etiqueta de esa posición. */
         void onEtiquetaLongClick(int position);
     }
 
@@ -32,16 +38,16 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.Etique
     @NonNull
     @Override
     public EtiquetaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.libreta_item, parent, false);
-        return new EtiquetaViewHolder(item);
+        LibretaItemBinding binding = LibretaItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new EtiquetaViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final EtiquetaViewHolder holder, int position) {
         Etiqueta etiqueta = etiquetas.get(position);
-        holder.titulo.setText(etiqueta.getTitulo());
-        int numNotas = etiqueta.getNumNotas();
-        holder.notas.setText(holder.itemView.getResources().getQuantityString(R.plurals.notas, numNotas, numNotas));
+        holder.binding.textViewTitulo2.setText(etiqueta.getTitulo());
+        holder.binding.textViewNotas.setText(holder.itemView.getResources()
+                .getQuantityString(R.plurals.notas, etiqueta.getNumNotas(), etiqueta.getNumNotas()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,13 +70,11 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.Etique
     }
 
     static class EtiquetaViewHolder extends RecyclerView.ViewHolder {
-        final TextView titulo;
-        final TextView notas;
+        final LibretaItemBinding binding;
 
-        EtiquetaViewHolder(@NonNull View itemView) {
-            super(itemView);
-            titulo = itemView.findViewById(R.id.textViewTitulo2);
-            notas = itemView.findViewById(R.id.textViewNotas);
+        EtiquetaViewHolder(@NonNull LibretaItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

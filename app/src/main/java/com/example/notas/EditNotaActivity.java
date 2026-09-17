@@ -26,6 +26,7 @@ import com.example.notas.UI.EditNotaViewModel;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.example.notas.databinding.ActivityEditNotaBinding;
 import com.example.notas.util.EtiquetaSelection;
 import com.example.notas.util.Vinietas;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,7 +36,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Pantalla para crear o editar una nota.
+ *
+ * <p>Permite escribir el título y el texto, elegir la libreta y marcar las
+ * etiquetas. También ofrece insertar viñetas desde la barra inferior.</p>
+ */
 public class EditNotaActivity extends AppCompatActivity {
+    private ActivityEditNotaBinding binding;
     private Nota nota;
     private Libreta libreta;
     private Libreta oldLibreta;
@@ -55,7 +63,8 @@ public class EditNotaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_nota);
+        binding = ActivityEditNotaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         allLibretas = new ArrayList<>();
         allEtiquetas = new ArrayList<>();
@@ -111,12 +120,12 @@ public class EditNotaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titulo = (EditText) findViewById(R.id.editTextTituloNwNota);
-        texto = (EditText) findViewById(R.id.editTextContenidoNwNota);
-        spinnerLibretas = (Spinner) findViewById(R.id.spinnerOpcionLibretas);
-        buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
-        numEtiquetas = (TextView) findViewById(R.id.textView3);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        titulo = binding.editTextTituloNwNota;
+        texto = binding.editTextContenidoNwNota;
+        spinnerLibretas = binding.spinnerOpcionLibretas;
+        buttonEtiquetas = binding.buttonEtiquetas;
+        numEtiquetas = binding.textView3;
+        bottomNavigationView = binding.bottomNavigation;
 
         fillComponents();
     }

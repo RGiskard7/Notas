@@ -5,13 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 
-import com.example.notas.R;
 import com.example.notas.data.Libreta;
+import com.example.notas.databinding.LibretaItemSpinnerBinding;
 
 import java.util.List;
 
+/**
+ * Adapter del desplegable de libretas que aparece al crear o editar una nota.
+ */
 public class AdaptadorListLibretas extends BaseAdapter {
     private final Context context;
     private final List<Libreta> listaLibretas;
@@ -38,14 +40,26 @@ public class AdaptadorListLibretas extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View item = convertView;
-        if (item == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(context);
-            item = layoutInflater.inflate(R.layout.libreta_item_spinner, parent, false);
+        ViewHolder holder;
+        if (convertView == null) {
+            LibretaItemSpinnerBinding binding = LibretaItemSpinnerBinding.inflate(
+                    LayoutInflater.from(context), parent, false);
+            holder = new ViewHolder(binding);
+            binding.getRoot().setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        TextView titulo = item.findViewById(R.id.tituloLibretaSpinner);
-        titulo.setText(listaLibretas.get(position).getTitulo());
-        return item;
+        holder.binding.tituloLibretaSpinner.setText(listaLibretas.get(position).getTitulo());
+        return holder.binding.getRoot();
+    }
+
+    /** Guarda la referencia a la vista para no reinflarla en cada fila. */
+    private static class ViewHolder {
+        final LibretaItemSpinnerBinding binding;
+
+        ViewHolder(LibretaItemSpinnerBinding binding) {
+            this.binding = binding;
+        }
     }
 }

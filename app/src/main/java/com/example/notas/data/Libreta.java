@@ -2,18 +2,41 @@ package com.example.notas.data;
 
 import java.io.Serializable;
 
+/**
+ * Libreta que agrupa notas.
+ *
+ * <p>Solo almacena sus propios datos (título y fechas) y el número de notas que
+ * contiene, que es lo que necesitan los listados. Las notas se consultan a
+ * través del DAO correspondiente.</p>
+ */
 public class Libreta implements Serializable {
+
     private int id;
     private String titulo;
     private int numNotas;
-    private String fechaCreacion;
-    private String fechaModificacion;
+    private long fechaCreacion;
+    private long fechaModificacion;
 
-    public Libreta(int id, String titulo, String fechaCreacion) {
+    /**
+     * Crea una libreta sin recuento de notas.
+     *
+     * @param id            identificador en la base de datos.
+     * @param titulo        nombre de la libreta.
+     * @param fechaCreacion fecha de creación en milisegundos.
+     */
+    public Libreta(int id, String titulo, long fechaCreacion) {
         this(id, titulo, 0, fechaCreacion);
     }
 
-    public Libreta(int id, String titulo, int numNotas, String fechaCreacion) {
+    /**
+     * Crea una libreta con todos sus datos.
+     *
+     * @param id            identificador en la base de datos.
+     * @param titulo        nombre de la libreta.
+     * @param numNotas      número de notas que contiene.
+     * @param fechaCreacion fecha de creación en milisegundos.
+     */
+    public Libreta(int id, String titulo, int numNotas, long fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         this.numNotas = numNotas;
@@ -45,20 +68,36 @@ public class Libreta implements Serializable {
         this.numNotas = numNotas;
     }
 
-    public String getFechaCreacion() {
+    public long getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(long fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public String getFechaModificacion() {
+    public long getFechaModificacion() {
         return fechaModificacion;
     }
 
-    public void setFechaModificacion(String fechaModificacion) {
+    public void setFechaModificacion(long fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        return id == ((Libreta) o).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     @Override

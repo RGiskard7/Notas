@@ -23,6 +23,9 @@ import androidx.room.Index;
                         onUpdate = ForeignKey.CASCADE)
         },
         indices = {@Index("nota_id"), @Index("etiqueta_id")})
+/**
+ * Tabla puente que relaciona etiquetas y notas (relación de muchos a muchos).
+ */
 public class EtiquetaNotaCrossRef {
     @ColumnInfo(name = "etiqueta_id")
     public int etiquetaId;

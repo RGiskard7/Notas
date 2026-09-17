@@ -6,6 +6,12 @@ import androidx.room.Relation;
 
 import java.util.List;
 
+/**
+ * Nota con su libreta y sus etiquetas ya cargadas.
+ *
+ * <p>Se usa en las consultas {@code @Transaction} para evitar una consulta por
+ * cada nota (problema N+1).</p>
+ */
 public class NotaConRelaciones {
     @Embedded
     public NotaEntity nota;

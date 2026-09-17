@@ -6,6 +6,9 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "notas")
+/**
+ * Entidad Room que representa la tabla de notas.
+ */
 public class NotaEntity {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "nota_id")
@@ -19,12 +22,12 @@ public class NotaEntity {
     public String texto;
 
     @ColumnInfo(name = "fecha_creacion")
-    public String fechaCreacion;
+    public long fechaCreacion;
 
     @ColumnInfo(name = "fecha_modificacion")
-    public String fechaModificacion;
+    public long fechaModificacion;
 
-    public NotaEntity(int id, @NonNull String titulo, String texto, String fechaCreacion, String fechaModificacion) {
+    public NotaEntity(int id, @NonNull String titulo, String texto, long fechaCreacion, long fechaModificacion) {
         this.id = id;
         this.titulo = titulo;
         this.texto = texto;

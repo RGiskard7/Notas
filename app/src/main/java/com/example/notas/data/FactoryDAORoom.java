@@ -6,7 +6,14 @@ import com.example.notas.data.room.EtiquetaDAORoom;
 import com.example.notas.data.room.LibretaDAORoom;
 import com.example.notas.data.room.NotaDAORoom;
 
+/**
+ * Factoría concreta que construye los DAOs sobre Room.
+ *
+ * <p>Todos los DAOs comparten el mismo fichero de base de datos.</p>
+ */
 public class FactoryDAORoom extends FactoryDAO {
+
+    /** Nombre del fichero de base de datos de la aplicación. */
     private static final String DB_NAME = "DBNevernote";
 
     @Override

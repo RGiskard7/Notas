@@ -5,16 +5,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Nota del usuario.
+ *
+ * <p>Una nota tiene un título, un texto libre, la libreta a la que pertenece y
+ * el conjunto de etiquetas asociadas. Las fechas se guardan como milisegundos
+ * desde el 1 de enero de 1970 y se formatean al mostrarlas.</p>
+ *
+ * <p>Implementa {@link Serializable} porque se pasa entre actividades a través
+ * de un Intent.</p>
+ */
 public class Nota implements Serializable {
+
     private int id;
     private String titulo;
     private String texto;
     private Libreta libreta;
     private Set<Etiqueta> etiquetas;
-    private String fechaCreacion;
-    private String fechaModificacion;
+    private long fechaCreacion;
+    private long fechaModificacion;
 
-    public Nota(int id, String titulo, String texto, Libreta libreta, List<Etiqueta> etiquetas, String fechaCreacion) {
+    /**
+     * Crea una nota con todos sus datos.
+     *
+     * @param id               identificador en la base de datos.
+     * @param titulo           título de la nota.
+     * @param texto            contenido de la nota.
+     * @param libreta          libreta a la que pertenece (puede ser null).
+     * @param etiquetas        etiquetas asociadas.
+     * @param fechaCreacion    fecha de creación en milisegundos.
+     */
+    public Nota(int id, String titulo, String texto, Libreta libreta, List<Etiqueta> etiquetas, long fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         this.texto = texto;
@@ -48,19 +69,19 @@ public class Nota implements Serializable {
         this.texto = texto;
     }
 
-    public String getFechaCreacion() {
+    public long getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(long fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public String getFechaModificacion() {
+    public long getFechaModificacion() {
         return fechaModificacion;
     }
 
-    public void setFechaModificacion(String fechaModificacion) {
+    public void setFechaModificacion(long fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
     }
 
@@ -78,6 +99,22 @@ public class Nota implements Serializable {
 
     public void setEtiquetas(Set<Etiqueta> etiquetas) {
         this.etiquetas = etiquetas;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        return id == ((Nota) o).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     @Override

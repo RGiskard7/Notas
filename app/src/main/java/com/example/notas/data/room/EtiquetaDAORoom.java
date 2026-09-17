@@ -7,17 +7,16 @@ import com.example.notas.data.IEtiquetaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Implementación de {@link IEtiquetaDAO} sobre Room.
+ */
 public class EtiquetaDAORoom implements IEtiquetaDAO {
     private final Context context;
     private final String name;
-    private final SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yyyy - HH:mm", Locale.getDefault());
 
     public EtiquetaDAORoom(Context context, String name) {
         this.context = context.getApplicationContext();
@@ -32,13 +31,13 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
         return NotasDatabase.get(context, name).notaDao();
     }
 
-    private String ahora() {
-        return dtf.format(Calendar.getInstance().getTime());
+    private long ahora() {
+        return System.currentTimeMillis();
     }
 
     @Override
     public void createEtiqueta(String titulo) {
-        String ahora = ahora();
+        long ahora = ahora();
         dao().insertEtiqueta(new EtiquetaEntity(0, titulo, ahora, ahora));
     }
 

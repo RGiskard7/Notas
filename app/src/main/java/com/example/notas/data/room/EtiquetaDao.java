@@ -9,6 +9,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Consultas Room sobre las etiquetas y sus vínculos con notas.
+ */
 @Dao
 public interface EtiquetaDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)

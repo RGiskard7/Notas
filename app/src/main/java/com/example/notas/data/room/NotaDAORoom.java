@@ -7,16 +7,18 @@ import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Implementación de {@link INotaDAO} sobre Room.
+ *
+ * <p>Traduce entre el modelo de dominio y las entidades, y aprovecha las
+ * relaciones para no lanzar una consulta por cada nota.</p>
+ */
 public class NotaDAORoom implements INotaDAO {
     private final Context context;
     private final String name;
-    private final SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yyyy - HH:mm", Locale.getDefault());
 
     public NotaDAORoom(Context context, String name) {
         this.context = context.getApplicationContext();
@@ -27,8 +29,8 @@ public class NotaDAORoom implements INotaDAO {
         return NotasDatabase.get(context, name).notaDao();
     }
 
-    private String ahora() {
-        return dtf.format(Calendar.getInstance().getTime());
+    private long ahora() {
+        return System.currentTimeMillis();
     }
 
     private Map<Integer, Integer> conteosLibretas() {
@@ -41,7 +43,7 @@ public class NotaDAORoom implements INotaDAO {
 
     @Override
     public int createNota(String titulo, String texto) {
-        String ahora = ahora();
+        long ahora = ahora();
         NotaEntity entity = new NotaEntity(0, titulo, texto, ahora, ahora);
         return (int) dao().insertNota(entity);
     }

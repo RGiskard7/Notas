@@ -37,7 +37,9 @@ com.example.notas
 - Persistencia con **Room** (claves foráneas con `ON DELETE CASCADE` activadas).
 - Lecturas/escrituras **fuera del hilo principal** vía `NotasRepository`; la UI observa
   `LiveData`. La base de datos **no** permite consultas en el hilo principal.
-- Fechas: `fecha_creacion` se conserva y `fecha_modificacion` se actualiza al editar.
+- Las fechas se guardan como **epoch** (milisegundos) y se formatean al mostrarlas.
+  `fecha_creacion` se conserva y `fecha_modificacion` se actualiza al editar.
+- Vistas con **ViewBinding**; la búsqueda se conserva con `SavedStateHandle`.
 
 ## Compilar y ejecutar
 
@@ -51,16 +53,17 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-61 tests:
+76 tests:
 
-- **data/** (25): DAOs Room (CRUD, cascadas, duplicados, fechas), garantía de que
-  producción no consulta en el hilo principal y entrega asíncrona del repositorio.
-- **util/** (17): filtro de búsqueda, parseo/orden de fechas y diff de etiquetas.
-- **UI/** (18): `MainActivity` (navegación, FAB, atrás, ámbito, long-press) y las
-  Activities de edición/visualización.
+- **data/** (30): DAOs Room (CRUD, cascadas, duplicados, recuentos, fechas), garantía de
+  que producción no consulta en el hilo principal y entrega asíncrona del repositorio.
+- **util/** (24): filtro de búsqueda, formato de fechas, diff de etiquetas y viñetas.
+- **UI/** (21): `MainActivity` (navegación, FAB, atrás, ámbito, long-press), las
+  Activities de edición/visualización y la persistencia de la búsqueda.
 - Ejemplo de plantilla (1).
 
 ## Notas
 
-- `minSdk 21`, `targetSdk 36`.
+- `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
 - Paquete `com.example.notas`; `app_name` "Nevernote".
+- Migración de Room 1 -> 2 (fechas de texto a epoch) con test de migración.

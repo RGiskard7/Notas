@@ -27,7 +27,7 @@ import com.example.notas.ViewNotaActivity;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
-import com.example.notas.util.Fechas;
+import com.example.notas.databinding.FragmentListNotasBinding;
 import com.example.notas.util.FiltroTitulo;
 
 import java.util.ArrayList;
@@ -35,6 +35,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Fragmento que lista notas.
+ *
+ * <p>Puede mostrar todas las notas, las de una libreta o las de una etiqueta,
+ * según los argumentos con los que se cree. Incluye búsqueda por título y
+ * ordenación por fecha, título o recuento.</p>
+ */
 public class ListNotasFragment extends Fragment {
     private static final String ARG_LIBRETA = "arg_libreta";
     private static final String ARG_ETIQUETA = "arg_etiqueta";
@@ -42,15 +49,15 @@ public class ListNotasFragment extends Fragment {
     private static final Comparator<Nota> POR_FECHA_DESC = new Comparator<Nota>() {
         @Override
         public int compare(Nota o1, Nota o2) {
-            return Fechas.parse(o2.getFechaCreacion()).compareTo(Fechas.parse(o1.getFechaCreacion()));
+            return Long.compare(o2.getFechaCreacion(), o1.getFechaCreacion());
         }
     };
 
     private RecyclerView recyclerView;
     private NotaAdapter adaptador;
+    private FragmentListNotasBinding binding;
     private List<Nota> listaNotas;
     private List<Nota> listaNotasCompleta;
-    private String consultaActual = "";
     private Libreta libreta;
     private Etiqueta etiqueta;
     private SearchView searchView;
@@ -92,7 +99,8 @@ public class ListNotasFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_notas, container, false);
+        binding = FragmentListNotasBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         listaNotas = new ArrayList<>();
         listaNotasCompleta = new ArrayList<>();
@@ -106,7 +114,7 @@ public class ListNotasFragment extends Fragment {
                 listaNotasCompleta.clear();
                 listaNotasCompleta.addAll(notas);
                 Collections.sort(listaNotasCompleta, POR_FECHA_DESC);
-                aplicarFiltro(consultaActual);
+                aplicarFiltro(viewModel.getConsulta());
             }
         });
 
@@ -135,7 +143,7 @@ public class ListNotasFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void aplicarFiltro(String query) {
-        consultaActual = query;
+        viewModel.setConsulta(query);
         listaNotas.clear();
         listaNotas.addAll(FiltroTitulo.filtrar(listaNotasCompleta, query, new FiltroTitulo.TituloProvider<Nota>() {
             @Override
@@ -174,7 +182,7 @@ public class ListNotasFragment extends Fragment {
                 mostrarOpciones(position);
             }
         });
-        recyclerView = view.findViewById(R.id.listViewNotas);
+        recyclerView = binding.listViewNotas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adaptador);
     }
@@ -207,7 +215,7 @@ public class ListNotasFragment extends Fragment {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                consultaActual = "";
+                viewModel.setConsulta("");
                 aplicarFiltro("");
                 return false;
             }
@@ -222,7 +230,7 @@ public class ListNotasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Nota>() {
                 @Override
                 public int compare(Nota o1, Nota o2) {
-                    return Fechas.parse(o1.getFechaCreacion()).compareTo(Fechas.parse(o2.getFechaCreacion()));
+                    return Long.compare(o1.getFechaCreacion(), o2.getFechaCreacion());
                 }
             });
         }
@@ -231,7 +239,7 @@ public class ListNotasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Nota>() {
                 @Override
                 public int compare(Nota o1, Nota o2) {
-                    return Fechas.parse(o2.getFechaCreacion()).compareTo(Fechas.parse(o1.getFechaCreacion()));
+                    return Long.compare(o2.getFechaCreacion(), o1.getFechaCreacion());
                 }
             });
         }
@@ -259,7 +267,7 @@ public class ListNotasFragment extends Fragment {
 
     private void ordenarYRefrescar(Comparator<Nota> comparador) {
         Collections.sort(listaNotasCompleta, comparador);
-        aplicarFiltro(consultaActual);
+        aplicarFiltro(viewModel.getConsulta());
     }
 
     // OPCIONES AL MANTENER PULSADO
@@ -306,5 +314,11 @@ public class ListNotasFragment extends Fragment {
         if (viewModel != null) {
             viewModel.recargar();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

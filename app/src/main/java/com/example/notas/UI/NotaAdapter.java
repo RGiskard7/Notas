@@ -3,21 +3,30 @@ package com.example.notas.UI;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.notas.R;
 import com.example.notas.data.Nota;
+import com.example.notas.databinding.NotaItemBinding;
+import com.example.notas.util.Fechas;
 
 import java.util.List;
 
+/**
+ * Adapter del listado de notas.
+ *
+ * <p>Muestra el título, un extracto del texto y la fecha de cada nota, y avisa
+ * al fragmento cuando se pulsa o se mantiene pulsado un elemento.</p>
+ */
 public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder> {
 
+    /** Acciones sobre un elemento del listado. */
     public interface OnNotaClickListener {
+        /** Se ha pulsado la nota de esa posición. */
         void onNotaClick(int position);
 
+        /** Se ha mantenido pulsada la nota de esa posición. */
         void onNotaLongClick(int position);
     }
 
@@ -32,16 +41,16 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
     @NonNull
     @Override
     public NotaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.nota_item, parent, false);
-        return new NotaViewHolder(item);
+        NotaItemBinding binding = NotaItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new NotaViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final NotaViewHolder holder, int position) {
         Nota nota = notas.get(position);
-        holder.titulo.setText(nota.getTitulo());
-        holder.texto.setText(nota.getTexto());
-        holder.fecha.setText(nota.getFechaCreacion());
+        holder.binding.textViewTitulo.setText(nota.getTitulo());
+        holder.binding.textViewTexto.setText(nota.getTexto());
+        holder.binding.textViewFecha.setText(Fechas.formatearNota(nota.getFechaCreacion()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +73,11 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
     }
 
     static class NotaViewHolder extends RecyclerView.ViewHolder {
-        final TextView titulo;
-        final TextView texto;
-        final TextView fecha;
+        final NotaItemBinding binding;
 
-        NotaViewHolder(@NonNull View itemView) {
-            super(itemView);
-            titulo = itemView.findViewById(R.id.textViewTitulo);
-            texto = itemView.findViewById(R.id.textViewTexto);
-            fecha = itemView.findViewById(R.id.textViewFecha);
+        NotaViewHolder(@NonNull NotaItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

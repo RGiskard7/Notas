@@ -27,6 +27,7 @@ import com.example.notas.MainActivity;
 import com.example.notas.R;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.databinding.FragmentListEtiquetasBinding;
 import com.example.notas.util.FiltroTitulo;
 
 import java.util.ArrayList;
@@ -34,18 +35,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Fragmento que lista las etiquetas.
+ *
+ * <p>Al pulsar una etiqueta se muestran las notas que la llevan; al mantenerla
+ * pulsada se ofrecen las opciones de editar o eliminar.</p>
+ */
 public class ListEtiquetasFragment extends Fragment {
     private RecyclerView recyclerView;
     private EtiquetaAdapter adaptador;
+    private FragmentListEtiquetasBinding binding;
     private List<Etiqueta> listaEtiquetas;
     private List<Etiqueta> listaEtiquetasCompleta;
-    private String consultaActual = "";
     private SearchView searchView;
     private ListEtiquetasViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_etiquetas, container, false);
+        binding = FragmentListEtiquetasBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         listaEtiquetas = new ArrayList<>();
         listaEtiquetasCompleta = new ArrayList<>();
@@ -58,7 +66,7 @@ public class ListEtiquetasFragment extends Fragment {
             public void onChanged(List<Etiqueta> etiquetas) {
                 listaEtiquetasCompleta.clear();
                 listaEtiquetasCompleta.addAll(etiquetas);
-                aplicarFiltro(consultaActual);
+                aplicarFiltro(viewModel.getConsulta());
             }
         });
         viewModel.cargar();
@@ -68,7 +76,7 @@ public class ListEtiquetasFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void aplicarFiltro(String query) {
-        consultaActual = query;
+        viewModel.setConsulta(query);
         listaEtiquetas.clear();
         listaEtiquetas.addAll(FiltroTitulo.filtrar(listaEtiquetasCompleta, query, new FiltroTitulo.TituloProvider<Etiqueta>() {
             @Override
@@ -97,7 +105,7 @@ public class ListEtiquetasFragment extends Fragment {
                 mostrarOpciones(position);
             }
         });
-        recyclerView = view.findViewById(R.id.listViewEtiquetas);
+        recyclerView = binding.listViewEtiquetas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adaptador);
     }
@@ -139,7 +147,7 @@ public class ListEtiquetasFragment extends Fragment {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                consultaActual = "";
+                viewModel.setConsulta("");
                 aplicarFiltro("");
                 return false;
             }
@@ -191,7 +199,7 @@ public class ListEtiquetasFragment extends Fragment {
 
     private void ordenarYRefrescar(Comparator<Etiqueta> comparador) {
         Collections.sort(listaEtiquetasCompleta, comparador);
-        aplicarFiltro(consultaActual);
+        aplicarFiltro(viewModel.getConsulta());
     }
 
     // OPCIONES AL MANTENER PULSADO
@@ -269,5 +277,11 @@ public class ListEtiquetasFragment extends Fragment {
         if (viewModel != null) {
             viewModel.cargar();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

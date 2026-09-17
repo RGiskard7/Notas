@@ -13,6 +13,12 @@ import com.example.notas.data.NotasRepository;
 
 import java.util.List;
 
+/**
+ * ViewModel de la pantalla de crear o editar una nota.
+ *
+ * <p>Carga las libretas, las etiquetas disponibles y las etiquetas de la nota, y
+ * guarda los cambios.</p>
+ */
 public class EditNotaViewModel extends AndroidViewModel {
     private final NotasRepository repositorio;
     private final MutableLiveData<List<Libreta>> libretas = new MutableLiveData<>();

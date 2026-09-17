@@ -9,6 +9,7 @@ import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.databinding.ActivityMainBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -30,7 +31,15 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * Pantalla principal de la aplicación.
+ *
+ * <p>Contiene el menú lateral, la barra de herramientas y el contenedor donde se
+ * van sustituyendo los fragmentos de listado (notas, libretas y etiquetas). El
+ * botón flotante crea una nota o una libreta según la pantalla activa.</p>
+ */
 public class MainActivity extends AppCompatActivity {
+    private ActivityMainBinding binding;
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -40,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -64,18 +74,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Configuracion de los menus (drawer y toolbar)
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = binding.appBar.toolbar;
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.todas_las_notas);
 
-        drawer = findViewById(R.id.drawer_layout);
+        drawer = binding.drawerLayout;
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close); // Integrar el menu drawer con el toolbar mediante el icono "hamburguesa"
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
+        navigationView = binding.navView;
 
-        fab = findViewById(R.id.fab);  // Boton flotante para crear nueva nota o una nueva libreta
+        fab = binding.appBar.fab;  // Boton flotante para crear nueva nota o una nueva libreta
     }
 
     public void eventRecorder() {
@@ -101,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 if (fragmentSelected) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit(); // Anniadir fragment select a la pila de fragmentos
 
-                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    DrawerLayout drawer = binding.drawerLayout;
                     drawer.closeDrawer(GravityCompat.START); // Cerrar la pestaña al presionar
 
                     return true;
@@ -177,10 +187,10 @@ public class MainActivity extends AppCompatActivity {
     // Gestiona el botón atrás: cierra el menú, retrocede entre listados o deja salir de la app.
     // Devuelve true si ha consumido el evento.
     private boolean manejarAtras() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = binding.drawerLayout;
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = binding.navView;
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);

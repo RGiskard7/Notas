@@ -26,6 +26,7 @@ import com.example.notas.EditLibretaActivity;
 import com.example.notas.MainActivity;
 import com.example.notas.R;
 import com.example.notas.data.Libreta;
+import com.example.notas.databinding.FragmentListLibretasBinding;
 import com.example.notas.util.FiltroTitulo;
 
 import java.util.ArrayList;
@@ -33,18 +34,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Fragmento que lista las libretas.
+ *
+ * <p>Al pulsar una libreta se muestran sus notas; al mantenerla pulsada se
+ * ofrecen las opciones de editar o eliminar.</p>
+ */
 public class ListLibretasFragment extends Fragment {
     private RecyclerView recyclerView;
     private LibretaAdapter adaptador;
+    private FragmentListLibretasBinding binding;
     private List<Libreta> listaLibretas;
     private List<Libreta> listaLibretasCompleta;
-    private String consultaActual = "";
     private SearchView searchView;
     private ListLibretasViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_libretas, container, false);
+        binding = FragmentListLibretasBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         listaLibretas = new ArrayList<>();
         listaLibretasCompleta = new ArrayList<>();
@@ -57,7 +65,7 @@ public class ListLibretasFragment extends Fragment {
             public void onChanged(List<Libreta> libretas) {
                 listaLibretasCompleta.clear();
                 listaLibretasCompleta.addAll(libretas);
-                aplicarFiltro(consultaActual);
+                aplicarFiltro(viewModel.getConsulta());
             }
         });
         viewModel.cargar();
@@ -67,7 +75,7 @@ public class ListLibretasFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void aplicarFiltro(String query) {
-        consultaActual = query;
+        viewModel.setConsulta(query);
         listaLibretas.clear();
         listaLibretas.addAll(FiltroTitulo.filtrar(listaLibretasCompleta, query, new FiltroTitulo.TituloProvider<Libreta>() {
             @Override
@@ -96,7 +104,7 @@ public class ListLibretasFragment extends Fragment {
                 mostrarOpciones(position);
             }
         });
-        recyclerView = view.findViewById(R.id.listViewLibretas);
+        recyclerView = binding.listViewLibretas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adaptador);
     }
@@ -132,7 +140,7 @@ public class ListLibretasFragment extends Fragment {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                consultaActual = "";
+                viewModel.setConsulta("");
                 aplicarFiltro("");
                 return false;
             }
@@ -184,7 +192,7 @@ public class ListLibretasFragment extends Fragment {
 
     private void ordenarYRefrescar(Comparator<Libreta> comparador) {
         Collections.sort(listaLibretasCompleta, comparador);
-        aplicarFiltro(consultaActual);
+        aplicarFiltro(viewModel.getConsulta());
     }
 
     // OPCIONES AL MANTENER PULSADO
@@ -247,5 +255,11 @@ public class ListLibretasFragment extends Fragment {
         if (viewModel != null) {
             viewModel.cargar();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

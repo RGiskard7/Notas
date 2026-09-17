@@ -13,6 +13,11 @@ import com.example.notas.data.NotasRepository;
 
 import java.util.List;
 
+/**
+ * ViewModel de la pantalla que muestra una nota.
+ *
+ * <p>Carga las etiquetas asociadas y permite eliminar la nota.</p>
+ */
 public class ViewNotaViewModel extends AndroidViewModel {
     private final NotasRepository repositorio;
     private final MutableLiveData<List<Etiqueta>> etiquetasDeNota = new MutableLiveData<>();

@@ -13,8 +13,13 @@ import android.widget.Toast;
 import com.example.notas.UI.EditLibretaViewModel;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.databinding.ActivityEditLibretaBinding;
 
+/**
+ * Pantalla para crear o editar una libreta.
+ */
 public class EditLibretaActivity extends AppCompatActivity {
+    private ActivityEditLibretaBinding binding;
     private Libreta libreta;
     private EditText titulo;
     private boolean editando;
@@ -23,7 +28,8 @@ public class EditLibretaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_libreta);
+        binding = ActivityEditLibretaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         editando = false;
 
@@ -44,7 +50,7 @@ public class EditLibretaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titulo = (EditText) findViewById(R.id.editTextTituloLibreta);
+        titulo = binding.editTextTituloLibreta;
     }
 
     @Override

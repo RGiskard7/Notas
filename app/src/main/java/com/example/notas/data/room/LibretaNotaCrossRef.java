@@ -23,6 +23,9 @@ import androidx.room.Index;
                         onUpdate = ForeignKey.CASCADE)
         },
         indices = {@Index("nota_id"), @Index("libreta_id")})
+/**
+ * Tabla puente que relaciona libretas y notas (una libreta tiene muchas notas).
+ */
 public class LibretaNotaCrossRef {
     @ColumnInfo(name = "libreta_id")
     public int libretaId;

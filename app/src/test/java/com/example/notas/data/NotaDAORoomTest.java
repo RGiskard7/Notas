@@ -1,6 +1,7 @@
 package com.example.notas.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -80,14 +81,13 @@ public class NotaDAORoomTest {
     }
 
     @Test
-    public void getAllNotas_devuelveLaFechaConFormato() {
+    public void getAllNotas_devuelveLaFechaDeCreacion() {
         nuevaNotaEnLibretaDefault("T", "X");
 
         List<Nota> notas = new ArrayList<>();
         notaDAO.getAllNotas(notas);
 
-        assertNotNull(notas.get(0).getFechaCreacion());
-        assertTrue(notas.get(0).getFechaCreacion().matches("\\d{2}/\\d{2}/\\d{4} - \\d{2}:\\d{2}"));
+        assertTrue(notas.get(0).getFechaCreacion() > 0);
     }
 
     @Test
@@ -98,8 +98,7 @@ public class NotaDAORoomTest {
 
         assertEquals("T", nota.getTitulo());
         assertEquals("X", nota.getTexto());
-        assertNotNull(nota.getFechaCreacion());
-        assertTrue(nota.getFechaCreacion().matches("\\d{2}/\\d{2}/\\d{4} - \\d{2}:\\d{2}"));
+        assertTrue(nota.getFechaCreacion() > 0);
     }
 
     @Test
@@ -132,7 +131,7 @@ public class NotaDAORoomTest {
         int id = nuevaNotaEnLibretaDefault("Original", "texto");
 
         NotaEntity entity = NotasDatabase.get(context, DB_NAME).notaDao().getNotaById(id);
-        entity.fechaCreacion = "01/01/2000 - 00:00";
+        entity.fechaCreacion = 946684800000L; // 01/01/2000 00:00 UTC
         NotasDatabase.get(context, DB_NAME).notaDao().updateNota(entity);
 
         notaDAO.editNota(id, "Editado", "nuevo");
@@ -140,9 +139,9 @@ public class NotaDAORoomTest {
         Nota nota = notaDAO.getNota(id);
         assertEquals("Editado", nota.getTitulo());
         assertEquals("nuevo", nota.getTexto());
-        assertEquals("01/01/2000 - 00:00", nota.getFechaCreacion());
-        assertNotNull(nota.getFechaModificacion());
-        assertTrue(nota.getFechaModificacion().matches("\\d{2}/\\d{2}/\\d{4} - \\d{2}:\\d{2}"));
+        assertEquals(946684800000L, nota.getFechaCreacion());
+        assertTrue(nota.getFechaModificacion() > 0);
+        assertNotEquals(946684800000L, nota.getFechaModificacion());
     }
 
     @Test

@@ -7,6 +7,9 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "etiquetas", indices = {@Index(value = {"titulo"}, unique = true)})
+/**
+ * Entidad Room que representa la tabla de etiquetas.
+ */
 public class EtiquetaEntity {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "etiqueta_id")
@@ -17,12 +20,12 @@ public class EtiquetaEntity {
     public String titulo;
 
     @ColumnInfo(name = "fecha_creacion")
-    public String fechaCreacion;
+    public long fechaCreacion;
 
     @ColumnInfo(name = "fecha_modificacion")
-    public String fechaModificacion;
+    public long fechaModificacion;
 
-    public EtiquetaEntity(int id, @NonNull String titulo, String fechaCreacion, String fechaModificacion) {
+    public EtiquetaEntity(int id, @NonNull String titulo, long fechaCreacion, long fechaModificacion) {
         this.id = id;
         this.titulo = titulo;
         this.fechaCreacion = fechaCreacion;

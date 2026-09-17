@@ -23,6 +23,7 @@ import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.data.room.NotaEntity;
 import com.example.notas.data.room.NotasDatabase;
+import com.example.notas.util.Fechas;
 
 import org.junit.After;
 import org.junit.Before;
@@ -85,14 +86,14 @@ public class ViewNotaActivityTest {
     public void muestraLaFechaDeModificacionCuandoEsDistinta() {
         Nota nota = crearNota("Titulo", "Contenido");
         NotaEntity entity = NotasDatabase.get(context, "DBNevernote").notaDao().getNotaById(nota.getId());
-        entity.fechaModificacion = "01/01/2000 - 00:00";
+        entity.fechaModificacion = 946684800000L; // 01/01/2000 00:00 UTC
         NotasDatabase.get(context, "DBNevernote").notaDao().updateNota(entity);
 
         ViewNotaActivity activity = lanzar(notaDAO.getNota(nota.getId()));
 
         TextView fechaModificacion = activity.findViewById(R.id.textViewFechaModificacion);
         assertEquals(View.VISIBLE, fechaModificacion.getVisibility());
-        assertTrue(fechaModificacion.getText().toString().contains("01/01/2000 - 00:00"));
+        assertTrue(fechaModificacion.getText().toString().contains(Fechas.formatearNota(946684800000L)));
     }
 
     @Test

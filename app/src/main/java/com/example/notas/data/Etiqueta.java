@@ -1,20 +1,41 @@
 package com.example.notas.data;
 
 import java.io.Serializable;
-import java.util.Objects;
 
+/**
+ * Etiqueta que puede asociarse a varias notas.
+ *
+ * <p>Igual que {@link Libreta}, guarda sus propios datos y el número de notas
+ * que la usan. Su identidad a efectos de comparación es el título.</p>
+ */
 public class Etiqueta implements Serializable {
+
     private int id;
     private String titulo;
     private int numNotas;
-    private String fechaCreacion;
-    private String fechaModificacion;
+    private long fechaCreacion;
+    private long fechaModificacion;
 
-    public Etiqueta(int id, String titulo, String fechaCreacion) {
+    /**
+     * Crea una etiqueta sin recuento de notas.
+     *
+     * @param id            identificador en la base de datos.
+     * @param titulo        nombre de la etiqueta.
+     * @param fechaCreacion fecha de creación en milisegundos.
+     */
+    public Etiqueta(int id, String titulo, long fechaCreacion) {
         this(id, titulo, 0, fechaCreacion);
     }
 
-    public Etiqueta(int id, String titulo, int numNotas, String fechaCreacion) {
+    /**
+     * Crea una etiqueta con todos sus datos.
+     *
+     * @param id            identificador en la base de datos.
+     * @param titulo        nombre de la etiqueta.
+     * @param numNotas      número de notas que la usan.
+     * @param fechaCreacion fecha de creación en milisegundos.
+     */
+    public Etiqueta(int id, String titulo, int numNotas, long fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
         this.numNotas = numNotas;
@@ -46,32 +67,36 @@ public class Etiqueta implements Serializable {
         this.numNotas = numNotas;
     }
 
-    public String getFechaCreacion() {
+    public long getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(long fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public String getFechaModificacion() {
+    public long getFechaModificacion() {
         return fechaModificacion;
     }
 
-    public void setFechaModificacion(String fechaModificacion) {
+    public void setFechaModificacion(long fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Etiqueta etiqueta = (Etiqueta) o;
         return titulo.equals(etiqueta.titulo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(titulo);
+        return titulo.hashCode();
     }
 }

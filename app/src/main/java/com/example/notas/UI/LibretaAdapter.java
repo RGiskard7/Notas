@@ -3,21 +3,27 @@ package com.example.notas.UI;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notas.R;
 import com.example.notas.data.Libreta;
+import com.example.notas.databinding.LibretaItemBinding;
 
 import java.util.List;
 
+/**
+ * Adapter del listado de libretas, con su recuento de notas.
+ */
 public class LibretaAdapter extends RecyclerView.Adapter<LibretaAdapter.LibretaViewHolder> {
 
+    /** Acciones sobre un elemento del listado. */
     public interface OnLibretaClickListener {
+        /** Se ha pulsado la libreta de esa posición. */
         void onLibretaClick(int position);
 
+        /** Se ha mantenido pulsada la libreta de esa posición. */
         void onLibretaLongClick(int position);
     }
 
@@ -32,16 +38,16 @@ public class LibretaAdapter extends RecyclerView.Adapter<LibretaAdapter.LibretaV
     @NonNull
     @Override
     public LibretaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.libreta_item, parent, false);
-        return new LibretaViewHolder(item);
+        LibretaItemBinding binding = LibretaItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new LibretaViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final LibretaViewHolder holder, int position) {
         Libreta libreta = libretas.get(position);
-        holder.titulo.setText(libreta.getTitulo());
-        int numNotas = libreta.getNumNotas();
-        holder.notas.setText(holder.itemView.getResources().getQuantityString(R.plurals.notas, numNotas, numNotas));
+        holder.binding.textViewTitulo2.setText(libreta.getTitulo());
+        holder.binding.textViewNotas.setText(holder.itemView.getResources()
+                .getQuantityString(R.plurals.notas, libreta.getNumNotas(), libreta.getNumNotas()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,13 +70,11 @@ public class LibretaAdapter extends RecyclerView.Adapter<LibretaAdapter.LibretaV
     }
 
     static class LibretaViewHolder extends RecyclerView.ViewHolder {
-        final TextView titulo;
-        final TextView notas;
+        final LibretaItemBinding binding;
 
-        LibretaViewHolder(@NonNull View itemView) {
-            super(itemView);
-            titulo = itemView.findViewById(R.id.textViewTitulo2);
-            notas = itemView.findViewById(R.id.textViewNotas);
+        LibretaViewHolder(@NonNull LibretaItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

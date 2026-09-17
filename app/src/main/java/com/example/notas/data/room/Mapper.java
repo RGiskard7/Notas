@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Convierte las entidades de Room al modelo de dominio que usa la aplicación y
+ * agrupa los recuentos de notas en mapas para rellenarlos sin consultas extra.
+ */
 final class Mapper {
     private Mapper() {
     }

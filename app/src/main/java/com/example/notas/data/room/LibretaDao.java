@@ -9,6 +9,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Consultas Room sobre las libretas y sus vínculos con notas.
+ */
 @Dao
 public interface LibretaDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)

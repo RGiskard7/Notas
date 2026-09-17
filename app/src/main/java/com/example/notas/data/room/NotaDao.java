@@ -9,6 +9,13 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Consultas Room sobre las notas.
+ *
+ * <p>Incluye los métodos con relaciones ({@code @Transaction}) que traen la
+ * libreta y las etiquetas de cada nota en un número constante de consultas, y
+ * las consultas agregadas de recuento.</p>
+ */
 @Dao
 public interface NotaDao {
     @Insert

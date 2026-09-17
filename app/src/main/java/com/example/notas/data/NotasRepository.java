@@ -11,11 +11,29 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Punto único de acceso a los datos de la aplicación.
+ *
+ * <p>Ejecuta las consultas y escrituras en un hilo de fondo y devuelve el
+ * resultado al hilo principal, de forma que la interfaz nunca bloquea ni toca
+ * la base de datos directamente. Los ViewModel se apoyan en él para exponer
+ * los datos como {@code LiveData}.</p>
+ *
+ * <p>Es un singleton para no abrir varias conexiones a la vez. En los tests se
+ * puede activar un modo síncrono que ejecuta las tareas en el hilo que llama.</p>
+ */
 public class NotasRepository {
+
+    /**
+     * Callback con el resultado de una consulta.
+     *
+     * @param <T> tipo del valor devuelto.
+     */
     public interface Callback<T> {
         void onResult(T valor);
     }
 
+    /** Tarea que produce un valor y que puede lanzar errores en tiempo de ejecución. */
     private interface Tarea<T> {
         T ejecutar();
     }
@@ -107,6 +125,7 @@ public class NotasRepository {
         });
     }
 
+    /** Carga todas las notas. */
     public void notasTodas(Callback<List<Nota>> callback) {
         leer(new Tarea<List<Nota>>() {
             @Override
@@ -118,6 +137,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga las notas que pertenecen a una libreta. */
     public void notasDeLibreta(final int idLibreta, Callback<List<Nota>> callback) {
         leer(new Tarea<List<Nota>>() {
             @Override
@@ -129,6 +149,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga las notas que llevan una etiqueta. */
     public void notasDeEtiqueta(final int idEtiqueta, Callback<List<Nota>> callback) {
         leer(new Tarea<List<Nota>>() {
             @Override
@@ -140,6 +161,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga todas las libretas con su recuento de notas. */
     public void libretas(Callback<List<Libreta>> callback) {
         leer(new Tarea<List<Libreta>>() {
             @Override
@@ -151,6 +173,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga todas las etiquetas con su recuento de notas. */
     public void etiquetas(Callback<List<Etiqueta>> callback) {
         leer(new Tarea<List<Etiqueta>>() {
             @Override
@@ -162,6 +185,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga una nota por su identificador (puede devolver null). */
     public void nota(final int id, Callback<Nota> callback) {
         leer(new Tarea<Nota>() {
             @Override
@@ -171,6 +195,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Carga las etiquetas asociadas a una nota. */
     public void etiquetasDeNota(final int idNota, Callback<List<Etiqueta>> callback) {
         leer(new Tarea<List<Etiqueta>>() {
             @Override
@@ -182,6 +207,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Comprueba si ya hay una libreta con ese título. */
     public void existeLibreta(final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
             @Override
@@ -191,6 +217,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Comprueba si ya hay una etiqueta con ese título. */
     public void existeEtiqueta(final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
             @Override
@@ -200,6 +227,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Crea la libreta si el título no está en uso; el callback recibe true si se creó. */
     public void crearLibretaSiNoExiste(final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
             @Override
@@ -213,6 +241,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Crea la etiqueta si el título no está en uso; el callback recibe true si se creó. */
     public void crearEtiquetaSiNoExiste(final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
             @Override
@@ -226,6 +255,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Cambia el título de una etiqueta si no lo tiene ya otra; el callback recibe true si se editó. */
     public void editarEtiquetaSiNoExiste(final int id, final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
             @Override
@@ -239,6 +269,7 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Crea una nota, la asocia a la libreta y le añade las etiquetas indicadas. */
     public void crearNota(final String titulo, final String texto, final int idLibreta,
                           final List<Etiqueta> etiquetas, final Runnable onDone) {
         escribir(new Runnable() {
@@ -253,6 +284,18 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /**
+     * Actualiza una nota y recalcula su libreta (si ha cambiado) y sus etiquetas.
+     *
+     * @param id               identificador de la nota.
+     * @param titulo           nuevo título.
+     * @param texto            nuevo contenido.
+     * @param idLibretaVieja   libreta actual de la nota.
+     * @param idLibretaNueva   libreta seleccionada.
+     * @param anadidas         etiquetas que hay que añadir.
+     * @param quitadas         etiquetas que hay que quitar.
+     * @param onDone           se ejecuta al terminar.
+     */
     public void editarNota(final int id, final String titulo, final String texto,
                            final int idLibretaVieja, final int idLibretaNueva,
                            final List<Etiqueta> anadidas, final List<Etiqueta> quitadas,
@@ -275,6 +318,7 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /** Elimina una nota y sus vínculos. */
     public void eliminarNota(final int id, Runnable onDone) {
         escribir(new Runnable() {
             @Override
@@ -284,6 +328,7 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /** Crea una libreta. */
     public void crearLibreta(final String titulo, Runnable onDone) {
         escribir(new Runnable() {
             @Override
@@ -293,6 +338,7 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /** Cambia el título de una libreta. */
     public void editarLibreta(final int id, final String titulo, Runnable onDone) {
         escribir(new Runnable() {
             @Override
@@ -302,6 +348,7 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /** Elimina una libreta; sus notas se mueven a la libreta Default (id 1). */
     public void eliminarLibreta(final int id, Runnable onDone) {
         escribir(new Runnable() {
             @Override
@@ -316,6 +363,7 @@ public class NotasRepository {
         }, onDone);
     }
 
+    /** Elimina una etiqueta y sus vínculos con las notas. */
     public void eliminarEtiqueta(final int id, Runnable onDone) {
         escribir(new Runnable() {
             @Override

@@ -6,6 +6,10 @@ import androidx.room.Relation;
 
 import java.util.List;
 
+/**
+ * Libreta con sus notas ya cargadas, para calcular el recuento sin consultas
+ * adicionales.
+ */
 public class LibretaConRelaciones {
     @Embedded
     public LibretaEntity libreta;

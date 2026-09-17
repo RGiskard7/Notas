@@ -114,15 +114,15 @@ public class LibretaDAORoomTest {
         Libreta creada = buscarPorTitulo("Vieja");
 
         LibretaEntity entity = NotasDatabase.get(context, DB_NAME).libretaDao().getLibretaById(creada.getId());
-        entity.fechaCreacion = "01/01/2000";
+        entity.fechaCreacion = 946684800000L; // 01/01/2000 00:00 UTC
         NotasDatabase.get(context, DB_NAME).libretaDao().updateLibreta(entity);
 
         libretaDAO.editLibreta(creada.getId(), "Nueva");
 
         Libreta editada = buscarPorTitulo("Nueva");
         assertEquals(creada.getId(), editada.getId());
-        assertEquals("01/01/2000", editada.getFechaCreacion());
-        assertNotNull(editada.getFechaModificacion());
+        assertEquals(946684800000L, editada.getFechaCreacion());
+        assertTrue(editada.getFechaModificacion() > 0);
     }
 
     @Test

@@ -7,6 +7,9 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.example.notas.data.NotasRepository;
 
+/**
+ * ViewModel de la pantalla de crear o editar una libreta.
+ */
 public class EditLibretaViewModel extends AndroidViewModel {
     private final NotasRepository repositorio;
 
