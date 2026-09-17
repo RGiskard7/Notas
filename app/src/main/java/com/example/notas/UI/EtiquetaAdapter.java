@@ -40,7 +40,7 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.Etique
     public void onBindViewHolder(@NonNull final EtiquetaViewHolder holder, int position) {
         Etiqueta etiqueta = etiquetas.get(position);
         holder.titulo.setText(etiqueta.getTitulo());
-        int numNotas = etiqueta.getNotas().size();
+        int numNotas = etiqueta.getNumNotas();
         holder.notas.setText(holder.itemView.getResources().getQuantityString(R.plurals.notas, numNotas, numNotas));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

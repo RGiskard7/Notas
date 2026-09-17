@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class EtiquetaDAORoom implements IEtiquetaDAO {
     private final Context context;
@@ -48,7 +49,8 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
 
     @Override
     public Etiqueta getEtiqueta(int id) {
-        return Mapper.toEtiqueta(dao().getEtiquetaById(id));
+        EtiquetaConRelaciones relacion = dao().getEtiquetaConRelaciones(id);
+        return relacion == null ? null : Mapper.toEtiqueta(relacion);
     }
 
     @Override
@@ -78,8 +80,10 @@ public class EtiquetaDAORoom implements IEtiquetaDAO {
     @Override
     public void getAllNotasFrom(int idEtiqueta, List<Nota> list) {
         list.clear();
+        Map<Integer, Integer> conteoLibretas = Mapper.aMapa(notaDao().conteosDeLibretas());
+        Map<Integer, Integer> conteoEtiquetas = Mapper.aMapa(notaDao().conteosDeEtiquetas());
         for (NotaConRelaciones relacion : notaDao().getNotasDeEtiquetaConRelaciones(idEtiqueta)) {
-            list.add(Mapper.toNota(relacion));
+            list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
         }
     }
 

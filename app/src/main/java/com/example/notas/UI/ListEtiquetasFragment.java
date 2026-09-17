@@ -172,9 +172,7 @@ public class ListEtiquetasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Etiqueta>() {
                 @Override
                 public int compare(Etiqueta o1, Etiqueta o2) {
-                    Integer v1 = o1.getNotas().size();
-                    Integer v2 = o2.getNotas().size();
-                    return v1.compareTo(v2);
+                    return Integer.compare(o1.getNumNotas(), o2.getNumNotas());
                 }
             });
         }
@@ -183,9 +181,7 @@ public class ListEtiquetasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Etiqueta>() {
                 @Override
                 public int compare(Etiqueta o1, Etiqueta o2) {
-                    Integer v1 = o1.getNotas().size();
-                    Integer v2 = o2.getNotas().size();
-                    return v2.compareTo(v1);
+                    return Integer.compare(o2.getNumNotas(), o1.getNumNotas());
                 }
             });
         }

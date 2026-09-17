@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class NotaDAORoom implements INotaDAO {
     private final Context context;
@@ -30,6 +31,14 @@ public class NotaDAORoom implements INotaDAO {
         return dtf.format(Calendar.getInstance().getTime());
     }
 
+    private Map<Integer, Integer> conteosLibretas() {
+        return Mapper.aMapa(dao().conteosDeLibretas());
+    }
+
+    private Map<Integer, Integer> conteosEtiquetas() {
+        return Mapper.aMapa(dao().conteosDeEtiquetas());
+    }
+
     @Override
     public int createNota(String titulo, String texto) {
         String ahora = ahora();
@@ -45,7 +54,7 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public Nota getNota(int id) {
         NotaConRelaciones relacion = dao().getNotaConRelaciones(id);
-        return relacion == null ? null : Mapper.toNota(relacion);
+        return relacion == null ? null : Mapper.toNota(relacion, conteosLibretas(), conteosEtiquetas());
     }
 
     @Override
@@ -62,7 +71,14 @@ public class NotaDAORoom implements INotaDAO {
 
     @Override
     public Libreta getLibreta(int idNota) {
-        return Mapper.toLibreta(dao().getLibretaDeNota(idNota));
+        LibretaEntity entity = dao().getLibretaDeNota(idNota);
+        if (entity == null) {
+            return null;
+        }
+        Libreta libreta = Mapper.toLibreta(entity);
+        Integer total = conteosLibretas().get(libreta.getId());
+        libreta.setNumNotas(total == null ? 0 : total);
+        return libreta;
     }
 
     @Override
@@ -78,8 +94,10 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public void getAllNotas(List<Nota> list) {
         list.clear();
+        Map<Integer, Integer> conteoLibretas = conteosLibretas();
+        Map<Integer, Integer> conteoEtiquetas = conteosEtiquetas();
         for (NotaConRelaciones relacion : dao().getAllNotasConRelaciones()) {
-            list.add(Mapper.toNota(relacion));
+            list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
         }
     }
 
@@ -100,6 +118,11 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public void getAllEtiquetasFrom(int idNota, List<Etiqueta> list) {
         list.clear();
-        list.addAll(Mapper.toEtiquetas(dao().getEtiquetasDeNota(idNota)));
+        Map<Integer, Integer> conteoEtiquetas = conteosEtiquetas();
+        for (Etiqueta etiqueta : Mapper.toEtiquetas(dao().getEtiquetasDeNota(idNota))) {
+            Integer total = conteoEtiquetas.get(etiqueta.getId());
+            etiqueta.setNumNotas(total == null ? 0 : total);
+            list.add(etiqueta);
+        }
     }
 }

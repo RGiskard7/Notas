@@ -62,6 +62,8 @@
     <string name="nota_editada">Nota editada</string>
     <string name="nota_eliminada">Nota eliminada</string>
     <string name="nota_vacia">No se puede guardar una nota vacía</string>
+    <string name="fecha_creacion">Creada: %1$s</string>
+    <string name="fecha_modificacion">Modificada: %1$s</string>
     <string name="no_etiquetas_disponibles">No hay ninguna etiqueta disponible</string>
     <string name="no_etiquetas_en_nota">No hay ninguna etiqueta asociada a esta nota</string>
 

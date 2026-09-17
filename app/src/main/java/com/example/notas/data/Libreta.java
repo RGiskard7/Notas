@@ -1,28 +1,22 @@
 package com.example.notas.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Libreta implements Serializable {
     private int id;
     private String titulo;
-    private List<Nota> notas;
+    private int numNotas;
     private String fechaCreacion;
     private String fechaModificacion;
 
-    public Libreta(int id, String titulo, List<Nota> notas, String fechaCreacion) {
-        this.id = id;
-        this.titulo = titulo;
-        this.notas = notas;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaModificacion = fechaCreacion;
+    public Libreta(int id, String titulo, String fechaCreacion) {
+        this(id, titulo, 0, fechaCreacion);
     }
 
-    public Libreta(int id, String titulo, String fechaCreacion) {
+    public Libreta(int id, String titulo, int numNotas, String fechaCreacion) {
         this.id = id;
         this.titulo = titulo;
-        notas = new ArrayList<Nota>();
+        this.numNotas = numNotas;
         this.fechaCreacion = fechaCreacion;
         this.fechaModificacion = fechaCreacion;
     }
@@ -43,12 +37,12 @@ public class Libreta implements Serializable {
         this.titulo = titulo;
     }
 
-    public List<Nota> getNotas() {
-        return notas;
+    public int getNumNotas() {
+        return numNotas;
     }
 
-    public void setNotas(List<Nota> notas) {
-        this.notas = notas;
+    public void setNumNotas(int numNotas) {
+        this.numNotas = numNotas;
     }
 
     public String getFechaCreacion() {
@@ -65,13 +59,6 @@ public class Libreta implements Serializable {
 
     public void setFechaModificacion(String fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
-    }
-
-    public Boolean isEmpty() {
-        if (notas.isEmpty()) {
-            return true;
-        }
-        return false;
     }
 
     @Override

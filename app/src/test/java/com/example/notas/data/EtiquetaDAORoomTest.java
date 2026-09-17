@@ -143,7 +143,7 @@ public class EtiquetaDAORoomTest {
 
         Etiqueta recargada = buscarPorTitulo("Marcada");
 
-        assertEquals(1, recargada.getNotas().size());
+        assertEquals(1, recargada.getNumNotas());
     }
 
     @Test

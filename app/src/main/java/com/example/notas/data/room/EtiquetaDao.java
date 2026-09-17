@@ -20,6 +20,10 @@ public interface EtiquetaDao {
     @Query("SELECT * FROM etiquetas WHERE etiqueta_id = :id LIMIT 1")
     EtiquetaEntity getEtiquetaById(int id);
 
+    @Transaction
+    @Query("SELECT * FROM etiquetas WHERE etiqueta_id = :id LIMIT 1")
+    EtiquetaConRelaciones getEtiquetaConRelaciones(int id);
+
     @Query("SELECT * FROM etiquetas ORDER BY etiqueta_id ASC")
     List<EtiquetaEntity> getAllEtiquetas();
 

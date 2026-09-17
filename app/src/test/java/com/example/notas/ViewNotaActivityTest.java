@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Looper;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -20,6 +21,7 @@ import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.data.room.NotaEntity;
 import com.example.notas.data.room.NotasDatabase;
 
 import org.junit.After;
@@ -77,6 +79,20 @@ public class ViewNotaActivityTest {
         assertEquals("Titulo", ((TextView) activity.findViewById(R.id.textViewTituloNota)).getText().toString());
         assertEquals("Contenido", ((TextView) activity.findViewById(R.id.textViewTextoNota)).getText().toString());
         assertEquals("Default", ((TextView) activity.findViewById(R.id.textViewLibretaNota)).getText().toString());
+    }
+
+    @Test
+    public void muestraLaFechaDeModificacionCuandoEsDistinta() {
+        Nota nota = crearNota("Titulo", "Contenido");
+        NotaEntity entity = NotasDatabase.get(context, "DBNevernote").notaDao().getNotaById(nota.getId());
+        entity.fechaModificacion = "01/01/2000 - 00:00";
+        NotasDatabase.get(context, "DBNevernote").notaDao().updateNota(entity);
+
+        ViewNotaActivity activity = lanzar(notaDAO.getNota(nota.getId()));
+
+        TextView fechaModificacion = activity.findViewById(R.id.textViewFechaModificacion);
+        assertEquals(View.VISIBLE, fechaModificacion.getVisibility());
+        assertTrue(fechaModificacion.getText().toString().contains("01/01/2000 - 00:00"));
     }
 
     @Test

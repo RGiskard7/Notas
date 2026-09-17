@@ -5,7 +5,9 @@ import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 final class Mapper {
     private Mapper() {
@@ -53,23 +55,44 @@ final class Mapper {
         return toNota(relacion.nota, libreta, etiquetas);
     }
 
-    static Libreta toLibreta(LibretaConRelaciones relacion) {
-        Libreta libreta = toLibreta(relacion.libreta);
-        List<Nota> notas = new ArrayList<>();
-        for (NotaEntity nota : relacion.notas) {
-            notas.add(new Nota(nota.id, nota.titulo, nota.texto, nota.fechaCreacion));
+    static Map<Integer, Integer> aMapa(List<Conteo> conteos) {
+        Map<Integer, Integer> mapa = new HashMap<>();
+        for (Conteo conteo : conteos) {
+            mapa.put(conteo.id, conteo.total);
         }
-        libreta.setNotas(notas);
+        return mapa;
+    }
+
+    static Nota toNota(NotaConRelaciones relacion, Map<Integer, Integer> conteoLibretas, Map<Integer, Integer> conteoEtiquetas) {
+        Nota nota = toNota(relacion);
+        if (nota.getLibreta() != null) {
+            Integer total = conteoLibretas.get(nota.getLibreta().getId());
+            nota.getLibreta().setNumNotas(total == null ? 0 : total);
+        }
+        for (Etiqueta etiqueta : nota.getEtiquetas()) {
+            Integer total = conteoEtiquetas.get(etiqueta.getId());
+            etiqueta.setNumNotas(total == null ? 0 : total);
+        }
+        return nota;
+    }
+
+    static Libreta toLibreta(LibretaConRelaciones relacion) {
+        Libreta libreta = new Libreta(
+                relacion.libreta.id,
+                relacion.libreta.titulo,
+                relacion.notas == null ? 0 : relacion.notas.size(),
+                relacion.libreta.fechaCreacion);
+        libreta.setFechaModificacion(relacion.libreta.fechaModificacion);
         return libreta;
     }
 
     static Etiqueta toEtiqueta(EtiquetaConRelaciones relacion) {
-        Etiqueta etiqueta = toEtiqueta(relacion.etiqueta);
-        List<Nota> notas = new ArrayList<>();
-        for (NotaEntity nota : relacion.notas) {
-            notas.add(new Nota(nota.id, nota.titulo, nota.texto, nota.fechaCreacion));
-        }
-        etiqueta.setNotas(notas);
+        Etiqueta etiqueta = new Etiqueta(
+                relacion.etiqueta.id,
+                relacion.etiqueta.titulo,
+                relacion.notas == null ? 0 : relacion.notas.size(),
+                relacion.etiqueta.fechaCreacion);
+        etiqueta.setFechaModificacion(relacion.etiqueta.fechaModificacion);
         return etiqueta;
     }
 }

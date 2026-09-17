@@ -146,6 +146,29 @@ public class NotaDAORoomTest {
     }
 
     @Test
+    public void laLibretaDeUnaNota_llevaElRecuentoDeNotas() {
+        nuevaNotaEnLibretaDefault("A", "x");
+        nuevaNotaEnLibretaDefault("B", "y");
+
+        List<Nota> notas = new ArrayList<>();
+        notaDAO.getAllNotas(notas);
+
+        assertEquals(2, notas.get(0).getLibreta().getNumNotas());
+    }
+
+    @Test
+    public void lasEtiquetasDeUnaNota_llevanElRecuentoDeNotas() {
+        int id = nuevaNotaEnLibretaDefault("A", "x");
+        etiquetaDAO.createEtiqueta("E");
+        notaDAO.addEtiquetasToNota(id, todasLasEtiquetas());
+
+        Nota nota = notaDAO.getNota(id);
+        Etiqueta etiqueta = nota.getEtiquetas().iterator().next();
+
+        assertEquals(1, etiqueta.getNumNotas());
+    }
+
+    @Test
     public void deleteNota_eliminaLosVinculos() {
         int id = nuevaNotaEnLibretaDefault("T", "X");
         etiquetaDAO.createEtiqueta("E");

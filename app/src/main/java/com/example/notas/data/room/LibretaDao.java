@@ -20,6 +20,10 @@ public interface LibretaDao {
     @Query("SELECT * FROM libretas WHERE libreta_id = :id LIMIT 1")
     LibretaEntity getLibretaById(int id);
 
+    @Transaction
+    @Query("SELECT * FROM libretas WHERE libreta_id = :id LIMIT 1")
+    LibretaConRelaciones getLibretaConRelaciones(int id);
+
     @Query("SELECT * FROM libretas ORDER BY libreta_id ASC")
     List<LibretaEntity> getAllLibretas();
 

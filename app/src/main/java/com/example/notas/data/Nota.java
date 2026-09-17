@@ -1,7 +1,6 @@
 package com.example.notas.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,15 +13,6 @@ public class Nota implements Serializable {
     private Set<Etiqueta> etiquetas;
     private String fechaCreacion;
     private String fechaModificacion;
-
-    public Nota(int id, String titulo, String texto, String fechaCreacion) {
-        this.id = id;
-        this.titulo = titulo;
-        this.texto = texto;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaModificacion = fechaCreacion;
-        etiquetas = new HashSet<>();
-    }
 
     public Nota(int id, String titulo, String texto, Libreta libreta, List<Etiqueta> etiquetas, String fechaCreacion) {
         this.id = id;

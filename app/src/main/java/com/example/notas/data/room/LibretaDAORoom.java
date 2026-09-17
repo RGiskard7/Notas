@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LibretaDAORoom implements ILibretaDAO {
     private final Context context;
@@ -53,7 +54,8 @@ public class LibretaDAORoom implements ILibretaDAO {
 
     @Override
     public Libreta getLibreta(int id) {
-        return Mapper.toLibreta(dao().getLibretaById(id));
+        LibretaConRelaciones relacion = dao().getLibretaConRelaciones(id);
+        return relacion == null ? null : Mapper.toLibreta(relacion);
     }
 
     @Override
@@ -88,8 +90,10 @@ public class LibretaDAORoom implements ILibretaDAO {
     @Override
     public void getAllNotasFrom(int idLibreta, List<Nota> list) {
         list.clear();
+        Map<Integer, Integer> conteoLibretas = Mapper.aMapa(notaDao().conteosDeLibretas());
+        Map<Integer, Integer> conteoEtiquetas = Mapper.aMapa(notaDao().conteosDeEtiquetas());
         for (NotaConRelaciones relacion : notaDao().getNotasDeLibretaConRelaciones(idLibreta)) {
-            list.add(Mapper.toNota(relacion));
+            list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
         }
     }
 }

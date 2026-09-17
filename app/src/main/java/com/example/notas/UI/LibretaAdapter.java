@@ -40,7 +40,7 @@ public class LibretaAdapter extends RecyclerView.Adapter<LibretaAdapter.LibretaV
     public void onBindViewHolder(@NonNull final LibretaViewHolder holder, int position) {
         Libreta libreta = libretas.get(position);
         holder.titulo.setText(libreta.getTitulo());
-        int numNotas = libreta.getNotas().size();
+        int numNotas = libreta.getNumNotas();
         holder.notas.setText(holder.itemView.getResources().getQuantityString(R.plurals.notas, numNotas, numNotas));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -26,6 +26,18 @@
             android:textStyle="italic" />
 
         <TextView
+            android:id="@+id/textViewFechaModificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textStyle="italic"
+            android:visibility="gone"
+            tools:text="Modificada: 01/01/2020 - 12:00" />
+
+        <TextView
             android:id="@+id/textViewTituloNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

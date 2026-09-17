@@ -59,4 +59,10 @@ public interface NotaDao {
 
     @Query("SELECT etiquetas.* FROM etiquetas INNER JOIN etiquetaNotas ON etiquetas.etiqueta_id = etiquetaNotas.etiqueta_id WHERE etiquetaNotas.nota_id = :idNota ORDER BY etiquetas.etiqueta_id ASC")
     List<EtiquetaEntity> getEtiquetasDeNota(int idNota);
+
+    @Query("SELECT libreta_id AS id, COUNT(*) AS total FROM libretaNotas GROUP BY libreta_id")
+    List<Conteo> conteosDeLibretas();
+
+    @Query("SELECT etiqueta_id AS id, COUNT(*) AS total FROM etiquetaNotas GROUP BY etiqueta_id")
+    List<Conteo> conteosDeEtiquetas();
 }

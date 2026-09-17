@@ -30,6 +30,7 @@ public class ViewNotaActivity extends AppCompatActivity {
     private TextView titulo;
     private TextView texto;
     private TextView fecha;
+    private TextView fechaModificacion;
     private TextView txlibreta;
     private TextView numEtiquetas;
     private Nota nota;
@@ -81,6 +82,7 @@ public class ViewNotaActivity extends AppCompatActivity {
         texto = (TextView) findViewById(R.id.textViewTextoNota);
         texto.setMovementMethod(new ScrollingMovementMethod());
         fecha = (TextView) findViewById(R.id.textViewFechaNota);
+        fechaModificacion = (TextView) findViewById(R.id.textViewFechaModificacion);
         txlibreta = (TextView) findViewById(R.id.textViewLibretaNota);
         numEtiquetas = (TextView) findViewById(R.id.textView3);
         buttonEtiquetas = (ImageButton) findViewById(R.id.buttonEtiquetas);
@@ -92,7 +94,14 @@ public class ViewNotaActivity extends AppCompatActivity {
         titulo.setTextIsSelectable(true);
         texto.setText(nota.getTexto());
         texto.setTextIsSelectable(true);
-        fecha.setText(nota.getFechaCreacion());
+        fecha.setText(getString(R.string.fecha_creacion, nota.getFechaCreacion()));
+        String modificacion = nota.getFechaModificacion();
+        if (modificacion != null && !modificacion.equals(nota.getFechaCreacion())) {
+            fechaModificacion.setText(getString(R.string.fecha_modificacion, modificacion));
+            fechaModificacion.setVisibility(View.VISIBLE);
+        } else {
+            fechaModificacion.setVisibility(View.GONE);
+        }
         if (libreta != null) {
             txlibreta.setText(libreta.getTitulo());
         }

@@ -165,9 +165,7 @@ public class ListLibretasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Libreta>() {
                 @Override
                 public int compare(Libreta o1, Libreta o2) {
-                    Integer v1 = o1.getNotas().size();
-                    Integer v2 = o2.getNotas().size();
-                    return v1.compareTo(v2);
+                    return Integer.compare(o1.getNumNotas(), o2.getNumNotas());
                 }
             });
         }
@@ -176,9 +174,7 @@ public class ListLibretasFragment extends Fragment {
             ordenarYRefrescar(new Comparator<Libreta>() {
                 @Override
                 public int compare(Libreta o1, Libreta o2) {
-                    Integer v1 = o1.getNotas().size();
-                    Integer v2 = o2.getNotas().size();
-                    return v2.compareTo(v1);
+                    return Integer.compare(o2.getNumNotas(), o1.getNumNotas());
                 }
             });
         }
@@ -229,7 +225,7 @@ public class ListLibretasFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 Libreta libretaEliminar = listaLibretas.get(position);
                 if (libretaEliminar.getId() != 1) {
-                    boolean teniaNotas = !libretaEliminar.getNotas().isEmpty();
+                    boolean teniaNotas = libretaEliminar.getNumNotas() > 0;
                     viewModel.eliminar(libretaEliminar.getId());
                     if (teniaNotas) {
                         Toast.makeText(getActivity(), R.string.libreta_eliminada_movidas, Toast.LENGTH_SHORT).show();
