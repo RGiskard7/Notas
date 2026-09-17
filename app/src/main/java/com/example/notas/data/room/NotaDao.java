@@ -46,6 +46,22 @@ public interface NotaDao {
     @Query("SELECT notas.* FROM notas INNER JOIN etiquetaNotas ON notas.nota_id = etiquetaNotas.nota_id WHERE etiquetaNotas.etiqueta_id = :idEtiqueta ORDER BY notas.nota_id ASC")
     List<NotaConRelaciones> getNotasDeEtiquetaConRelaciones(int idEtiqueta);
 
+    @Transaction
+    @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid WHERE notas_fts MATCH :consulta ORDER BY notas.nota_id ASC")
+    List<NotaConRelaciones> buscarNotas(String consulta);
+
+    @Transaction
+    @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid " +
+            "INNER JOIN libretaNotas ON notas.nota_id = libretaNotas.nota_id " +
+            "WHERE libretaNotas.libreta_id = :idLibreta AND notas_fts MATCH :consulta ORDER BY notas.nota_id ASC")
+    List<NotaConRelaciones> buscarNotasDeLibreta(int idLibreta, String consulta);
+
+    @Transaction
+    @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid " +
+            "INNER JOIN etiquetaNotas ON notas.nota_id = etiquetaNotas.nota_id " +
+            "WHERE etiquetaNotas.etiqueta_id = :idEtiqueta AND notas_fts MATCH :consulta ORDER BY notas.nota_id ASC")
+    List<NotaConRelaciones> buscarNotasDeEtiqueta(int idEtiqueta, String consulta);
+
     @Query("DELETE FROM notas WHERE nota_id = :id")
     void deleteNotaById(int id);
 

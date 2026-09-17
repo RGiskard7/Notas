@@ -93,4 +93,14 @@ public interface INotaDAO {
      * @param list   lista de salida.
      */
     public void getAllEtiquetasFrom(int idNota, List<Etiqueta> list);
+
+    /**
+     * Busca notas por título o contenido.
+     *
+     * @param consulta   consulta ya preparada para el índice de texto.
+     * @param idLibreta  si no es -1, limita la búsqueda a esa libreta.
+     * @param idEtiqueta si no es -1, limita la búsqueda a esa etiqueta.
+     * @param list       lista de salida.
+     */
+    public void buscarNotas(String consulta, int idLibreta, int idEtiqueta, List<Nota> list);
 }

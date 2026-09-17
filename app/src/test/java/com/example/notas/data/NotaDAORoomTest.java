@@ -199,4 +199,75 @@ public class NotaDAORoomTest {
         assertEquals(1, restantes.size());
         assertEquals("B", restantes.get(0).getTitulo());
     }
+
+    @Test
+    public void buscarNotas_encuentraPorElContenido() {
+        int id = nuevaNotaEnLibretaDefault("Lista", "comprar elefante azul");
+        nuevaNotaEnLibretaDefault("Otra", "texto distinto");
+
+        List<Nota> encontradas = buscar("elefante*");
+
+        assertEquals(1, encontradas.size());
+        assertEquals(id, encontradas.get(0).getId());
+    }
+
+    @Test
+    public void buscarNotas_encuentraPorElTitulo() {
+        int id = nuevaNotaEnLibretaDefault("Receta", "harina y huevos");
+        nuevaNotaEnLibretaDefault("Otra", "sin relación");
+
+        List<Nota> encontradas = buscar("receta*");
+
+        assertEquals(1, encontradas.size());
+        assertEquals(id, encontradas.get(0).getId());
+    }
+
+    @Test
+    public void buscarNotas_respetaElAmbitoDeLaLibreta() {
+        libretaDAO.createLibreta("Trabajo");
+        Libreta trabajo = null;
+        List<Libreta> libretas = new ArrayList<>();
+        libretaDAO.getAllLibretas(libretas);
+        for (Libreta libreta : libretas) {
+            if (libreta.getTitulo().equals("Trabajo")) {
+                trabajo = libreta;
+            }
+        }
+
+        int idEnDefault = nuevaNotaEnLibretaDefault("Informe", "pendiente");
+        int idEnTrabajo = notaDAO.createNota("Informe", "pendiente");
+        libretaDAO.addNotaToLibreta(trabajo.getId(), idEnTrabajo);
+
+        List<Nota> encontradas = new ArrayList<>();
+        notaDAO.buscarNotas("informe*", trabajo.getId(), -1, encontradas);
+
+        assertEquals(1, encontradas.size());
+        assertEquals(idEnTrabajo, encontradas.get(0).getId());
+        assertTrue(idEnDefault != idEnTrabajo);
+    }
+
+    @Test
+    public void buscarNotas_actualizaElIndiceAlEditar() {
+        int id = nuevaNotaEnLibretaDefault("T", "palabra vieja");
+
+        notaDAO.editNota(id, "T", "palabra nueva");
+
+        assertTrue(buscar("vieja*").isEmpty());
+        assertEquals(1, buscar("nueva*").size());
+    }
+
+    @Test
+    public void buscarNotas_actualizaElIndiceAlEliminar() {
+        int id = nuevaNotaEnLibretaDefault("T", "efímero");
+
+        notaDAO.deleteNota(id);
+
+        assertTrue(buscar("efímero*").isEmpty());
+    }
+
+    private List<Nota> buscar(String consulta) {
+        List<Nota> encontradas = new ArrayList<>();
+        notaDAO.buscarNotas(consulta, -1, -1, encontradas);
+        return encontradas;
+    }
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.SavedStateHandle;
 
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.util.ConsultaFts;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ import java.util.List;
  * ViewModel del listado de notas.
  *
  * <p>Recuerda el ámbito desde el que se está listando (todas, una libreta o una
- * etiqueta) y expone las notas como {@code LiveData}, de modo que la vista se
- * actualiza sola al cambiar los datos.</p>
+ * etiqueta) y el texto de búsqueda, y expone las notas como {@code LiveData},
+ * de modo que la vista se actualiza sola al cambiar los datos.</p>
  */
 public class ListNotasViewModel extends AndroidViewModel {
     private static final String CLAVE_CONSULTA = "consulta";
@@ -49,47 +50,39 @@ public class ListNotasViewModel extends AndroidViewModel {
         return notas;
     }
 
+    /** Lista todas las notas (sin ámbito). */
     public void cargarTodas() {
         idLibreta = -1;
         idEtiqueta = -1;
-        repositorio.notasTodas(new NotasRepository.Callback<List<Nota>>() {
-            @Override
-            public void onResult(List<Nota> valor) {
-                notas.setValue(valor);
-            }
-        });
+        buscarInterno();
     }
 
-    public void cargarDeLibreta(final int id) {
+    /** Lista las notas de una libreta. */
+    public void cargarDeLibreta(int id) {
         idLibreta = id;
         idEtiqueta = -1;
-        repositorio.notasDeLibreta(id, new NotasRepository.Callback<List<Nota>>() {
-            @Override
-            public void onResult(List<Nota> valor) {
-                notas.setValue(valor);
-            }
-        });
+        buscarInterno();
     }
 
-    public void cargarDeEtiqueta(final int id) {
+    /** Lista las notas de una etiqueta. */
+    public void cargarDeEtiqueta(int id) {
         idEtiqueta = id;
         idLibreta = -1;
-        repositorio.notasDeEtiqueta(id, new NotasRepository.Callback<List<Nota>>() {
-            @Override
-            public void onResult(List<Nota> valor) {
-                notas.setValue(valor);
-            }
-        });
+        buscarInterno();
     }
 
+    /**
+     * Cambia el texto de búsqueda. Si está vacío se listan todas las notas del
+     * ámbito actual; si no, se busca por título y contenido.
+     */
+    public void buscar(String consulta) {
+        setConsulta(consulta);
+        buscarInterno();
+    }
+
+    /** Vuelve a cargar con el ámbito y la búsqueda actuales. */
     public void recargar() {
-        if (idLibreta != -1) {
-            cargarDeLibreta(idLibreta);
-        } else if (idEtiqueta != -1) {
-            cargarDeEtiqueta(idEtiqueta);
-        } else {
-            cargarTodas();
-        }
+        buscarInterno();
     }
 
     public void eliminar(int id) {
@@ -99,5 +92,27 @@ public class ListNotasViewModel extends AndroidViewModel {
                 recargar();
             }
         });
+    }
+
+    private void buscarInterno() {
+        String consulta = ConsultaFts.paraMatch(getConsulta());
+        NotasRepository.Callback<List<Nota>> callback = new NotasRepository.Callback<List<Nota>>() {
+            @Override
+            public void onResult(List<Nota> valor) {
+                notas.setValue(valor);
+            }
+        };
+
+        if (consulta.isEmpty()) {
+            if (idLibreta != -1) {
+                repositorio.notasDeLibreta(idLibreta, callback);
+            } else if (idEtiqueta != -1) {
+                repositorio.notasDeEtiqueta(idEtiqueta, callback);
+            } else {
+                repositorio.notasTodas(callback);
+            }
+        } else {
+            repositorio.buscarNotas(consulta, idLibreta, idEtiqueta, callback);
+        }
     }
 }

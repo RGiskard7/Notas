@@ -32,9 +32,10 @@ import java.util.Map;
                 NotaEntity.class,
                 EtiquetaEntity.class,
                 LibretaNotaCrossRef.class,
-                EtiquetaNotaCrossRef.class
+                EtiquetaNotaCrossRef.class,
+                NotaFts.class
         },
-        version = 2,
+        version = 3,
         exportSchema = true)
 public abstract class NotasDatabase extends RoomDatabase {
 
@@ -51,6 +52,31 @@ public abstract class NotasDatabase extends RoomDatabase {
             migrarLibretas(db);
             migrarEtiquetas(db);
             migrarNotas(db);
+        }
+    };
+
+    /**
+     * Migración de la versión 2 a la 3: añade el índice FTS de búsqueda.
+     *
+     * <p>La tabla FTS es de contenido externo (apunta a {@code notas}), así que
+     * hay que crearla, crear los disparadores que la mantienen sincronizada y
+     * rellenarla con las notas que ya existían.</p>
+     */
+    static final Migration MIGRACION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS notas_fts USING FTS4(`titulo` TEXT, `texto` TEXT, content=`notas`)");
+            db.execSQL("CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_BEFORE_UPDATE " +
+                    "BEFORE UPDATE ON `notas` BEGIN DELETE FROM `notas_fts` WHERE `docid`=OLD.`rowid`; END");
+            db.execSQL("CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_BEFORE_DELETE " +
+                    "BEFORE DELETE ON `notas` BEGIN DELETE FROM `notas_fts` WHERE `docid`=OLD.`rowid`; END");
+            db.execSQL("CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_AFTER_UPDATE " +
+                    "AFTER UPDATE ON `notas` BEGIN INSERT INTO `notas_fts`(`docid`, `titulo`, `texto`) " +
+                    "VALUES (NEW.`rowid`, NEW.`titulo`, NEW.`texto`); END");
+            db.execSQL("CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_AFTER_INSERT " +
+                    "AFTER INSERT ON `notas` BEGIN INSERT INTO `notas_fts`(`docid`, `titulo`, `texto`) " +
+                    "VALUES (NEW.`rowid`, NEW.`titulo`, NEW.`texto`); END");
+            db.execSQL("INSERT INTO notas_fts(notas_fts) VALUES('rebuild')");
         }
     };
 
@@ -84,7 +110,7 @@ public abstract class NotasDatabase extends RoomDatabase {
         if (db == null) {
             final Context appContext = context.getApplicationContext();
             RoomDatabase.Builder<NotasDatabase> builder = Room.databaseBuilder(appContext, NotasDatabase.class, name)
-                    .addMigrations(MIGRACION_1_2)
+                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3)
                     .addCallback(new Callback() {
                         @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase database) {

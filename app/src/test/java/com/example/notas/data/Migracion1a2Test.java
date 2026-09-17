@@ -24,6 +24,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Comprueba que la migración 1 -> 2 conserva los datos y convierte las fechas
@@ -121,5 +123,16 @@ public class Migracion1a2Test {
         Etiqueta etiqueta = etiquetaDAO.getEtiqueta(1);
         assertEquals("Urgente", etiqueta.getTitulo());
         assertTrue(etiqueta.getFechaCreacion() > 0);
+    }
+
+    @Test
+    public void laMigracionRellenaElIndiceDeBusqueda() {
+        NotaDAORoom notaDAO = new NotaDAORoom(context, DB_NAME);
+
+        List<Nota> encontradas = new ArrayList<>();
+        notaDAO.buscarNotas("leche*", -1, -1, encontradas);
+
+        assertEquals(1, encontradas.size());
+        assertEquals("Compra", encontradas.get(0).getTitulo());
     }
 }

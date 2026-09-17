@@ -127,4 +127,23 @@ public class NotaDAORoom implements INotaDAO {
             list.add(etiqueta);
         }
     }
+
+    @Override
+    public void buscarNotas(String consulta, int idLibreta, int idEtiqueta, List<Nota> list) {
+        list.clear();
+        List<NotaConRelaciones> relaciones;
+        if (idLibreta != -1) {
+            relaciones = dao().buscarNotasDeLibreta(idLibreta, consulta);
+        } else if (idEtiqueta != -1) {
+            relaciones = dao().buscarNotasDeEtiqueta(idEtiqueta, consulta);
+        } else {
+            relaciones = dao().buscarNotas(consulta);
+        }
+
+        Map<Integer, Integer> conteoLibretas = conteosLibretas();
+        Map<Integer, Integer> conteoEtiquetas = conteosEtiquetas();
+        for (NotaConRelaciones relacion : relaciones) {
+            list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
+        }
+    }
 }

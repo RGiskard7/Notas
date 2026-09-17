@@ -28,7 +28,6 @@ import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.FragmentListNotasBinding;
-import com.example.notas.util.FiltroTitulo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,7 +113,7 @@ public class ListNotasFragment extends Fragment {
                 listaNotasCompleta.clear();
                 listaNotasCompleta.addAll(notas);
                 Collections.sort(listaNotasCompleta, POR_FECHA_DESC);
-                aplicarFiltro(viewModel.getConsulta());
+                mostrarNotas();
             }
         });
 
@@ -142,15 +141,9 @@ public class ListNotasFragment extends Fragment {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void aplicarFiltro(String query) {
-        viewModel.setConsulta(query);
+    private void mostrarNotas() {
         listaNotas.clear();
-        listaNotas.addAll(FiltroTitulo.filtrar(listaNotasCompleta, query, new FiltroTitulo.TituloProvider<Nota>() {
-            @Override
-            public String titulo(Nota item) {
-                return item.getTitulo();
-            }
-        }));
+        listaNotas.addAll(listaNotasCompleta);
         if (adaptador != null) {
             adaptador.notifyDataSetChanged();
         }
@@ -202,21 +195,20 @@ public class ListNotasFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                aplicarFiltro(query);
+                viewModel.buscar(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                aplicarFiltro(newText);
+                viewModel.buscar(newText);
                 return true;
             }
         });
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                viewModel.setConsulta("");
-                aplicarFiltro("");
+                viewModel.buscar("");
                 return false;
             }
         });
@@ -267,7 +259,7 @@ public class ListNotasFragment extends Fragment {
 
     private void ordenarYRefrescar(Comparator<Nota> comparador) {
         Collections.sort(listaNotasCompleta, comparador);
-        aplicarFiltro(viewModel.getConsulta());
+        mostrarNotas();
     }
 
     // OPCIONES AL MANTENER PULSADO

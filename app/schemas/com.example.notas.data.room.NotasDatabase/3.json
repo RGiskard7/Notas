@@ -1,0 +1,333 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "4657f9b588018bd4f309d1ce0b6de0b4",
+    "entities": [
+      {
+        "tableName": "libretas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`libreta_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `titulo` TEXT NOT NULL, `fecha_creacion` INTEGER NOT NULL, `fecha_modificacion` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "libreta_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaCreacion",
+            "columnName": "fecha_creacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaModificacion",
+            "columnName": "fecha_modificacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "libreta_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_libretas_titulo",
+            "unique": true,
+            "columnNames": [
+              "titulo"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_libretas_titulo` ON `${TABLE_NAME}` (`titulo`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "notas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`nota_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `titulo` TEXT NOT NULL, `texto` TEXT, `fecha_creacion` INTEGER NOT NULL, `fecha_modificacion` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "nota_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "texto",
+            "columnName": "texto",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fechaCreacion",
+            "columnName": "fecha_creacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaModificacion",
+            "columnName": "fecha_modificacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "nota_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "etiquetas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`etiqueta_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `titulo` TEXT NOT NULL, `fecha_creacion` INTEGER NOT NULL, `fecha_modificacion` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "etiqueta_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaCreacion",
+            "columnName": "fecha_creacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaModificacion",
+            "columnName": "fecha_modificacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "etiqueta_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_etiquetas_titulo",
+            "unique": true,
+            "columnNames": [
+              "titulo"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_etiquetas_titulo` ON `${TABLE_NAME}` (`titulo`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "libretaNotas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`libreta_id` INTEGER NOT NULL, `nota_id` INTEGER NOT NULL, PRIMARY KEY(`libreta_id`, `nota_id`), FOREIGN KEY(`libreta_id`) REFERENCES `libretas`(`libreta_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`nota_id`) REFERENCES `notas`(`nota_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "libretaId",
+            "columnName": "libreta_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notaId",
+            "columnName": "nota_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "libreta_id",
+            "nota_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_libretaNotas_nota_id",
+            "unique": false,
+            "columnNames": [
+              "nota_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_libretaNotas_nota_id` ON `${TABLE_NAME}` (`nota_id`)"
+          },
+          {
+            "name": "index_libretaNotas_libreta_id",
+            "unique": false,
+            "columnNames": [
+              "libreta_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_libretaNotas_libreta_id` ON `${TABLE_NAME}` (`libreta_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "libretas",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "libreta_id"
+            ],
+            "referencedColumns": [
+              "libreta_id"
+            ]
+          },
+          {
+            "table": "notas",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "nota_id"
+            ],
+            "referencedColumns": [
+              "nota_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "etiquetaNotas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`etiqueta_id` INTEGER NOT NULL, `nota_id` INTEGER NOT NULL, PRIMARY KEY(`etiqueta_id`, `nota_id`), FOREIGN KEY(`etiqueta_id`) REFERENCES `etiquetas`(`etiqueta_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`nota_id`) REFERENCES `notas`(`nota_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "etiquetaId",
+            "columnName": "etiqueta_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notaId",
+            "columnName": "nota_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "etiqueta_id",
+            "nota_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_etiquetaNotas_nota_id",
+            "unique": false,
+            "columnNames": [
+              "nota_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_etiquetaNotas_nota_id` ON `${TABLE_NAME}` (`nota_id`)"
+          },
+          {
+            "name": "index_etiquetaNotas_etiqueta_id",
+            "unique": false,
+            "columnNames": [
+              "etiqueta_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_etiquetaNotas_etiqueta_id` ON `${TABLE_NAME}` (`etiqueta_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "etiquetas",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "etiqueta_id"
+            ],
+            "referencedColumns": [
+              "etiqueta_id"
+            ]
+          },
+          {
+            "table": "notas",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "nota_id"
+            ],
+            "referencedColumns": [
+              "nota_id"
+            ]
+          }
+        ]
+      },
+      {
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "simple",
+          "tokenizerArgs": [],
+          "contentTable": "notas",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_BEFORE_UPDATE BEFORE UPDATE ON `notas` BEGIN DELETE FROM `notas_fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_BEFORE_DELETE BEFORE DELETE ON `notas` BEGIN DELETE FROM `notas_fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_AFTER_UPDATE AFTER UPDATE ON `notas` BEGIN INSERT INTO `notas_fts`(`docid`, `titulo`, `texto`) VALUES (NEW.`rowid`, NEW.`titulo`, NEW.`texto`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notas_fts_AFTER_INSERT AFTER INSERT ON `notas` BEGIN INSERT INTO `notas_fts`(`docid`, `titulo`, `texto`) VALUES (NEW.`rowid`, NEW.`titulo`, NEW.`texto`); END"
+        ],
+        "tableName": "notas_fts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`titulo` TEXT, `texto` TEXT, content=`notas`)",
+        "fields": [
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "texto",
+            "columnName": "texto",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": []
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4657f9b588018bd4f309d1ce0b6de0b4')"
+    ]
+  }
+}

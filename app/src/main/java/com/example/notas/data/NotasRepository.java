@@ -161,6 +161,26 @@ public class NotasRepository {
         }, callback);
     }
 
+    /**
+     * Busca notas por título o contenido.
+     *
+     * @param consulta   consulta ya preparada para el índice de texto.
+     * @param idLibreta  si no es -1, limita la búsqueda a esa libreta.
+     * @param idEtiqueta si no es -1, limita la búsqueda a esa etiqueta.
+     * @param callback   recibe las notas encontradas.
+     */
+    public void buscarNotas(final String consulta, final int idLibreta, final int idEtiqueta,
+                            Callback<List<Nota>> callback) {
+        leer(new Tarea<List<Nota>>() {
+            @Override
+            public List<Nota> ejecutar() {
+                List<Nota> lista = new ArrayList<>();
+                notaDAO.buscarNotas(consulta, idLibreta, idEtiqueta, lista);
+                return lista;
+            }
+        }, callback);
+    }
+
     /** Carga todas las libretas con su recuento de notas. */
     public void libretas(Callback<List<Libreta>> callback) {
         leer(new Tarea<List<Libreta>>() {
