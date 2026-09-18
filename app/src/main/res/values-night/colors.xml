@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta (modo oscuro) -->
+    <color name="primary">#4DB6AC</color>
+    <color name="primary_dark">#00796B</color>
+    <color name="secondary">#F06292</color>
+    <color name="on_primary">#00251F</color>
+    <color name="on_secondary">#3E001D</color>
+
+    <color name="surface">#1E1E1E</color>
+    <color name="background">#121212</color>
+    <color name="on_surface">#E4E7EB</color>
+    <color name="on_surface_secondary">#9AA5B1</color>
+    <color name="divider">#2C2C2C</color>
+</resources>

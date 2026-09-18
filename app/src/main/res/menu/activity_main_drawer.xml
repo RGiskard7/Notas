@@ -3,32 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/allNotas"
-            android:icon="@mipmap/ic_nota3_foreground"
-            android:title="@string/todas_las_notas">
-
-        </item>
+            android:icon="@drawable/ic_notas"
+            android:title="@string/todas_las_notas" />
 
         <item
             android:id="@+id/allLibretas"
-            android:icon="@mipmap/ic_libreta3_foreground"
-            android:title="@string/libretas">
-        </item>
+            android:icon="@drawable/ic_libretas"
+            android:title="@string/libretas" />
 
         <item
             android:id="@+id/allEtiquetas"
-            android:icon="@mipmap/ic_etiqueta2_foreground"
-            android:title="@string/etiquetas">
-        </item>
+            android:icon="@drawable/ic_etiquetas"
+            android:title="@string/etiquetas" />
 
         <item
             android:id="@+id/allPapelera"
-            android:icon="@android:drawable/ic_menu_delete"
-            android:title="@string/papelera">
-        </item>
+            android:icon="@drawable/ic_papelera"
+            android:title="@string/papelera" />
     </group>
+
+    <item
+        android:id="@+id/allAjustes"
+        android:icon="@drawable/ic_ajustes"
+        android:title="@string/ajustes" />
 
 </menu>

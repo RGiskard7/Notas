@@ -14,14 +14,9 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.notas.UI.AdaptadorListLibretas;
 import com.example.notas.UI.EditNotaViewModel;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
@@ -31,6 +26,7 @@ import com.example.notas.util.EtiquetaSelection;
 import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Vinietas;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,9 +46,8 @@ public class EditNotaActivity extends AppCompatActivity {
     private Libreta oldLibreta;
     private EditText titulo;
     private EditText texto;
-    private Spinner spinnerLibretas;
-    private ImageButton buttonEtiquetas;
-    private TextView numEtiquetas;
+    private Chip chipLibreta;
+    private Chip chipEtiquetas;
     private BottomNavigationView bottomNavigationView;
     private boolean editando = false;
     private List<Libreta> allLibretas;
@@ -85,7 +80,7 @@ public class EditNotaActivity extends AppCompatActivity {
         viewModel.getLibretas().observe(this, new Observer<List<Libreta>>() {
             @Override
             public void onChanged(List<Libreta> libretas) {
-                actualizarSpinner(libretas);
+                actualizarLibreta(libretas);
             }
         });
         viewModel.getEtiquetas().observe(this, new Observer<List<Etiqueta>>() {
@@ -102,7 +97,7 @@ public class EditNotaActivity extends AppCompatActivity {
                 currentEtiquetasNota.addAll(etiquetas);
                 originalEtiquetasNota.clear();
                 originalEtiquetasNota.addAll(etiquetas);
-                numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+                actualizarEtiquetasChip();
             }
         });
 
@@ -123,9 +118,8 @@ public class EditNotaActivity extends AppCompatActivity {
 
         titulo = binding.editTextTituloNwNota;
         texto = binding.editTextContenidoNwNota;
-        spinnerLibretas = binding.spinnerOpcionLibretas;
-        buttonEtiquetas = binding.buttonEtiquetas;
-        numEtiquetas = binding.textView3;
+        chipLibreta = binding.chipLibreta;
+        chipEtiquetas = binding.chipEtiquetas;
         bottomNavigationView = binding.bottomNavigation;
 
         fillComponents();
@@ -139,15 +133,17 @@ public class EditNotaActivity extends AppCompatActivity {
         } else {
             getSupportActionBar().setTitle(R.string.nueva_nota);
         }
-        numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+        actualizarEtiquetasChip();
     }
 
-    private void actualizarSpinner(List<Libreta> libretas) {
+    /** Actualiza el chip que muestra el número de etiquetas de la nota. */
+    private void actualizarEtiquetasChip() {
+        chipEtiquetas.setText(getString(R.string.etiquetas) + " (" + currentEtiquetasNota.size() + ")");
+    }
+
+    private void actualizarLibreta(List<Libreta> libretas) {
         allLibretas.clear();
         allLibretas.addAll(libretas);
-
-        AdaptadorListLibretas adaptador = new AdaptadorListLibretas(getApplicationContext(), allLibretas);
-        spinnerLibretas.setAdapter(adaptador);
 
         int indice = -1;
         if (editando && oldLibreta != null) {
@@ -156,9 +152,18 @@ public class EditNotaActivity extends AppCompatActivity {
             Libreta padre = (Libreta) getIntent().getExtras().get("libretaPadre");
             indice = indiceDe(padre.getId());
         }
-        if (indice >= 0) {
-            spinnerLibretas.setSelection(indice);
+        if (indice < 0 && !allLibretas.isEmpty()) {
+            indice = 0;
         }
+        if (indice >= 0) {
+            seleccionarLibreta(indice);
+        }
+    }
+
+    /** Fija la libreta seleccionada y lo refleja en el chip. */
+    void seleccionarLibreta(int indice) {
+        libreta = allLibretas.get(indice);
+        chipLibreta.setText(libreta.getTitulo());
     }
 
     private int indiceDe(int idLibreta) {
@@ -171,50 +176,17 @@ public class EditNotaActivity extends AppCompatActivity {
     }
 
     public void eventRecorder() {
-        spinnerLibretas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        chipLibreta.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                libreta = (Libreta) parent.getItemAtPosition(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onClick(View view) {
+                elegirLibreta();
             }
         });
 
-        buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
+        chipEtiquetas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!allEtiquetas.isEmpty()) {
-                    final String[] etiquetasName = new String[allEtiquetas.size()];
-                    final boolean[] checkedEtiquetas = new boolean[allEtiquetas.size()];
-
-                    for (int i = 0; i < allEtiquetas.size(); i++) {
-                        etiquetasName[i] = allEtiquetas.get(i).getTitulo();
-                        checkedEtiquetas[i] = currentEtiquetasNota.contains(allEtiquetas.get(i));
-                    }
-
-                    AlertDialog.Builder builderDialog = new AlertDialog.Builder(EditNotaActivity.this);
-                    builderDialog.setTitle(R.string.elige_etiquetas);
-                    builderDialog.setMultiChoiceItems(etiquetasName, checkedEtiquetas, null);
-
-                    builderDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            EtiquetaSelection.Diff diff = EtiquetaSelection.calcular(currentEtiquetasNota, allEtiquetas, checkedEtiquetas);
-                            currentEtiquetasNota.removeAll(diff.quitadas);
-                            currentEtiquetasNota.addAll(diff.anadidas);
-                            numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
-                        }
-                    });
-
-                    builderDialog.setNegativeButton(R.string.cancelar, null);
-
-                    AlertDialog dialog = builderDialog.create();
-                    dialog.show();
-                } else {
-                    Toast.makeText(EditNotaActivity.this, R.string.no_etiquetas_disponibles, Toast.LENGTH_SHORT).show();
-                }
+                elegirEtiquetas();
             }
         });
 
@@ -235,6 +207,63 @@ public class EditNotaActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+    }
+
+    /** Muestra la lista de libretas para elegir una. */
+    private void elegirLibreta() {
+        if (allLibretas.isEmpty()) {
+            return;
+        }
+
+        final String[] nombres = new String[allLibretas.size()];
+        int seleccionada = 0;
+        for (int i = 0; i < allLibretas.size(); i++) {
+            nombres[i] = allLibretas.get(i).getTitulo();
+            if (libreta != null && allLibretas.get(i).getId() == libreta.getId()) {
+                seleccionada = i;
+            }
+        }
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle(R.string.libreta);
+        dialog.setSingleChoiceItems(nombres, seleccionada, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int which) {
+                seleccionarLibreta(which);
+                d.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    /** Muestra el diálogo para marcar y desmarcar etiquetas. */
+    private void elegirEtiquetas() {
+        if (allEtiquetas.isEmpty()) {
+            Toast.makeText(EditNotaActivity.this, R.string.no_etiquetas_disponibles, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final String[] etiquetasName = new String[allEtiquetas.size()];
+        final boolean[] checkedEtiquetas = new boolean[allEtiquetas.size()];
+        for (int i = 0; i < allEtiquetas.size(); i++) {
+            etiquetasName[i] = allEtiquetas.get(i).getTitulo();
+            checkedEtiquetas[i] = currentEtiquetasNota.contains(allEtiquetas.get(i));
+        }
+
+        AlertDialog.Builder builderDialog = new AlertDialog.Builder(this);
+        builderDialog.setTitle(R.string.elige_etiquetas);
+        builderDialog.setMultiChoiceItems(etiquetasName, checkedEtiquetas, null);
+        builderDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                EtiquetaSelection.Diff diff = EtiquetaSelection.calcular(currentEtiquetasNota, allEtiquetas, checkedEtiquetas);
+                currentEtiquetasNota.removeAll(diff.quitadas);
+                currentEtiquetasNota.addAll(diff.anadidas);
+                actualizarEtiquetasChip();
+            }
+        });
+        builderDialog.setNegativeButton(R.string.cancelar, null);
+        builderDialog.create().show();
     }
 
     private void insertarVinieta() {

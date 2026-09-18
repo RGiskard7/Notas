@@ -6,9 +6,10 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.widget.EditText;
-import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.example.notas.data.FactoryDAO;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +71,10 @@ public class EditNotaActivityTest {
     }
 
     private void seleccionarPrimeraLibreta(EditNotaActivity activity) {
-        Spinner spinner = activity.findViewById(R.id.spinnerOpcionLibretas);
-        spinner.setSelection(0, true);
+        activity.findViewById(R.id.chipLibreta).performClick();
+        AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
+        dialog.getListView().performItemClick(null, 0, 0);
+        shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test

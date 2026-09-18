@@ -11,6 +11,7 @@ import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
 import com.example.notas.UI.ListPapeleraFragment;
+import com.example.notas.ajustes.AjustesActivity;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
@@ -146,6 +147,10 @@ public class MainActivity extends AppCompatActivity {
                 } else if (menuItem.getItemId() == R.id.allPapelera) {
                     fragment = new ListPapeleraFragment();
                     fragmentSelected = true;
+                } else if (menuItem.getItemId() == R.id.allAjustes) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                    startActivity(new Intent(MainActivity.this, AjustesActivity.class));
+                    return true;
                 }
 
                 if (fragmentSelected) {

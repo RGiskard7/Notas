@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -87,6 +88,9 @@ public class ListEtiquetasFragment extends Fragment {
         if (adaptador != null) {
             adaptador.notifyDataSetChanged();
         }
+        if (binding != null) {
+            binding.textViewVacio.setVisibility(listaEtiquetas.isEmpty() ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void createComponents(View view) {
@@ -107,6 +111,7 @@ public class ListEtiquetasFragment extends Fragment {
         });
         recyclerView = binding.listViewEtiquetas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(adaptador);
     }
 

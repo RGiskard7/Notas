@@ -1,0 +1,6 @@
+<resources>
+
+    <!-- En modo oscuro, el menú desplegable también es oscuro. -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark" />
+
+</resources>

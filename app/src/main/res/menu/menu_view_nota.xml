@@ -5,64 +5,44 @@
     tools:context="com.example.notas.ViewNotaActivity">
 
     <item
-        android:id="@+id/action_Eliminar"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="100"
-        android:title="@string/eliminar"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_Editar"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/ic_editar"
         android:orderInCategory="100"
         android:title="@string/editar"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_adjuntar"
+        android:id="@+id/action_Eliminar"
+        android:icon="@drawable/ic_eliminar"
         android:orderInCategory="101"
+        android:title="@string/eliminar"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_adjuntar"
+        android:icon="@drawable/ic_adjuntar"
+        android:orderInCategory="102"
         android:title="@string/adjuntar_imagen"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_recordatorio"
-        android:orderInCategory="102"
+        android:icon="@drawable/ic_recordatorio"
+        android:orderInCategory="103"
         android:title="@string/recordatorio"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_quitar_recordatorio"
-        android:orderInCategory="103"
+        android:icon="@drawable/ic_recordatorio"
+        android:orderInCategory="104"
         android:title="@string/quitar_recordatorio"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_exportar"
-        android:orderInCategory="104"
+        android:icon="@drawable/ic_exportar"
+        android:orderInCategory="105"
         android:title="@string/exportar"
         app:showAsAction="never" />
-
-
-    <!--<item
-        android:id="@+id/action_exportar"
-        android:title="Exportar"
-        android:orderInCategory="100" >
-
-        <menu>
-            <item
-                android:id="@+id/action_export_txt"
-                android:title="Archivo TXT"
-                android:orderInCategory="100"/>
-
-            <item
-                android:id="@+id/action_export_pdf"
-                android:title="Archivo PDF"
-                android:orderInCategory="100" />
-        </menu>
-    </item>
-
-    <item
-        android:id="@+id/action_duplicar"
-        android:orderInCategory="100"
-        android:title="Duplicar" />-->
 </menu>

@@ -1,39 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     tools:context=".ViewNotaActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/textViewTituloNota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textViewFechaNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textStyle="italic" />
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_surface_secondary"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/textViewFechaModificacion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/on_surface_secondary"
             android:textSize="12sp"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textStyle="italic"
             android:visibility="gone"
             tools:text="Modificada: 01/01/2020 - 12:00" />
 
@@ -41,91 +44,63 @@
             android:id="@+id/textViewRecordatorio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/primary"
             android:textSize="13sp"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
-            android:textAlignment="center"
             android:textStyle="bold"
             android:visibility="gone"
             tools:text="Recordatorio: 01/01/2020 - 12:00" />
 
-        <TextView
-            android:id="@+id/textViewTituloNota"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:ems="10"
-            android:textSize="24sp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="15dp" />
+            android:layout_marginTop="8dp"
+            android:scrollbars="none">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="1dp"
-            android:layout_marginBottom="15dp">
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:contentDescription="@string/libretas"
-                app:srcCompat="@mipmap/ic_libreta3_foreground" />
-
-            <TextView
-                android:id="@+id/textViewLibretaNota"
+            <com.google.android.material.chip.ChipGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="2dp"
-                android:drawablePadding="5dp"
-                android:ems="10"
-                android:scrollbars="vertical"
-                android:textSize="15sp"
-                android:textStyle="normal" />
+                app:singleLine="true">
 
-            <ImageButton
-                android:id="@+id/buttonEtiquetas"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:layout_marginStart="2dp"
-                android:background="@null"
-                android:scaleType="fitXY"
-                android:contentDescription="@string/etiquetas"
-                app:srcCompat="@mipmap/ic_etiqueta2_foreground" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/textViewLibretaNota"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="false"
+                    app:chipIcon="@drawable/ic_libretas"
+                    app:chipIconTint="@color/on_surface" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:textStyle="normal"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="2dp"
-                tools:text="0"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/textView3"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="false"
+                    app:chipIcon="@drawable/ic_etiquetas"
+                    app:chipIconTint="@color/on_surface" />
 
-        </LinearLayout>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
 
-        <View style="@style/Divider"/>
+        <View
+            style="@style/Divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
 
         <TextView
             android:id="@+id/textViewTextoNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:textSize="18sp"
-            android:scrollbars = "vertical"
-            android:textStyle="normal"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp" />
+            android:lineSpacingMultiplier="1.15"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:id="@+id/contenedorAdjuntos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginTop="16dp" />
+
     </LinearLayout>
 </ScrollView>

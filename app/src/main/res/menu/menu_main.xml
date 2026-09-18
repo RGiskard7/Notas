@@ -3,37 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.notas.MainActivity">
 
-    <!--<item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />-->
-
     <item
         android:id="@+id/app_bar_search"
-        android:title="@string/buscar"
-        android:icon="@drawable/ic_search_black_24dp"
+        android:icon="@drawable/ic_buscar"
         android:orderInCategory="100"
+        android:title="@string/buscar"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
-            android:id="@+id/action_filtrar"
-            android:title="@string/ordenar_por"
-            android:orderInCategory="100" >
+        android:id="@+id/action_filtrar"
+        android:icon="@drawable/ic_ordenar"
+        android:orderInCategory="100"
+        android:title="@string/ordenar_por">
 
-            <menu>
-                <item
-                    android:id="@+id/action_filtrar_fecha_asc"
-                    android:orderInCategory="100"
-                    android:title="@string/ordenar_fecha_asc" />
+        <menu>
+            <item
+                android:id="@+id/action_filtrar_fecha_asc"
+                android:orderInCategory="100"
+                android:title="@string/ordenar_fecha_asc" />
 
-                <item
-                    android:id="@+id/action_filtrar_fecha_des"
-                    android:orderInCategory="100"
-                    android:title="@string/ordenar_fecha_des" />
+            <item
+                android:id="@+id/action_filtrar_fecha_des"
+                android:orderInCategory="100"
+                android:title="@string/ordenar_fecha_des" />
 
-                <item
+            <item
                 android:id="@+id/action_filtrar_titulo_asc"
                 android:orderInCategory="100"
                 android:title="@string/ordenar_titulo_asc" />
@@ -53,36 +48,40 @@
                 android:orderInCategory="100"
                 android:title="@string/ordenar_recuento_des" />
         </menu>
-
     </item>
 
     <item
         android:id="@+id/action_importar"
-        android:orderInCategory="100"
+        android:icon="@drawable/ic_importar"
+        android:orderInCategory="101"
         android:title="@string/importar"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_establecer_pin"
-        android:orderInCategory="101"
+        android:icon="@drawable/ic_bloquear"
+        android:orderInCategory="102"
         android:title="@string/establecer_pin"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_quitar_pin"
-        android:orderInCategory="102"
+        android:icon="@drawable/ic_bloquear"
+        android:orderInCategory="103"
         android:title="@string/quitar_pin"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_bloquear"
-        android:orderInCategory="103"
+        android:icon="@drawable/ic_bloquear"
+        android:orderInCategory="105"
         android:title="@string/bloquear_ahora"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_salir"
-        android:orderInCategory="104"
+        android:icon="@drawable/ic_salir"
+        android:orderInCategory="106"
         android:title="@string/salir"
         app:showAsAction="never" />
 

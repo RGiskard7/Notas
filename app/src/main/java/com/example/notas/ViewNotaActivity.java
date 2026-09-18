@@ -78,7 +78,6 @@ public class ViewNotaActivity extends AppCompatActivity {
     private Nota nota;
     private Libreta libreta;
     private List<Etiqueta> currentEtiquetasNota;
-    private ImageButton buttonEtiquetas;
     private LinearLayout contenedorAdjuntos;
     private ViewNotaViewModel viewModel;
 
@@ -122,7 +121,7 @@ public class ViewNotaActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Etiqueta> etiquetas) {
                 currentEtiquetasNota = etiquetas;
-                numEtiquetas.setText(Integer.toString(currentEtiquetasNota.size()));
+                numEtiquetas.setText(getString(R.string.etiquetas) + " (" + currentEtiquetasNota.size() + ")");
             }
         });
         viewModel.getNota().observe(this, new Observer<Nota>() {
@@ -161,7 +160,6 @@ public class ViewNotaActivity extends AppCompatActivity {
         textViewRecordatorio = binding.textViewRecordatorio;
         txlibreta = binding.textViewLibretaNota;
         numEtiquetas = binding.textView3;
-        buttonEtiquetas = binding.buttonEtiquetas;
         currentEtiquetasNota = new ArrayList<>();
         contenedorAdjuntos = binding.contenedorAdjuntos;
     }
@@ -184,7 +182,7 @@ public class ViewNotaActivity extends AppCompatActivity {
     }
 
     public void eventRecorder() {
-        buttonEtiquetas.setOnClickListener(new View.OnClickListener() {
+        numEtiquetas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!currentEtiquetasNota.isEmpty()) {

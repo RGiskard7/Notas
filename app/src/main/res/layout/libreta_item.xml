@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/selectableItemBackground"
+    android:paddingStart="16dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="14dp">
 
     <TextView
         android:id="@+id/textViewTitulo2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="1dp"
-        android:textSize="15sp"
-        android:singleLine="true"
         android:ellipsize="end"
+        android:singleLine="true"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewNotas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
         android:layout_marginTop="2dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
-        android:textSize="12sp"
-        android:textStyle="italic"/>
+        android:textColor="@color/on_surface_secondary"
+        android:textSize="13sp" />
 
 </LinearLayout>

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -149,6 +150,9 @@ public class ListNotasFragment extends Fragment {
         if (adaptador != null) {
             adaptador.notifyDataSetChanged();
         }
+        if (binding != null) {
+            binding.textViewVacio.setVisibility(listaNotas.isEmpty() ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void createComponents(View view) {
@@ -179,6 +183,7 @@ public class ListNotasFragment extends Fragment {
         });
         recyclerView = binding.listViewNotas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(adaptador);
     }
 

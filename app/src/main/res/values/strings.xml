@@ -24,6 +24,15 @@
     <string name="pin_guardado">PIN guardado</string>
     <string name="pin_quitado">PIN quitado</string>
     <string name="pin_corto">El PIN debe tener al menos 4 dígitos</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="apariencia">Apariencia</string>
+    <string name="tema_sistema">Según el sistema</string>
+    <string name="tema_claro">Claro</string>
+    <string name="tema_oscuro">Oscuro</string>
+    <string name="acerca_de">Acerca de</string>
+    <string name="version">Versión %1$s</string>
+    <string name="autor">Hecho por Eduardo Díaz Sánchez</string>
+    <string name="descripcion_app">Aplicación de notas con libretas, etiquetas, búsqueda, recordatorios y adjuntos.</string>
 
     <!-- Strings used for nav_header_main.xml -->
     <string name="textViewNav">Nevernote</string>
@@ -45,6 +54,10 @@
     <!-- Títulos de pantalla -->
     <string name="nueva_nota">Nueva nota</string>
     <string name="editar_nota">Editar nota</string>
+    <string name="libreta">Libreta</string>
+    <string name="sin_notas">Todavía no hay notas</string>
+    <string name="sin_libretas">Todavía no hay libretas</string>
+    <string name="sin_etiquetas">Todavía no hay etiquetas</string>
     <string name="ver_nota">Nota</string>
     <string name="nueva_libreta">Nueva libreta</string>
     <string name="editar_libreta">Editar libreta</string>

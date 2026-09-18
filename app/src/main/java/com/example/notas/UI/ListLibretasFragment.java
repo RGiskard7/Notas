@@ -19,6 +19,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -86,6 +87,9 @@ public class ListLibretasFragment extends Fragment {
         if (adaptador != null) {
             adaptador.notifyDataSetChanged();
         }
+        if (binding != null) {
+            binding.textViewVacio.setVisibility(listaLibretas.isEmpty() ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void createComponents(View view) {
@@ -105,6 +109,7 @@ public class ListLibretasFragment extends Fragment {
         });
         recyclerView = binding.listViewLibretas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(adaptador);
     }
 

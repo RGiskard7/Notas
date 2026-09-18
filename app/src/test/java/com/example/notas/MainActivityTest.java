@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Looper;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,7 @@ import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
 import com.example.notas.UI.ListPapeleraFragment;
+import com.example.notas.ajustes.AjustesActivity;
 import com.example.notas.data.FactoryDAO;
 import com.example.notas.data.ILibretaDAO;
 import com.example.notas.data.INotaDAO;
@@ -194,6 +197,38 @@ public class MainActivityTest {
         assertTrue(restaurado instanceof ListNotasFragment);
         assertNotNull(((ListNotasFragment) restaurado).getLibreta());
         assertEquals(idLibreta, ((ListNotasFragment) restaurado).getLibreta().getId());
+    }
+
+    @Test
+    public void sinNotas_muestraElMensajeDeListaVacia() {
+        MainActivity activity = lanzar();
+        ListNotasFragment fragment = (ListNotasFragment) fragmentActual(activity);
+
+        TextView vacio = fragment.getView().findViewById(R.id.textViewVacio);
+        assertEquals(View.VISIBLE, vacio.getVisibility());
+    }
+
+    @Test
+    public void conNotas_ocultaElMensajeDeListaVacia() {
+        int id = notaDAO.createNota("T", "X");
+        libretaDAO.addNotaToLibreta(1, id);
+
+        MainActivity activity = lanzar();
+        ListNotasFragment fragment = (ListNotasFragment) fragmentActual(activity);
+
+        TextView vacio = fragment.getView().findViewById(R.id.textViewVacio);
+        assertEquals(View.GONE, vacio.getVisibility());
+    }
+
+    @Test
+    public void seleccionarAjustesEnElMenuLateral_abreLaPantalla() {
+        MainActivity activity = lanzar();
+
+        seleccionarMenu(activity, R.id.allAjustes);
+
+        Intent siguiente = shadowOf(activity).getNextStartedActivity();
+        assertNotNull(siguiente);
+        assertEquals(AjustesActivity.class.getName(), siguiente.getComponent().getClassName());
     }
 
     @Test
