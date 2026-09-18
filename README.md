@@ -1,7 +1,8 @@
-# Nevernote
+# Inkpot
 
-Aplicación Android de notas personales: notas organizadas en libretas y etiquetadas,
-con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
+Aplicación Android de notas personales, libre y sin dependencias de terceros: notas
+organizadas en libretas y etiquetadas, con búsqueda, formato Markdown, recordatorios y
+adjuntos. Todo se guarda en el dispositivo.
 
 ## Funcionalidad
 
@@ -51,7 +52,7 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 ## Arquitectura
 
 ```
-com.example.notas
+com.inkpot.app
 ├── MainActivity            Drawer + fragments (notas / libretas / etiquetas)
 ├── EditNotaActivity        Crear y editar notas
 ├── ViewNotaActivity        Ver, editar y eliminar una nota
@@ -111,7 +112,7 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 ## Notas
 
 - `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
-- Paquete `com.example.notas`; `app_name` "Nevernote".
+- Paquete `com.inkpot.app`; `app_name` "Inkpot".
 - Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS), 3->4 (papelera),
   4->5 (adjuntos), 5->6 (recordatorios) y 6->7 (fijadas y color), con tests.
 - El bloqueo con PIN no cifra los datos: la base de datos sigue sin cifrar.

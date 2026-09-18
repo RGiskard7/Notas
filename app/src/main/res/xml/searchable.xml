@@ -2,7 +2,7 @@
 <searchable xmlns:android="http://schemas.android.com/apk/res/android"
     android:label="@string/app_name"
     android:hint="@string/search_hint"
-    android:searchSuggestAuthority="com.example.notas.busquedas"
+    android:searchSuggestAuthority="com.inkpot.app.busquedas"
     android:searchSuggestSelection=" ?"
     android:searchSuggestThreshold="0"
     android:voiceSearchMode="showVoiceSearchButton|launchRecognizer" >

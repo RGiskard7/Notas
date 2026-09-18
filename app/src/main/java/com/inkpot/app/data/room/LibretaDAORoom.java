@@ -1,0 +1,98 @@
+package com.inkpot.app.data.room;
+
+import android.content.Context;
+
+import com.inkpot.app.data.Etiqueta;
+import com.inkpot.app.data.ILibretaDAO;
+import com.inkpot.app.data.Libreta;
+import com.inkpot.app.data.Nota;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Implementación de {@link ILibretaDAO} sobre Room.
+ */
+public class LibretaDAORoom implements ILibretaDAO {
+    private final Context context;
+    private final String name;
+
+    public LibretaDAORoom(Context context, String name) {
+        this.context = context.getApplicationContext();
+        this.name = name;
+    }
+
+    private LibretaDao dao() {
+        return NotasDatabase.get(context, name).libretaDao();
+    }
+
+    private NotaDao notaDao() {
+        return NotasDatabase.get(context, name).notaDao();
+    }
+
+    private long ahora() {
+        return System.currentTimeMillis();
+    }
+
+    @Override
+    public void createLibreta(String titulo) {
+        long ahora = ahora();
+        dao().insertLibreta(new LibretaEntity(0, titulo, ahora, ahora));
+    }
+
+    @Override
+    public void closeDB() {
+        NotasDatabase.close(name);
+    }
+
+    @Override
+    public Boolean existTitulo(String titulo) {
+        return dao().countByTitulo(titulo) > 0;
+    }
+
+    @Override
+    public Libreta getLibreta(int id) {
+        LibretaConRelaciones relacion = dao().getLibretaConRelaciones(id);
+        return relacion == null ? null : Mapper.toLibreta(relacion);
+    }
+
+    @Override
+    public void deleteLibreta(int id) {
+        dao().deleteLibretaById(id);
+    }
+
+    @Override
+    public void addNotaToLibreta(int idLibreta, int idNota) {
+        dao().insertLibretaNota(new LibretaNotaCrossRef(idLibreta, idNota));
+    }
+
+    @Override
+    public void editLibreta(int id, String titulo) {
+        LibretaEntity entity = dao().getLibretaById(id);
+        if (entity == null) {
+            return;
+        }
+        entity.titulo = titulo;
+        entity.fechaModificacion = ahora();
+        dao().updateLibreta(entity);
+    }
+
+    @Override
+    public void getAllLibretas(List<Libreta> list) {
+        list.clear();
+        for (LibretaConRelaciones relacion : dao().getAllLibretasConRelaciones()) {
+            list.add(Mapper.toLibreta(relacion));
+        }
+    }
+
+    @Override
+    public void getAllNotasFrom(int idLibreta, List<Nota> list) {
+        list.clear();
+        Map<Integer, Integer> conteoLibretas = Mapper.aMapa(notaDao().conteosDeLibretas());
+        Map<Integer, Integer> conteoEtiquetas = Mapper.aMapa(notaDao().conteosDeEtiquetas());
+        for (NotaConRelaciones relacion : notaDao().getNotasDeLibretaConRelaciones(idLibreta)) {
+            list.add(Mapper.toNota(relacion, conteoLibretas, conteoEtiquetas));
+        }
+    }
+}
