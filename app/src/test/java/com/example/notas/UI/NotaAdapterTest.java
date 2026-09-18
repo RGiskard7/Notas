@@ -99,4 +99,19 @@ public class NotaAdapterTest {
 
         assertTrue(((MaterialCardView) holder.itemView).isChecked());
     }
+
+    @Test
+    public void submit_actualizaElContenidoSinRehacerloTodo() {
+        Context context = new ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.AppTheme);
+        List<Nota> notas = new ArrayList<>();
+        notas.add(new Nota(1, "Uno", "a", null, new ArrayList<Etiqueta>(), 0L));
+        notas.add(new Nota(2, "Dos", "b", null, new ArrayList<Etiqueta>(), 0L));
+        NotaAdapter adaptador = new NotaAdapter(notas, null);
+
+        List<Nota> nuevas = new ArrayList<>();
+        nuevas.add(notas.get(1));
+        adaptador.submit(nuevas);
+
+        assertEquals(1, adaptador.getItemCount());
+    }
 }

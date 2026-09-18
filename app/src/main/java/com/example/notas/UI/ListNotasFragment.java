@@ -1,14 +1,16 @@
 package com.example.notas.UI;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -134,6 +136,7 @@ public class ListNotasFragment extends Fragment {
     private ListNotasViewModel viewModel;
     private String ordenActual;
     private boolean modoSeleccion;
+    private boolean hapticoDeslizamiento;
 
     public ListNotasFragment() {
         libreta = null;
@@ -227,12 +230,11 @@ public class ListNotasFragment extends Fragment {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void mostrarNotas() {
         listaNotas.clear();
         listaNotas.addAll(listaNotasCompleta);
         if (adaptador != null) {
-            adaptador.notifyDataSetChanged();
+            adaptador.submit(listaNotas);
         }
         if (binding != null) {
             binding.textViewVacio.setVisibility(listaNotas.isEmpty() ? View.VISIBLE : View.GONE);
@@ -288,17 +290,39 @@ public class ListNotasFragment extends Fragment {
 
     /** Permite enviar una nota a la papelera deslizándola, con opción de deshacer. */
     private void configurarDeslizar() {
-        final ColorDrawable fondo = new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.eliminar));
+        final float densidad = getResources().getDisplayMetrics().density;
+
+        final GradientDrawable fondo = new GradientDrawable();
+        fondo.setColor(ContextCompat.getColor(getActivity(), R.color.eliminar));
+        fondo.setCornerRadius(14 * densidad);
+
         final Drawable icono = ContextCompat.getDrawable(getActivity(), R.drawable.ic_eliminar).mutate();
         icono.setTint(Color.WHITE);
-        final int tamIcono = (int) (28 * getResources().getDisplayMetrics().density);
-        final int margenIcono = (int) (24 * getResources().getDisplayMetrics().density);
+        final int tamIcono = (int) (24 * densidad);
+        final int margen = (int) (20 * densidad);
+
+        final Paint pinturaTexto = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pinturaTexto.setColor(Color.WHITE);
+        pinturaTexto.setTypeface(Typeface.DEFAULT_BOLD);
+        pinturaTexto.setTextSize(14 * densidad);
+        final String etiqueta = getString(R.string.eliminar);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                                   @NonNull RecyclerView.ViewHolder target) {
                 return false;
+            }
+
+            @Override
+            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                return 0.5f;
+            }
+
+            @Override
+            public float getSwipeEscapeVelocity(float defaultValue) {
+                // Sin "flick": hay que deslizar de verdad, no basta un gesto rápido.
+                return Float.MAX_VALUE;
             }
 
             @Override
@@ -319,17 +343,37 @@ public class ListNotasFragment extends Fragment {
                                     int actionState, boolean isCurrentlyActive) {
                 View item = viewHolder.itemView;
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX != 0) {
-                    if (dX > 0) {
-                        fondo.setBounds(item.getLeft(), item.getTop(), item.getLeft() + (int) dX, item.getBottom());
-                        icono.setBounds(item.getLeft() + margenIcono, item.getTop() + (item.getHeight() - tamIcono) / 2,
-                                item.getLeft() + margenIcono + tamIcono, item.getTop() + (item.getHeight() + tamIcono) / 2);
-                    } else {
-                        fondo.setBounds(item.getRight() + (int) dX, item.getTop(), item.getRight(), item.getBottom());
-                        icono.setBounds(item.getRight() - margenIcono - tamIcono, item.getTop() + (item.getHeight() - tamIcono) / 2,
-                                item.getRight() - margenIcono, item.getTop() + (item.getHeight() + tamIcono) / 2);
-                    }
+                    ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) item.getLayoutParams();
+                    int izquierda = item.getLeft() + lp.leftMargin;
+                    int derecha = item.getRight() - lp.rightMargin;
+                    int arriba = item.getTop() + lp.topMargin;
+                    int abajo = item.getBottom() - lp.bottomMargin;
+
+                    fondo.setBounds(izquierda, arriba, derecha, abajo);
                     fondo.draw(c);
+
+                    int centroY = (arriba + abajo) / 2;
+                    int anchoTexto = (int) pinturaTexto.measureText(etiqueta);
+                    int xIcono;
+                    float xTexto;
+                    if (dX > 0) {
+                        xIcono = izquierda + margen;
+                        xTexto = xIcono + tamIcono + margen / 2f;
+                    } else {
+                        xIcono = derecha - margen - tamIcono;
+                        xTexto = xIcono - margen / 2f - anchoTexto;
+                    }
+                    icono.setBounds(xIcono, centroY - tamIcono / 2, xIcono + tamIcono, centroY + tamIcono / 2);
                     icono.draw(c);
+                    c.drawText(etiqueta, xTexto, centroY + pinturaTexto.getTextSize() / 3f, pinturaTexto);
+
+                    float umbral = item.getWidth() * 0.5f;
+                    if (!hapticoDeslizamiento && Math.abs(dX) >= umbral) {
+                        item.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        hapticoDeslizamiento = true;
+                    } else if (Math.abs(dX) < umbral) {
+                        hapticoDeslizamiento = false;
+                    }
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }

@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notas.R;
@@ -44,8 +45,54 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
     private boolean modoSeleccion;
 
     public NotaAdapter(List<Nota> notas, OnNotaClickListener listener) {
-        this.notas = notas;
+        this.notas = new java.util.ArrayList<>(notas);
         this.listener = listener;
+    }
+
+    /**
+     * Sustituye el contenido del listado animando solo lo que cambia.
+     *
+     * <p>Se usa {@link DiffUtil} para que al borrar una nota el hueco se cierre
+     * con una transición en lugar de rehacer toda la lista de golpe.</p>
+     */
+    public void submit(List<Nota> nuevas) {
+        final List<Nota> destino = new java.util.ArrayList<>(nuevas);
+        final List<Nota> actuales = new java.util.ArrayList<>(notas);
+        DiffUtil.DiffResult resultado = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return actuales.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return destino.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int posVieja, int posNueva) {
+                return actuales.get(posVieja).getId() == destino.get(posNueva).getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(int posVieja, int posNueva) {
+                return mismoContenido(actuales.get(posVieja), destino.get(posNueva));
+            }
+        });
+        notas.clear();
+        notas.addAll(destino);
+        resultado.dispatchUpdatesTo(this);
+    }
+
+    private boolean mismoContenido(Nota a, Nota b) {
+        return a.getId() == b.getId()
+                && android.text.TextUtils.equals(a.getTitulo(), b.getTitulo())
+                && android.text.TextUtils.equals(a.getTexto(), b.getTexto())
+                && a.getFechaCreacion() == b.getFechaCreacion()
+                && a.getFechaModificacion() == b.getFechaModificacion()
+                && a.getRecordatorio() == b.getRecordatorio()
+                && a.isFijada() == b.isFijada()
+                && a.getColor() == b.getColor();
     }
 
     /** Texto de búsqueda que se resalta en cada nota. */

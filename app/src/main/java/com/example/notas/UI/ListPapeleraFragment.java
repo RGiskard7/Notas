@@ -1,6 +1,5 @@
 package com.example.notas.UI;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -62,10 +61,9 @@ public class ListPapeleraFragment extends Fragment {
         return view;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void mostrarNotas() {
         if (adaptador != null) {
-            adaptador.notifyDataSetChanged();
+            adaptador.submit(listaNotas);
         }
         if (binding != null) {
             binding.textViewVacio.setVisibility(listaNotas.isEmpty() ? View.VISIBLE : View.GONE);
