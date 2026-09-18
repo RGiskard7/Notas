@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Looper;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -132,5 +133,18 @@ public class ViewNotaActivityTest {
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(notaDAO.getNota(nota.getId()) != null);
+    }
+
+    @Test
+    public void laImagenAdjuntaSeMuestraPeroNoSePuedeQuitarDesdeLaVista() {
+        Nota nota = crearNota("Con imagen", "x");
+        notaDAO.addAdjunto(nota.getId(), "ruta.png", "foto.png", "image/png");
+
+        ViewNotaActivity activity = lanzar(notaDAO.getNota(nota.getId()));
+
+        LinearLayout contenedor = activity.findViewById(R.id.contenedorAdjuntos);
+        assertEquals(1, contenedor.getChildCount());
+        View quitar = contenedor.getChildAt(0).findViewById(R.id.buttonQuitarAdjunto);
+        assertEquals(View.GONE, quitar.getVisibility());
     }
 }

@@ -48,9 +48,18 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
     @Override
     public void onBindViewHolder(@NonNull final NotaViewHolder holder, int position) {
         Nota nota = notas.get(position);
+        CharSequence extracto = RenderizadorNota.renderizar(nota.getTexto(), null);
+        String fecha = Fechas.formatearNota(nota.getFechaCreacion());
         holder.binding.textViewTitulo.setText(nota.getTitulo());
-        holder.binding.textViewTexto.setText(RenderizadorNota.renderizar(nota.getTexto(), null));
-        holder.binding.textViewFecha.setText(Fechas.formatearNota(nota.getFechaCreacion()));
+        holder.binding.textViewTexto.setText(extracto);
+        holder.binding.textViewFecha.setText(fecha);
+
+        StringBuilder descripcion = new StringBuilder(nota.getTitulo());
+        if (extracto.length() > 0) {
+            descripcion.append(". ").append(extracto);
+        }
+        descripcion.append(". ").append(fecha);
+        holder.itemView.setContentDescription(descripcion.toString());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

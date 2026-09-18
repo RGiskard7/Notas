@@ -7,7 +7,9 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.core.app.ApplicationProvider;
@@ -186,5 +188,34 @@ public class EditNotaActivityTest {
         Nota editada = notaDAO.getNota(id);
         assertEquals("Editada", editada.getTitulo());
         assertEquals(original.getFechaCreacion(), editada.getFechaCreacion());
+    }
+
+    @Test
+    public void nuevaNota_ocultaLaZonaDeAdjuntos() {
+        EditNotaActivity activity = lanzarNueva();
+
+        assertEquals(View.GONE, activity.findViewById(R.id.scrollAdjuntos).getVisibility());
+    }
+
+    @Test
+    public void editarNota_muestraLaZonaDeAdjuntos() {
+        int id = notaDAO.createNota("Con imagen", "x");
+        libretaDAO.addNotaToLibreta(1, id);
+
+        EditNotaActivity activity = lanzarEdicion(notaDAO.getNota(id));
+
+        assertEquals(View.VISIBLE, activity.findViewById(R.id.scrollAdjuntos).getVisibility());
+    }
+
+    @Test
+    public void editarNota_muestraUnaMiniaturaPorAdjunto() {
+        int id = notaDAO.createNota("Con imagen", "x");
+        libretaDAO.addNotaToLibreta(1, id);
+        notaDAO.addAdjunto(id, "ruta.png", "foto.png", "image/png");
+
+        EditNotaActivity activity = lanzarEdicion(notaDAO.getNota(id));
+
+        LinearLayout contenedor = activity.findViewById(R.id.contenedorAdjuntos);
+        assertEquals(1, contenedor.getChildCount());
     }
 }

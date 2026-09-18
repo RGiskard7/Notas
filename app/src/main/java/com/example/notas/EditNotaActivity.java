@@ -7,25 +7,40 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
 import com.example.notas.UI.EditNotaViewModel;
+import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
+import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityEditNotaBinding;
+import com.example.notas.util.Adjuntos;
 import com.example.notas.util.EtiquetaSelection;
 import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Vinietas;
 import com.google.android.material.chip.Chip;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +67,19 @@ public class EditNotaActivity extends AppCompatActivity {
     private Set<Etiqueta> originalEtiquetasNota;
     private List<Etiqueta> allEtiquetas;
     private EditNotaViewModel viewModel;
+    private LinearLayout contenedorAdjuntos;
+
+    /** Abre el selector de imágenes para adjuntar una a la nota. */
+    private final ActivityResultLauncher<String[]> adjuntarLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            new androidx.activity.result.ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        adjuntarImagen(uri);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +125,12 @@ public class EditNotaActivity extends AppCompatActivity {
                 actualizarEtiquetasChip();
             }
         });
+        viewModel.getAdjuntos().observe(this, new Observer<List<Adjunto>>() {
+            @Override
+            public void onChanged(List<Adjunto> adjuntos) {
+                mostrarAdjuntos(adjuntos);
+            }
+        });
 
         loadData();
     }
@@ -106,6 +140,7 @@ public class EditNotaActivity extends AppCompatActivity {
         viewModel.cargarEtiquetas();
         if (editando) {
             viewModel.cargarEtiquetasDeNota(nota.getId());
+            viewModel.cargarAdjuntos(nota.getId());
         }
     }
 
@@ -117,6 +152,15 @@ public class EditNotaActivity extends AppCompatActivity {
         texto = binding.editTextContenidoNwNota;
         chipLibreta = binding.chipLibreta;
         chipEtiquetas = binding.chipEtiquetas;
+        contenedorAdjuntos = binding.contenedorAdjuntos;
+
+        binding.scrollAdjuntos.setVisibility(editando ? View.VISIBLE : View.GONE);
+        binding.buttonAnadirAdjunto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adjuntarLauncher.launch(new String[]{"image/*"});
+            }
+        });
 
         fillComponents();
     }
@@ -135,6 +179,7 @@ public class EditNotaActivity extends AppCompatActivity {
     /** Actualiza el chip que muestra el número de etiquetas de la nota. */
     private void actualizarEtiquetasChip() {
         chipEtiquetas.setText(getString(R.string.etiquetas) + " (" + currentEtiquetasNota.size() + ")");
+        chipEtiquetas.setContentDescription(getString(R.string.etiquetas) + ": " + currentEtiquetasNota.size());
     }
 
     private void actualizarLibreta(List<Libreta> libretas) {
@@ -160,6 +205,7 @@ public class EditNotaActivity extends AppCompatActivity {
     void seleccionarLibreta(int indice) {
         libreta = allLibretas.get(indice);
         chipLibreta.setText(libreta.getTitulo());
+        chipLibreta.setContentDescription(getString(R.string.libreta) + ": " + libreta.getTitulo());
     }
 
     private int indiceDe(int idLibreta) {
@@ -169,6 +215,73 @@ public class EditNotaActivity extends AppCompatActivity {
             }
         }
         return -1;
+    }
+
+    /** Dibuja las miniaturas de los adjuntos de la nota, con su botón de quitar. */
+    private void mostrarAdjuntos(List<Adjunto> adjuntos) {
+        contenedorAdjuntos.removeAllViews();
+        int lado = (int) (96 * getResources().getDisplayMetrics().density);
+        int separacion = (int) (8 * getResources().getDisplayMetrics().density);
+
+        for (final Adjunto adjunto : adjuntos) {
+            View vista = getLayoutInflater().inflate(R.layout.adjunto_item, contenedorAdjuntos, false);
+            ImageView imagen = vista.findViewById(R.id.imageViewAdjunto);
+            ImageButton quitar = vista.findViewById(R.id.buttonQuitarAdjunto);
+
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(lado, lado);
+            imagen.setLayoutParams(params);
+            imagen.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            ViewGroup.LayoutParams raiz = vista.getLayoutParams();
+            raiz.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            raiz.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            if (raiz instanceof ViewGroup.MarginLayoutParams) {
+                ((ViewGroup.MarginLayoutParams) raiz).setMarginEnd(separacion);
+            }
+            vista.setLayoutParams(raiz);
+
+            File fichero = Adjuntos.fichero(this, adjunto.getRuta());
+            if (fichero.exists()) {
+                imagen.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
+            }
+            quitar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmarEliminarAdjunto(adjunto);
+                }
+            });
+            contenedorAdjuntos.addView(vista);
+        }
+    }
+
+    /** Copia la imagen elegida y la asocia a la nota. */
+    private void adjuntarImagen(Uri uri) {
+        viewModel.agregarAdjunto(nota.getId(), uri, Adjuntos.nombreFichero(this, uri), Adjuntos.mime(this, uri),
+                new NotasRepository.Callback<Boolean>() {
+                    @Override
+                    public void onResult(Boolean anadido) {
+                        int mensaje = Boolean.TRUE.equals(anadido) ? R.string.adjunto_anadido : R.string.error_adjunto;
+                        Toast.makeText(EditNotaActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void confirmarEliminarAdjunto(final Adjunto adjunto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.messageAlertDialogAdjunto).setTitle(R.string.titleAlertDialog);
+        builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewModel.eliminarAdjunto(adjunto, new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(EditNotaActivity.this, R.string.adjunto_eliminado, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
+        builder.create().show();
     }
 
     public void eventRecorder() {

@@ -45,10 +45,12 @@ public class LibretaAdapter extends RecyclerView.Adapter<LibretaAdapter.LibretaV
     @Override
     public void onBindViewHolder(@NonNull final LibretaViewHolder holder, int position) {
         Libreta libreta = libretas.get(position);
+        String recuento = holder.itemView.getResources()
+                .getQuantityString(R.plurals.notas, libreta.getNumNotas(), libreta.getNumNotas());
         holder.binding.imageViewIcono.setImageResource(R.drawable.ic_libretas);
         holder.binding.textViewTitulo2.setText(libreta.getTitulo());
-        holder.binding.textViewNotas.setText(holder.itemView.getResources()
-                .getQuantityString(R.plurals.notas, libreta.getNumNotas(), libreta.getNumNotas()));
+        holder.binding.textViewNotas.setText(recuento);
+        holder.itemView.setContentDescription(libreta.getTitulo() + ". " + recuento);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -90,6 +90,9 @@
     <string name="exportar">Exportar</string>
     <string name="importar">Importar</string>
     <string name="adjuntar_imagen">Adjuntar imagen</string>
+    <string name="adjunto_imagen">Imagen adjunta</string>
+    <string name="quitar_imagen">Quitar imagen</string>
+    <string name="adjunto_eliminado">Imagen quitada</string>
     <string name="recordatorio">Recordatorio</string>
     <string name="quitar_recordatorio">Quitar recordatorio</string>
     <string name="recordatorio_fijado">Recordatorio fijado</string>

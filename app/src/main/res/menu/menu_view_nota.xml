@@ -19,13 +19,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_adjuntar"
-        android:icon="@drawable/ic_adjuntar"
-        android:orderInCategory="102"
-        android:title="@string/adjuntar_imagen"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_recordatorio"
         android:icon="@drawable/ic_recordatorio"
         android:orderInCategory="103"

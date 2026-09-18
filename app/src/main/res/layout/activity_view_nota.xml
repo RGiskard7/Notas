@@ -20,6 +20,7 @@
             android:id="@+id/textViewTituloNota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
             android:textSize="24sp"
             android:textStyle="bold" />
 

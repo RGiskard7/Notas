@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView = binding.navView;
 
         fab = binding.appBar.fab;  // Boton flotante para crear nueva nota o una nueva libreta
+        fab.setContentDescription(getString(R.string.nueva_nota));
     }
 
     public void eventRecorder() {
@@ -156,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (fragmentSelected) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit(); // Anniadir fragment select a la pila de fragmentos
+
+                    actualizarDescripcionFab(menuItem.getItemId());
 
                     DrawerLayout drawer = binding.drawerLayout;
                     drawer.closeDrawer(GravityCompat.START); // Cerrar la pestaña al presionar
@@ -247,11 +250,13 @@ public class MainActivity extends AppCompatActivity {
             if (((ListNotasFragment) currentFragment).getLibreta() != null) { // Notas de una libreta
                 fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListLibretasFragment()).commit();
                 navigationView.setCheckedItem(R.id.allLibretas);
+                actualizarDescripcionFab(R.id.allLibretas);
                 getSupportActionBar().setTitle(R.string.libretas);
                 return true;
             } else if (((ListNotasFragment) currentFragment).getEtiqueta() != null) { // Notas de una etiqueta
                 fragmentManager.beginTransaction().replace(R.id.fragmentContainer, new ListEtiquetasFragment()).commit();
                 navigationView.setCheckedItem(R.id.allEtiquetas);
+                actualizarDescripcionFab(R.id.allEtiquetas);
                 getSupportActionBar().setTitle(R.string.etiquetas);
                 return true;
             }
@@ -261,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
                 || currentFragment instanceof ListPapeleraFragment) {
             fragmentManager.beginTransaction().replace(R.id.fragmentContainer, ListNotasFragment.newInstance()).commit();
             navigationView.setCheckedItem(R.id.allNotas);
+            actualizarDescripcionFab(R.id.allNotas);
             getSupportActionBar().setTitle(R.string.todas_las_notas);
             return true;
         }
@@ -372,6 +378,19 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Toast.makeText(this, R.string.error_importar, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Ajusta la descripción del botón flotante a la sección actual. */
+    private void actualizarDescripcionFab(int idMenu) {
+        int descripcion;
+        if (idMenu == R.id.allLibretas) {
+            descripcion = R.string.nueva_libreta;
+        } else if (idMenu == R.id.allEtiquetas) {
+            descripcion = R.string.nueva_etiqueta;
+        } else {
+            descripcion = R.string.nueva_nota;
+        }
+        fab.setContentDescription(getString(descripcion));
     }
 
     private void recargarListadoActual() {

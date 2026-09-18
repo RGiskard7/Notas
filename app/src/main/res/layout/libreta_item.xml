@@ -6,6 +6,7 @@
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:screenReaderFocusable="true"
     android:paddingStart="16dp"
     android:paddingTop="12dp"
     android:paddingEnd="16dp"

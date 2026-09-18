@@ -1,7 +1,6 @@
 package com.example.notas.UI;
 
 import android.app.Application;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -67,32 +66,6 @@ public class ViewNotaViewModel extends AndroidViewModel {
             @Override
             public void onResult(List<Adjunto> valor) {
                 adjuntos.setValue(valor);
-            }
-        });
-    }
-
-    /** Copia la imagen a la carpeta de adjuntos; el callback recibe true si se añadió. */
-    public void agregarAdjunto(final int idNota, Uri uri, String nombre, String mime,
-                               final NotasRepository.Callback<Boolean> callback) {
-        repositorio.agregarAdjunto(idNota, uri, nombre, mime, new NotasRepository.Callback<Adjunto>() {
-            @Override
-            public void onResult(Adjunto valor) {
-                if (valor != null) {
-                    cargarAdjuntos(idNota);
-                }
-                callback.onResult(valor != null);
-            }
-        });
-    }
-
-    public void eliminarAdjunto(final Adjunto adjunto, final Runnable onDone) {
-        repositorio.eliminarAdjunto(adjunto, new Runnable() {
-            @Override
-            public void run() {
-                cargarAdjuntos(adjunto.getNotaId());
-                if (onDone != null) {
-                    onDone.run();
-                }
             }
         });
     }

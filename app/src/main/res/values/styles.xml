@@ -33,11 +33,12 @@
     <!-- Menú desplegable (los colores cambian en values-night). -->
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
-    <!-- Separador de una línea. -->
+    <!-- Separador de una línea (decorativo). -->
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/divider</item>
+        <item name="android:importantForAccessibility">no</item>
     </style>
 
     <!-- Botón de la barra de formato del editor. -->

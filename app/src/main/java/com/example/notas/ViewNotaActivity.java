@@ -13,20 +13,16 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,7 +40,6 @@ import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
-import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.ActivityViewNotaBinding;
 import com.example.notas.recordatorios.ProgramadorRecordatorios;
 import com.example.notas.util.Adjuntos;
@@ -81,18 +76,6 @@ public class ViewNotaActivity extends AppCompatActivity {
     private LinearLayout contenedorAdjuntos;
     private ViewNotaViewModel viewModel;
 
-    /** Abre el selector de imágenes para adjuntar una a la nota. */
-    private final ActivityResultLauncher<String[]> adjuntarLauncher = registerForActivityResult(
-            new ActivityResultContracts.OpenDocument(),
-            new androidx.activity.result.ActivityResultCallback<Uri>() {
-                @Override
-                public void onActivityResult(Uri uri) {
-                    if (uri != null) {
-                        adjuntarImagen(uri);
-                    }
-                }
-            });
-
     /** Abre el selector de fichero para exportar la nota a Markdown. */
     private final ActivityResultLauncher<String> exportarLauncher = registerForActivityResult(
             new ActivityResultContracts.CreateDocument("text/markdown"),
@@ -122,6 +105,7 @@ public class ViewNotaActivity extends AppCompatActivity {
             public void onChanged(List<Etiqueta> etiquetas) {
                 currentEtiquetasNota = etiquetas;
                 numEtiquetas.setText(getString(R.string.etiquetas) + " (" + currentEtiquetasNota.size() + ")");
+                numEtiquetas.setContentDescription(getString(R.string.etiquetas) + ": " + currentEtiquetasNota.size());
             }
         });
         viewModel.getNota().observe(this, new Observer<Nota>() {
@@ -177,6 +161,7 @@ public class ViewNotaActivity extends AppCompatActivity {
         }
         if (libreta != null) {
             txlibreta.setText(libreta.getTitulo());
+            txlibreta.setContentDescription(getString(R.string.libreta) + ": " + libreta.getTitulo());
         }
         mostrarRecordatorio();
     }
@@ -226,8 +211,6 @@ public class ViewNotaActivity extends AppCompatActivity {
             intent.putExtra("nota", nota);
             intent.putExtra("tipo", "editable");
             startActivityForResult(intent, 1);
-        } else if (id == R.id.action_adjuntar) {
-            adjuntarLauncher.launch(new String[]{"image/*"});
         } else if (id == R.id.action_recordatorio) {
             elegirFechaHora();
         } else if (id == R.id.action_quitar_recordatorio) {
@@ -286,75 +269,20 @@ public class ViewNotaActivity extends AppCompatActivity {
         }));
     }
 
-    /** Dibuja las imágenes adjuntas de la nota. */
+    /** Dibuja las imágenes adjuntas de la nota. En la vista solo se muestran. */
     private void mostrarAdjuntos(List<Adjunto> adjuntos) {
         contenedorAdjuntos.removeAllViews();
         for (final Adjunto adjunto : adjuntos) {
-            ImageView vista = new ImageView(this);
-            vista.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            vista.setAdjustViewBounds(true);
+            View vista = getLayoutInflater().inflate(R.layout.adjunto_item, contenedorAdjuntos, false);
+            ImageView imagen = vista.findViewById(R.id.imageViewAdjunto);
+            vista.findViewById(R.id.buttonQuitarAdjunto).setVisibility(View.GONE);
 
             File fichero = Adjuntos.fichero(this, adjunto.getRuta());
             if (fichero.exists()) {
-                vista.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
+                imagen.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
             }
-
-            vista.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    confirmarEliminarAdjunto(adjunto);
-                    return true;
-                }
-            });
             contenedorAdjuntos.addView(vista);
         }
-    }
-
-    /** Copia la imagen elegida y la asocia a la nota. */
-    private void adjuntarImagen(Uri uri) {
-        viewModel.agregarAdjunto(nota.getId(), uri, nombreFichero(uri), mimeDe(uri),
-                new NotasRepository.Callback<Boolean>() {
-                    @Override
-                    public void onResult(Boolean anadido) {
-                        if (anadido) {
-                            Toast.makeText(ViewNotaActivity.this, R.string.adjunto_anadido, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ViewNotaActivity.this, R.string.error_adjunto, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
-    private void confirmarEliminarAdjunto(final Adjunto adjunto) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.messageAlertDialogAdjunto).setTitle(R.string.titleAlertDialog);
-        builder.setPositiveButton(R.string.positiveBtnAlertDialog, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                viewModel.eliminarAdjunto(adjunto, null);
-            }
-        });
-        builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
-        builder.create().show();
-    }
-
-    private String nombreFichero(Uri uri) {
-        String nombre = null;
-        try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                int columna = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if (columna >= 0) {
-                    nombre = cursor.getString(columna);
-                }
-            }
-        }
-        return nombre == null ? "imagen" : nombre;
-    }
-
-    private String mimeDe(Uri uri) {
-        String tipo = getContentResolver().getType(uri);
-        return tipo == null ? "image/*" : tipo;
     }
 
     /** Muestra u oculta la fecha del recordatorio. */

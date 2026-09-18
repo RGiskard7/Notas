@@ -415,7 +415,12 @@ public class NotasRepository {
         escribir(new Runnable() {
             @Override
             public void run() {
+                List<Adjunto> adjuntos = new ArrayList<>();
+                notaDAO.getAdjuntosFrom(id, adjuntos);
                 notaDAO.borrarNotaDefinitivamente(id);
+                for (Adjunto adjunto : adjuntos) {
+                    borrarFicheroAdjunto(adjunto.getRuta());
+                }
             }
         }, onDone);
     }
@@ -538,12 +543,17 @@ public class NotasRepository {
             @Override
             public void run() {
                 notaDAO.deleteAdjunto(adjunto.getId());
-                File fichero = Adjuntos.fichero(context, adjunto.getRuta());
-                if (fichero.exists()) {
-                    fichero.delete();
-                }
+                borrarFicheroAdjunto(adjunto.getRuta());
             }
         }, onDone);
+    }
+
+    /** Borra el fichero de un adjunto, si existe. */
+    private void borrarFicheroAdjunto(String ruta) {
+        File fichero = Adjuntos.fichero(context, ruta);
+        if (fichero.exists()) {
+            fichero.delete();
+        }
     }
 
     private String copiarAdjunto(Uri uri, String nombre) {

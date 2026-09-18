@@ -45,4 +45,21 @@ public class NotaAdapterTest {
         Spanned spanned = (Spanned) texto.getText();
         assertTrue(spanned.getSpans(0, spanned.length(), StyleSpan.class).length > 0);
     }
+
+    @Test
+    public void elElementoTieneDescripcionParaLectorDePantalla() {
+        Context context = new ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.AppTheme);
+        List<Nota> notas = new ArrayList<>();
+        notas.add(new Nota(1, "Titulo", "hola", null, new ArrayList<Etiqueta>(), 0L));
+
+        NotaAdapter adaptador = new NotaAdapter(notas, null);
+        RecyclerView parent = new RecyclerView(context);
+        parent.setLayoutManager(new LinearLayoutManager(context));
+        NotaAdapter.NotaViewHolder holder = adaptador.onCreateViewHolder(parent, 0);
+        adaptador.onBindViewHolder(holder, 0);
+
+        String descripcion = holder.itemView.getContentDescription().toString();
+        assertTrue(descripcion.contains("Titulo"));
+        assertTrue(descripcion.contains("hola"));
+    }
 }

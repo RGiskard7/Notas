@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imageViewAdjunto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/adjunto_imagen"
+        android:maxHeight="360dp"
+        android:scaleType="fitCenter" />
+
+    <ImageButton
+        android:id="@+id/buttonQuitarAdjunto"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="6dp"
+        android:background="@drawable/fondo_circulo_oscuro"
+        android:contentDescription="@string/quitar_imagen"
+        android:padding="8dp"
+        app:srcCompat="@drawable/ic_cerrar"
+        app:tint="#FFFFFF" />
+
+</FrameLayout>

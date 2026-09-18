@@ -1,6 +1,9 @@
 package com.example.notas.util;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 
 import java.io.File;
 
@@ -35,5 +38,25 @@ public final class Adjuntos {
         }
         int punto = nombre.lastIndexOf('.');
         return punto > 0 ? nombre.substring(punto) : "";
+    }
+
+    /** Nombre original del fichero elegido, o "imagen" si no se puede leer. */
+    public static String nombreFichero(Context context, Uri uri) {
+        String nombre = null;
+        try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columna = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columna >= 0) {
+                    nombre = cursor.getString(columna);
+                }
+            }
+        }
+        return nombre == null ? "imagen" : nombre;
+    }
+
+    /** Tipo de contenido del fichero elegido, o "image/*" si no se puede leer. */
+    public static String mime(Context context, Uri uri) {
+        String tipo = context.getContentResolver().getType(uri);
+        return tipo == null ? "image/*" : tipo;
     }
 }
