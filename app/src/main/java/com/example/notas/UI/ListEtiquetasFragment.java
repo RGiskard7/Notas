@@ -87,7 +87,7 @@ public class ListEtiquetasFragment extends Fragment {
             adaptador.notifyDataSetChanged();
         }
         if (binding != null) {
-            binding.textViewVacio.setVisibility(listaEtiquetas.isEmpty() ? View.VISIBLE : View.GONE);
+            binding.estadoVacio.setVisibility(listaEtiquetas.isEmpty() ? View.VISIBLE : View.GONE);
         }
     }
 

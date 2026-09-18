@@ -15,17 +15,34 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp" />
 
-    <TextView
-        android:id="@+id/textViewVacio"
+    <LinearLayout
+        android:id="@+id/estadoVacio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:accessibilityLiveRegion="polite"
+        android:gravity="center"
+        android:orientation="vertical"
         android:padding="24dp"
-        android:text="@string/sin_notas"
-        android:textColor="@color/on_surface_secondary"
-        android:textSize="16sp"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:alpha="0.35"
+            android:importantForAccessibility="no"
+            app:srcCompat="@mipmap/ic_icon_notas" />
+
+        <TextView
+            android:id="@+id/textViewVacio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/sin_notas"
+            android:textColor="@color/on_surface_secondary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
 </FrameLayout>

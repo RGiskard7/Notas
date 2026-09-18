@@ -14,7 +14,6 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -242,7 +241,7 @@ public class MainActivityTest {
         MainActivity activity = lanzar();
         ListNotasFragment fragment = (ListNotasFragment) fragmentActual(activity);
 
-        TextView vacio = fragment.getView().findViewById(R.id.textViewVacio);
+        View vacio = fragment.getView().findViewById(R.id.estadoVacio);
         assertEquals(View.VISIBLE, vacio.getVisibility());
     }
 
@@ -254,7 +253,7 @@ public class MainActivityTest {
         MainActivity activity = lanzar();
         ListNotasFragment fragment = (ListNotasFragment) fragmentActual(activity);
 
-        TextView vacio = fragment.getView().findViewById(R.id.textViewVacio);
+        View vacio = fragment.getView().findViewById(R.id.estadoVacio);
         assertEquals(View.GONE, vacio.getVisibility());
     }
 

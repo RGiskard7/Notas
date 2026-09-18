@@ -87,7 +87,7 @@ public class ListLibretasFragment extends Fragment {
             adaptador.notifyDataSetChanged();
         }
         if (binding != null) {
-            binding.textViewVacio.setVisibility(listaLibretas.isEmpty() ? View.VISIBLE : View.GONE);
+            binding.estadoVacio.setVisibility(listaLibretas.isEmpty() ? View.VISIBLE : View.GONE);
         }
     }
 

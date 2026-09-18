@@ -18,8 +18,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="@dimen/nav_header_vertical_spacing"
         android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/ic_notas"
-        app:tint="#FFFFFF" />
+        app:srcCompat="@mipmap/ic_icon_notas" />
 
     <TextView
         android:id="@+id/textViewNav"

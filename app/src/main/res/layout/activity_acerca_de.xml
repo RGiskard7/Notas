@@ -15,11 +15,10 @@
         android:padding="32dp">
 
         <ImageView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
             android:contentDescription="@string/app_name"
-            app:srcCompat="@drawable/ic_notas"
-            app:tint="@color/primary" />
+            app:srcCompat="@mipmap/ic_icon_notas" />
 
         <TextView
             android:layout_width="wrap_content"

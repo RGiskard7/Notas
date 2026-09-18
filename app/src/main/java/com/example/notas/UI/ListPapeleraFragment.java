@@ -66,7 +66,7 @@ public class ListPapeleraFragment extends Fragment {
             adaptador.submit(listaNotas);
         }
         if (binding != null) {
-            binding.textViewVacio.setVisibility(listaNotas.isEmpty() ? View.VISIBLE : View.GONE);
+            binding.estadoVacio.setVisibility(listaNotas.isEmpty() ? View.VISIBLE : View.GONE);
         }
     }
 
