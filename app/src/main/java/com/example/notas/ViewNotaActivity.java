@@ -46,6 +46,7 @@ import com.example.notas.util.Adjuntos;
 import com.example.notas.util.Fechas;
 import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Markdown;
+import com.example.notas.util.PaletaNotas;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,6 +164,11 @@ public class ViewNotaActivity extends AppCompatActivity {
             txlibreta.setText(libreta.getTitulo());
             txlibreta.setContentDescription(getString(R.string.libreta) + ": " + libreta.getTitulo());
         }
+        if (nota.getColor() != 0) {
+            binding.getRoot().setBackgroundColor(PaletaNotas.color(this, nota.getColor()));
+        } else {
+            binding.getRoot().setBackground(null);
+        }
         mostrarRecordatorio();
     }
 
@@ -199,6 +205,7 @@ public class ViewNotaActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_quitar_recordatorio).setVisible(nota.getRecordatorio() > 0);
+        menu.findItem(R.id.action_fijar).setTitle(nota.isFijada() ? R.string.desfijar : R.string.fijar);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -211,10 +218,25 @@ public class ViewNotaActivity extends AppCompatActivity {
             intent.putExtra("nota", nota);
             intent.putExtra("tipo", "editable");
             startActivityForResult(intent, 1);
+        } else if (id == R.id.action_fijar) {
+            final boolean nueva = !nota.isFijada();
+            viewModel.fijarNota(nota.getId(), nueva, new Runnable() {
+                @Override
+                public void run() {
+                    nota.setFijada(nueva);
+                    invalidateOptionsMenu();
+                }
+            });
         } else if (id == R.id.action_recordatorio) {
             elegirFechaHora();
         } else if (id == R.id.action_quitar_recordatorio) {
             quitarRecordatorio();
+        } else if (id == R.id.action_compartir) {
+            Intent compartir = new Intent(Intent.ACTION_SEND);
+            compartir.setType("text/plain");
+            compartir.putExtra(Intent.EXTRA_SUBJECT, nota.getTitulo());
+            compartir.putExtra(Intent.EXTRA_TEXT, Markdown.exportar(nota.getTitulo(), nota.getTexto()));
+            startActivity(Intent.createChooser(compartir, getString(R.string.compartir)));
         } else if (id == R.id.action_exportar) {
             exportarLauncher.launch(Markdown.nombreFichero(nota.getTitulo()));
         } else if (id == R.id.action_Eliminar) {

@@ -82,6 +82,29 @@ public final class FormatoNota {
         return limpia.length() > 6 ? limpia.substring(6).trim() : "";
     }
 
+    /**
+     * Cuenta las tareas de un texto.
+     *
+     * @param texto nota completa.
+     * @return dos valores: cuántas tareas están hechas y cuántas hay en total. El
+     *         total es 0 si la nota no tiene tareas.
+     */
+    public static int[] progresoTareas(String texto) {
+        int hechas = 0;
+        int total = 0;
+        if (texto != null) {
+            for (String linea : texto.split("\n", -1)) {
+                if (esTarea(linea)) {
+                    total++;
+                    if (estaHecha(linea)) {
+                        hechas++;
+                    }
+                }
+            }
+        }
+        return new int[]{hechas, total};
+    }
+
     /** Indica si la línea es un encabezado ({@code #}, {@code ##} o {@code ###}). */
     public static boolean esEncabezado(String linea) {
         String limpia = linea == null ? "" : linea.trim();

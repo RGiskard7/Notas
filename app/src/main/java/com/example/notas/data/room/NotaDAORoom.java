@@ -49,7 +49,7 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public int createNota(String titulo, String texto) {
         long ahora = ahora();
-        NotaEntity entity = new NotaEntity(0, titulo, texto, ahora, ahora, 0, 0);
+        NotaEntity entity = new NotaEntity(0, titulo, texto, ahora, ahora, 0, 0, 0, 0);
         return (int) dao().insertNota(entity);
     }
 
@@ -193,6 +193,16 @@ public class NotaDAORoom implements INotaDAO {
     @Override
     public void setRecordatorio(int id, long cuando) {
         dao().setRecordatorio(id, cuando);
+    }
+
+    @Override
+    public void setFijada(int id, int fijada) {
+        dao().setFijada(id, fijada);
+    }
+
+    @Override
+    public void setColor(int id, int color) {
+        dao().setColor(id, color);
     }
 
     @Override

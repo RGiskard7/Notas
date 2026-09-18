@@ -7,18 +7,29 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 
 - **Notas**: crear, ver, editar y eliminar. Título, contenido, fecha de creación y de
   modificación.
+- **Listado de notas**: tarjetas con el extracto, la fecha, el progreso de las tareas y
+  un icono si la nota está fijada; se desliza una tarjeta para enviarla a la papelera, con
+  opción de deshacer. Se puede cambiar entre **lista y cuadrícula**.
+- **Fijar y colorear**: las notas fijadas se quedan arriba y se les puede dar un color de
+  fondo pastel desde el editor.
+- **Selección múltiple**: mantén pulsada una nota para **seleccionar**, **mover** a otra
+  libreta o **etiquetar** en lote.
 - **Libretas**: agrupan notas. Existe una libreta `Default` protegida; al eliminar una
   libreta sus notas se mueven a `Default`.
 - **Etiquetas**: relación N:M con las notas.
 - **Búsqueda** por título y contenido (índice FTS4), respetando el ámbito
-  (todas / libreta / etiqueta), y **ordenación** por fecha, título o número de notas.
+  (todas / libreta / etiqueta), con **resaltado** de las coincidencias y **búsquedas
+  recientes** como sugerencias. **Ordenación** por fecha de creación, de modificación o
+  título (el criterio se recuerda).
 - Editor con el patrón de las apps de notas actuales: título y cuerpo sin cajas, la
   libreta/etiquetas como *chips* y una barra de formato con negrita, cursiva, tachado,
   código, encabezado, cita, viñetas, lista numerada, casilla, enlace y separador; en la
   vista, las tareas se pueden marcar directamente.
 - **Libretas y etiquetas** con la misma experiencia: listados con icono y un diálogo
   Material común para crearlas o renombrarlas (avisa si el título ya existe).
-- **Exportar e importar** notas en **Markdown** (ficheros `.md`).
+- **Exportar e importar** notas en **Markdown** (ficheros `.md`), y **copia de seguridad**
+  de todas las notas en un **ZIP** (una nota Markdown por entrada).
+- **Compartir** una nota con otras aplicaciones.
 - **Papelera**: las notas se borran de forma lógica, se pueden **restaurar** (o deshacer
   al momento) y borrar definitivamente.
 - **Adjuntos**: se añaden **imágenes** a una nota; se copian al almacenamiento interno. La
@@ -28,8 +39,9 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
   reiniciar el dispositivo.
 - **Bloqueo con PIN**: pantalla de bloqueo al abrir la app (el PIN se guarda con sal y
   PBKDF2). Es un bloqueo de acceso, **no** cifra la base de datos.
-- **Interfaz**: tema Material con modo claro/oscuro (elegible en **Ajustes**), paleta
-  propia e iconos vectoriales consistentes.
+- **Interfaz**: **Material 3** con **color dinámico** (Material You) en Android 12+, modo
+  claro/oscuro (elegible en **Ajustes**), pantalla de arranque, paleta propia e iconos
+  vectoriales consistentes.
 - **Accesibilidad**: cada fila de los listados y los *chips* exponen una descripción
   para lectores de pantalla, los títulos son encabezados semánticos, los estados vacíos
   se anuncian y el contraste de texto cumple AA.
@@ -76,23 +88,24 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-171 tests:
+183 tests:
 
-- **data/** (54): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
-  duplicados, recuentos, fechas, búsqueda FTS), migraciones 1->2 a 5->6, garantía de
-  que producción no consulta en el hilo principal, entrega asíncrona del repositorio,
-  creación/renombrado de libretas sin títulos repetidos y borrado de los ficheros de
-  los adjuntos.
-- **util/** (54): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
-  negrita/cursiva/tachado/código, encabezados, citas), adjuntos, fechas, diff de
-  etiquetas y viñetas.
+- **data/** (58): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
+  duplicados, recuentos, fechas, búsqueda FTS, fijadas y color), migraciones 1->2 a 6->7,
+  garantía de que producción no consulta en el hilo principal, entrega asíncrona del
+  repositorio, creación/renombrado de libretas sin títulos repetidos y borrado de los
+  ficheros de los adjuntos.
+- **util/** (60): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
+  negrita/cursiva/tachado/código, encabezados, citas, progreso de tareas), adjuntos,
+  fechas, diff de etiquetas, viñetas, resaltado de búsqueda y copia de seguridad.
 - **recordatorios/** (1): programación y cancelación de la alarma.
 - **seguridad/** (8): PIN (guardar, comprobar, cambiar, quitar) y pantalla de bloqueo.
 - **ajustes/** (6): selector de tema y pantalla "Acerca de".
-- **UI/** (47): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, estado vacío),
-  renderizado de notas, vista previa con formato, barra de formato del editor, diálogo
-  de nombre, adjuntos en el editor, descripciones para lector de pantalla, Activities de
-  edición/visualización y persistencia de la búsqueda.
+- **UI/** (49): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, estado vacío),
+  renderizado de notas, vista previa con formato, progreso de tareas, selección múltiple,
+  barra de formato del editor, diálogo de nombre, adjuntos en el editor, descripciones
+  para lector de pantalla, Activities de edición/visualización y persistencia de la
+  búsqueda.
 - Ejemplo de plantilla (1).
 
 ## Notas
@@ -100,5 +113,5 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 - `minSdk 21`, `targetSdk 36`; `versionCode 2`, `versionName 2.0`.
 - Paquete `com.example.notas`; `app_name` "Nevernote".
 - Migraciones de Room 1->2 (fechas a epoch), 2->3 (índice FTS), 3->4 (papelera),
-  4->5 (adjuntos) y 5->6 (recordatorios), con tests.
+  4->5 (adjuntos), 5->6 (recordatorios) y 6->7 (fijadas y color), con tests.
 - El bloqueo con PIN no cifra los datos: la base de datos sigue sin cifrar.

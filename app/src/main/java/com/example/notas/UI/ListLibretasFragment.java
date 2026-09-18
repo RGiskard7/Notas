@@ -125,6 +125,9 @@ public class ListLibretasFragment extends Fragment {
 
         menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
         menu.findItem(R.id.action_filtrar_fecha_des).setVisible(false);
+        menu.findItem(R.id.action_filtrar_modificacion_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_modificacion_des).setVisible(false);
+        menu.findItem(R.id.action_vista).setVisible(false);
 
         searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

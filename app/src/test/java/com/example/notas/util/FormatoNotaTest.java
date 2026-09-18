@@ -110,4 +110,20 @@ public class FormatoNotaTest {
         assertEquals("cita", FormatoNota.textoCita("> cita"));
         assertTrue(FormatoNota.esSeparador("---"));
     }
+
+    @Test
+    public void progresoTareas_cuentaHechasYTotal() {
+        int[] progreso = FormatoNota.progresoTareas("- [ ] una\n- [x] dos\n- [ ] tres\ntexto");
+
+        assertEquals(1, progreso[0]);
+        assertEquals(3, progreso[1]);
+    }
+
+    @Test
+    public void progresoTareas_sinTareas_esCero() {
+        int[] progreso = FormatoNota.progresoTareas("solo texto");
+
+        assertEquals(0, progreso[0]);
+        assertEquals(0, progreso[1]);
+    }
 }

@@ -74,6 +74,11 @@ public class ViewNotaViewModel extends AndroidViewModel {
         repositorio.eliminarNota(id, onDone);
     }
 
+    /** Fija o desfija la nota. */
+    public void fijarNota(int id, boolean fijada, Runnable onDone) {
+        repositorio.fijarNota(id, fijada, onDone);
+    }
+
     /** Guarda el texto de la nota (por ejemplo al marcar una tarea). */
     public void actualizarTexto(int id, String titulo, String texto, Runnable onDone) {
         repositorio.actualizarTextoNota(id, titulo, texto, onDone);

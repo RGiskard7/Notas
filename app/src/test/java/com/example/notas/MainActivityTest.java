@@ -297,7 +297,7 @@ public class MainActivityTest {
 
         AlertDialog opciones = (AlertDialog) ShadowDialog.getLatestDialog();
         ListView lista = opciones.getListView();
-        lista.performItemClick(lista.getChildAt(1), 1, 1); // "Eliminar"
+        lista.performItemClick(lista.getChildAt(3), 3, 3); // "Eliminar"
         shadowOf(Looper.getMainLooper()).idle();
 
         AlertDialog confirmacion = (AlertDialog) ShadowDialog.getLatestDialog();

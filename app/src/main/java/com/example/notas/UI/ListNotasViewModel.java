@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 
+import com.example.notas.data.Etiqueta;
+import com.example.notas.data.Libreta;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.util.ConsultaFts;
@@ -92,6 +94,46 @@ public class ListNotasViewModel extends AndroidViewModel {
                 recargar();
             }
         });
+    }
+
+    /** Fija o desfija una nota. */
+    public void fijar(int id, boolean fijada) {
+        repositorio.fijarNota(id, fijada, new Runnable() {
+            @Override
+            public void run() {
+                recargar();
+            }
+        });
+    }
+
+    /** Mueve una nota a otra libreta. */
+    public void mover(int id, int idLibretaVieja, int idLibretaNueva) {
+        repositorio.moverNota(id, idLibretaVieja, idLibretaNueva, new Runnable() {
+            @Override
+            public void run() {
+                recargar();
+            }
+        });
+    }
+
+    /** Añade etiquetas a una nota. */
+    public void etiquetar(int id, List<Etiqueta> etiquetas) {
+        repositorio.anadirEtiquetasNota(id, etiquetas, new Runnable() {
+            @Override
+            public void run() {
+                recargar();
+            }
+        });
+    }
+
+    /** Carga todas las libretas (para mover notas). */
+    public void libretas(NotasRepository.Callback<List<Libreta>> callback) {
+        repositorio.libretas(callback);
+    }
+
+    /** Carga todas las etiquetas (para etiquetar notas). */
+    public void etiquetas(NotasRepository.Callback<List<Etiqueta>> callback) {
+        repositorio.etiquetas(callback);
     }
 
     /** Saca una nota de la papelera (para deshacer un borrado). */

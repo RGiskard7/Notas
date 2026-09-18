@@ -9,6 +9,7 @@ import android.os.Looper;
 import androidx.annotation.VisibleForTesting;
 
 import com.example.notas.util.Adjuntos;
+import com.example.notas.util.Markdown;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -333,14 +334,30 @@ public class NotasRepository {
 
     /** Crea una nota, la asocia a la libreta y le añade las etiquetas indicadas. */
     public void crearNota(final String titulo, final String texto, final int idLibreta,
-                          final List<Etiqueta> etiquetas, final Runnable onDone) {
-        escribir(new Runnable() {
+                          final List<Etiqueta> etiquetas, final int color, final Runnable onDone) {        escribir(new Runnable() {
             @Override
             public void run() {
                 int idNota = notaDAO.createNota(titulo, texto);
                 libretaDAO.addNotaToLibreta(idLibreta, idNota);
+                notaDAO.setColor(idNota, color);
                 if (etiquetas != null && !etiquetas.isEmpty()) {
                     notaDAO.addEtiquetasToNota(idNota, etiquetas);
+                }
+            }
+        }, onDone);
+    }
+
+    /**
+     * Crea varias notas de golpe (por ejemplo al importar una copia), todas en la
+     * libreta {@code Default}.
+     */
+    public void crearNotas(final List<Markdown.NotaMarkdown> notas, final Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                for (Markdown.NotaMarkdown nota : notas) {
+                    int idNota = notaDAO.createNota(nota.titulo, nota.texto);
+                    libretaDAO.addNotaToLibreta(1, idNota);
                 }
             }
         }, onDone);
@@ -361,11 +378,12 @@ public class NotasRepository {
     public void editarNota(final int id, final String titulo, final String texto,
                            final int idLibretaVieja, final int idLibretaNueva,
                            final List<Etiqueta> anadidas, final List<Etiqueta> quitadas,
-                           final Runnable onDone) {
+                           final int color, final Runnable onDone) {
         escribir(new Runnable() {
             @Override
             public void run() {
                 notaDAO.editNota(id, titulo, texto);
+                notaDAO.setColor(id, color);
                 if (idLibretaVieja != idLibretaNueva) {
                     notaDAO.deleteLibreta(id, idLibretaVieja);
                     libretaDAO.addNotaToLibreta(idLibretaNueva, id);
@@ -380,9 +398,33 @@ public class NotasRepository {
         }, onDone);
     }
 
-    /** Actualiza solo el texto de una nota (por ejemplo al marcar una tarea). */
-    public void actualizarTextoNota(final int id, final String titulo, final String texto, Runnable onDone) {
+    /** Mueve una nota de una libreta a otra. */
+    public void moverNota(final int id, final int idLibretaVieja, final int idLibretaNueva, Runnable onDone) {
         escribir(new Runnable() {
+            @Override
+            public void run() {
+                if (idLibretaVieja != idLibretaNueva) {
+                    notaDAO.deleteLibreta(id, idLibretaVieja);
+                    libretaDAO.addNotaToLibreta(idLibretaNueva, id);
+                }
+            }
+        }, onDone);
+    }
+
+    /** Añade etiquetas a una nota sin quitar las que ya tiene. */
+    public void anadirEtiquetasNota(final int id, final List<Etiqueta> etiquetas, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                if (etiquetas != null && !etiquetas.isEmpty()) {
+                    notaDAO.addEtiquetasToNota(id, etiquetas);
+                }
+            }
+        }, onDone);
+    }
+
+    /** Actualiza solo el texto de una nota (por ejemplo al marcar una tarea). */
+    public void actualizarTextoNota(final int id, final String titulo, final String texto, Runnable onDone) {        escribir(new Runnable() {
             @Override
             public void run() {
                 notaDAO.editNota(id, titulo, texto);
@@ -443,6 +485,26 @@ public class NotasRepository {
             @Override
             public void run() {
                 notaDAO.setRecordatorio(id, cuando);
+            }
+        }, onDone);
+    }
+
+    /** Fija o desfija una nota. */
+    public void fijarNota(final int id, final boolean fijada, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.setFijada(id, fijada ? 1 : 0);
+            }
+        }, onDone);
+    }
+
+    /** Cambia el color de fondo de una nota. */
+    public void cambiarColorNota(final int id, final int color, Runnable onDone) {
+        escribir(new Runnable() {
+            @Override
+            public void run() {
+                notaDAO.setColor(id, color);
             }
         }, onDone);
     }

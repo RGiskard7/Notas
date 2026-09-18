@@ -36,7 +36,7 @@ import java.util.Map;
                 NotaFts.class,
                 AdjuntoEntity.class
         },
-        version = 6,
+        version = 7,
         exportSchema = true)
 public abstract class NotasDatabase extends RoomDatabase {
 
@@ -121,6 +121,20 @@ public abstract class NotasDatabase extends RoomDatabase {
         }
     };
 
+    /**
+     * Migración de la versión 6 a la 7: añade las notas fijadas y su color.
+     *
+     * <p>{@code fijada} vale 1 en las notas que se quedan arriba del listado y
+     * {@code color} es el índice del color de fondo (0 = sin color).</p>
+     */
+    static final Migration MIGRACION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE notas ADD COLUMN fijada INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE notas ADD COLUMN color INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
     public abstract NotaDao notaDao();
 
     public abstract LibretaDao libretaDao();
@@ -153,7 +167,7 @@ public abstract class NotasDatabase extends RoomDatabase {
         if (db == null) {
             final Context appContext = context.getApplicationContext();
             RoomDatabase.Builder<NotasDatabase> builder = Room.databaseBuilder(appContext, NotasDatabase.class, name)
-                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5, MIGRACION_5_6)
+                    .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5, MIGRACION_5_6, MIGRACION_6_7)
                     .addCallback(new Callback() {
                         @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase database) {

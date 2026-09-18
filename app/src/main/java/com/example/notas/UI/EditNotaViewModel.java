@@ -76,13 +76,13 @@ public class EditNotaViewModel extends AndroidViewModel {
         });
     }
 
-    public void crearNota(String titulo, String texto, int idLibreta, List<Etiqueta> etiquetas, Runnable onDone) {
-        repositorio.crearNota(titulo, texto, idLibreta, etiquetas, onDone);
+    public void crearNota(String titulo, String texto, int idLibreta, List<Etiqueta> etiquetas, int color, Runnable onDone) {
+        repositorio.crearNota(titulo, texto, idLibreta, etiquetas, color, onDone);
     }
 
     public void editarNota(int id, String titulo, String texto, int idLibretaVieja, int idLibretaNueva,
-                           List<Etiqueta> anadidas, List<Etiqueta> quitadas, Runnable onDone) {
-        repositorio.editarNota(id, titulo, texto, idLibretaVieja, idLibretaNueva, anadidas, quitadas, onDone);
+                           List<Etiqueta> anadidas, List<Etiqueta> quitadas, int color, Runnable onDone) {
+        repositorio.editarNota(id, titulo, texto, idLibretaVieja, idLibretaNueva, anadidas, quitadas, color, onDone);
     }
 
     public void cargarAdjuntos(int idNota) {

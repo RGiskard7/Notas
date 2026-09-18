@@ -5,11 +5,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.notas.R;
 import com.example.notas.data.Nota;
 import com.example.notas.databinding.NotaItemBinding;
 import com.example.notas.util.Fechas;
+import com.example.notas.util.FormatoNota;
+import com.example.notas.util.PaletaNotas;
+import com.example.notas.util.Resaltado;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.List;
 
@@ -32,10 +39,45 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
 
     private final List<Nota> notas;
     private final OnNotaClickListener listener;
+    private String consulta = "";
+    private final java.util.Set<Integer> seleccionados = new java.util.HashSet<>();
+    private boolean modoSeleccion;
 
     public NotaAdapter(List<Nota> notas, OnNotaClickListener listener) {
         this.notas = notas;
         this.listener = listener;
+    }
+
+    /** Texto de búsqueda que se resalta en cada nota. */
+    public void setConsulta(String consulta) {
+        this.consulta = consulta == null ? "" : consulta;
+    }
+
+    /** Activa o desactiva el modo de selección múltiple. */
+    public void setModoSeleccion(boolean modo) {
+        this.modoSeleccion = modo;
+        if (!modo) {
+            seleccionados.clear();
+        }
+        notifyDataSetChanged();
+    }
+
+    public boolean isModoSeleccion() {
+        return modoSeleccion;
+    }
+
+    /** Marca o desmarca una nota y devuelve cuántas quedan seleccionadas. */
+    public int alternarSeleccion(int id) {
+        if (!seleccionados.add(id)) {
+            seleccionados.remove(id);
+        }
+        notifyDataSetChanged();
+        return seleccionados.size();
+    }
+
+    /** Identificadores de las notas seleccionadas. */
+    public java.util.Set<Integer> getSeleccionados() {
+        return seleccionados;
     }
 
     @NonNull
@@ -50,15 +92,39 @@ public class NotaAdapter extends RecyclerView.Adapter<NotaAdapter.NotaViewHolder
         Nota nota = notas.get(position);
         CharSequence extracto = RenderizadorNota.renderizar(nota.getTexto(), null);
         String fecha = Fechas.formatearNota(nota.getFechaCreacion());
-        holder.binding.textViewTitulo.setText(nota.getTitulo());
-        holder.binding.textViewTexto.setText(extracto);
+        int colorResaltado = ContextCompat.getColor(holder.itemView.getContext(), R.color.resaltado);
+        holder.binding.textViewTitulo.setText(Resaltado.resaltar(nota.getTitulo(), consulta, colorResaltado));
+        holder.binding.textViewTexto.setText(Resaltado.resaltar(extracto, consulta, colorResaltado));
         holder.binding.textViewFecha.setText(fecha);
+        holder.binding.imageViewFijada.setVisibility(nota.isFijada() ? View.VISIBLE : View.GONE);
+
+        MaterialCardView tarjeta = holder.binding.getRoot();
+        if (nota.getColor() != 0) {
+            tarjeta.setCardBackgroundColor(PaletaNotas.color(tarjeta.getContext(), nota.getColor()));
+        } else {
+            tarjeta.setCardBackgroundColor(MaterialColors.getColor(tarjeta, com.google.android.material.R.attr.colorSurface));
+        }
+        tarjeta.setChecked(modoSeleccion && seleccionados.contains(nota.getId()));
+
+        int[] progreso = FormatoNota.progresoTareas(nota.getTexto());
+        String descripcionTareas = null;
+        if (progreso[1] > 0) {
+            holder.binding.textViewTareas.setText(progreso[0] + "/" + progreso[1]);
+            holder.binding.textViewTareas.setVisibility(View.VISIBLE);
+            descripcionTareas = holder.itemView.getResources()
+                    .getString(R.string.progreso_tareas, progreso[0], progreso[1]);
+        } else {
+            holder.binding.textViewTareas.setVisibility(View.GONE);
+        }
 
         StringBuilder descripcion = new StringBuilder(nota.getTitulo());
         if (extracto.length() > 0) {
             descripcion.append(". ").append(extracto);
         }
         descripcion.append(". ").append(fecha);
+        if (descripcionTareas != null) {
+            descripcion.append(". ").append(descripcionTareas);
+        }
         holder.itemView.setContentDescription(descripcion.toString());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

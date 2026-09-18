@@ -47,6 +47,8 @@ final class Mapper {
         Nota nota = new Nota(entity.id, entity.titulo, entity.texto, libreta, etiquetas, entity.fechaCreacion);
         nota.setFechaModificacion(entity.fechaModificacion);
         nota.setRecordatorio(entity.recordatorio);
+        nota.setFijada(entity.fijada == 1);
+        nota.setColor(entity.color);
         return nota;
     }
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.example.notas.R;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Nota;
+import com.google.android.material.card.MaterialCardView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,5 +63,40 @@ public class NotaAdapterTest {
         String descripcion = holder.itemView.getContentDescription().toString();
         assertTrue(descripcion.contains("Titulo"));
         assertTrue(descripcion.contains("hola"));
+    }
+
+    @Test
+    public void muestraElProgresoDeLasTareas() {
+        Context context = new ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.AppTheme);
+        List<Nota> notas = new ArrayList<>();
+        notas.add(new Nota(1, "Tareas", "- [ ] una\n- [x] dos", null, new ArrayList<Etiqueta>(), 0L));
+
+        NotaAdapter adaptador = new NotaAdapter(notas, null);
+        RecyclerView parent = new RecyclerView(context);
+        parent.setLayoutManager(new LinearLayoutManager(context));
+        NotaAdapter.NotaViewHolder holder = adaptador.onCreateViewHolder(parent, 0);
+        adaptador.onBindViewHolder(holder, 0);
+
+        TextView tareas = holder.itemView.findViewById(R.id.textViewTareas);
+        assertEquals(View.VISIBLE, tareas.getVisibility());
+        assertEquals("1/2", tareas.getText().toString());
+    }
+
+    @Test
+    public void elModoSeleccionMarcaLaTarjeta() {
+        Context context = new ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.AppTheme);
+        List<Nota> notas = new ArrayList<>();
+        notas.add(new Nota(1, "Titulo", "hola", null, new ArrayList<Etiqueta>(), 0L));
+
+        NotaAdapter adaptador = new NotaAdapter(notas, null);
+        RecyclerView parent = new RecyclerView(context);
+        parent.setLayoutManager(new LinearLayoutManager(context));
+        NotaAdapter.NotaViewHolder holder = adaptador.onCreateViewHolder(parent, 0);
+
+        adaptador.setModoSeleccion(true);
+        adaptador.alternarSeleccion(1);
+        adaptador.onBindViewHolder(holder, 0);
+
+        assertTrue(((MaterialCardView) holder.itemView).isChecked());
     }
 }

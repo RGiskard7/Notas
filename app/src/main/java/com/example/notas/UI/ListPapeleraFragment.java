@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -15,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -90,7 +90,6 @@ public class ListPapeleraFragment extends Fragment {
         });
         recyclerView = binding.listViewNotas;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(adaptador);
     }
 
@@ -133,6 +132,20 @@ public class ListPapeleraFragment extends Fragment {
         });
         builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
         builder.create().show();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_filtrar_fecha_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_fecha_des).setVisible(false);
+        menu.findItem(R.id.action_filtrar_modificacion_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_modificacion_des).setVisible(false);
+        menu.findItem(R.id.action_filtrar_titulo_asc).setVisible(false);
+        menu.findItem(R.id.action_filtrar_titulo_des).setVisible(false);
+        menu.findItem(R.id.action_recuento_notas_asc).setVisible(false);
+        menu.findItem(R.id.action_recuento_notas_des).setVisible(false);
+        menu.findItem(R.id.action_vista).setVisible(false);
     }
 
     @Override

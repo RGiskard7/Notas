@@ -27,6 +27,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import com.example.notas.UI.DialogoColor;
 import com.example.notas.UI.EditNotaViewModel;
 import com.example.notas.data.Adjunto;
 import com.example.notas.data.Etiqueta;
@@ -37,6 +38,7 @@ import com.example.notas.databinding.ActivityEditNotaBinding;
 import com.example.notas.util.Adjuntos;
 import com.example.notas.util.EtiquetaSelection;
 import com.example.notas.util.FormatoNota;
+import com.example.notas.util.PaletaNotas;
 import com.example.notas.util.Vinietas;
 import com.google.android.material.chip.Chip;
 
@@ -68,6 +70,7 @@ public class EditNotaActivity extends AppCompatActivity {
     private List<Etiqueta> allEtiquetas;
     private EditNotaViewModel viewModel;
     private LinearLayout contenedorAdjuntos;
+    private int colorNota = 0;
 
     /** Abre el selector de imágenes para adjuntar una a la nota. */
     private final ActivityResultLauncher<String[]> adjuntarLauncher = registerForActivityResult(
@@ -170,10 +173,21 @@ public class EditNotaActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.editar_nota);
             titulo.setText(nota.getTitulo());
             texto.setText(nota.getTexto());
+            colorNota = nota.getColor();
+            aplicarColor();
         } else {
             getSupportActionBar().setTitle(R.string.nueva_nota);
         }
         actualizarEtiquetasChip();
+    }
+
+    /** Aplica el color elegido como fondo del área de edición. */
+    private void aplicarColor() {
+        if (colorNota != 0) {
+            binding.contenidoEditor.setBackgroundColor(PaletaNotas.color(this, colorNota));
+        } else {
+            binding.contenidoEditor.setBackground(null);
+        }
     }
 
     /** Actualiza el chip que muestra el número de etiquetas de la nota. */
@@ -528,6 +542,17 @@ public class EditNotaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if (id == R.id.action_color) {
+            DialogoColor.mostrar(this, colorNota, new DialogoColor.OnColorElegido() {
+                @Override
+                public void onColor(int indice) {
+                    colorNota = indice;
+                    aplicarColor();
+                }
+            });
+            return true;
+        }
+
         if (id == R.id.action_guardar) {
             String tituloTexto = titulo.getText().toString();
             String textoContenido = texto.getText().toString();
@@ -549,7 +574,7 @@ public class EditNotaActivity extends AppCompatActivity {
 
                     int idLibretaVieja = oldLibreta != null ? oldLibreta.getId() : libreta.getId();
                     viewModel.editarNota(nota.getId(), tituloTexto, textoContenido, idLibretaVieja, libreta.getId(),
-                            anadidas, quitadas, new Runnable() {
+                            anadidas, quitadas, colorNota, new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(EditNotaActivity.this, R.string.nota_editada, Toast.LENGTH_SHORT).show();
@@ -559,7 +584,7 @@ public class EditNotaActivity extends AppCompatActivity {
                             });
                 } else {
                     viewModel.crearNota(tituloTexto, textoContenido, libreta.getId(),
-                            new ArrayList<>(currentEtiquetasNota), new Runnable() {
+                            new ArrayList<>(currentEtiquetasNota), colorNota, new Runnable() {
                                 @Override
                                 public void run() {
                                     finish();

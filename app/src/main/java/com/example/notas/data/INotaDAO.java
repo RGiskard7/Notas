@@ -162,6 +162,22 @@ public interface INotaDAO {
     public void setRecordatorio(int id, long cuando);
 
     /**
+     * Fija o desfija una nota para que aparezca arriba del listado.
+     *
+     * @param id     identificador de la nota.
+     * @param fijada 1 para fijarla, 0 para desfijarla.
+     */
+    public void setFijada(int id, int fijada);
+
+    /**
+     * Cambia el color de fondo de una nota.
+     *
+     * @param id    identificador de la nota.
+     * @param color índice del color (0 = sin color).
+     */
+    public void setColor(int id, int color);
+
+    /**
      * Carga las notas que tienen un recordatorio pendiente.
      *
      * @param list lista de salida.

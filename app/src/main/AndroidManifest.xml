@@ -31,7 +31,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -45,6 +45,11 @@
 
         <receiver
             android:name=".recordatorios.RecordatorioReceiver"
+            android:exported="false" />
+
+        <provider
+            android:name=".UI.BusquedaRecienteProvider"
+            android:authorities="com.example.notas.busquedas"
             android:exported="false" />
 
         <receiver

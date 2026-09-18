@@ -13,4 +13,12 @@
     <color name="on_surface">#E4E7EB</color>
     <color name="on_surface_secondary">#9AA5B1</color>
     <color name="divider">#2C2C2C</color>
+
+    <!-- Colores de nota (modo oscuro) -->
+    <color name="nota_amarillo">#4A452A</color>
+    <color name="nota_verde">#2F3E28</color>
+    <color name="nota_azul">#23394A</color>
+    <color name="nota_rosa">#4A2A38</color>
+    <color name="nota_morado">#3A2A45</color>
+    <color name="nota_naranja">#4A3826</color>
 </resources>

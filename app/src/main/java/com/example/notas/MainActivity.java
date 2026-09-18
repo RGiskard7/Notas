@@ -1,6 +1,8 @@
 package com.example.notas;
 
+import android.app.SearchManager;
 import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,10 +18,12 @@ import com.example.notas.ajustes.AjustesActivity;
 import com.example.notas.data.Etiqueta;
 import com.example.notas.data.Libreta;
 import com.example.notas.data.NotasRepository;
+import com.example.notas.data.Nota;
 import com.example.notas.databinding.ActivityMainBinding;
 import com.example.notas.seguridad.BloqueoActivity;
 import com.example.notas.seguridad.GestorPin;
 import com.example.notas.util.Markdown;
+import com.example.notas.util.Respaldo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -33,6 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -42,13 +47,16 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pantalla principal de la aplicación.
@@ -77,8 +85,33 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+    /** Pide dónde guardar la copia de seguridad de todas las notas. */
+    private final ActivityResultLauncher<String> exportarTodoLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("application/zip"),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        exportarTodo(uri);
+                    }
+                }
+            });
+
+    /** Abre el selector del ZIP de copia de seguridad para importarlo. */
+    private final ActivityResultLauncher<String[]> importarTodoLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    if (uri != null) {
+                        importarTodo(uri);
+                    }
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
         // Si hay un PIN configurado y no se ha desbloqueado todavía, se pide.
@@ -130,6 +163,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void eventRecorder() {
         drawer.addDrawerListener(toggle);
+        drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                int capa = newState == DrawerLayout.STATE_IDLE ? View.LAYER_TYPE_NONE : View.LAYER_TYPE_HARDWARE;
+                navigationView.setLayerType(capa, null);
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -278,6 +318,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.app_bar_search);
+        if (searchManager != null && searchItem != null && searchItem.getActionView() instanceof SearchView) {
+            ((SearchView) searchItem.getActionView()).setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
         return true;
     }
 
@@ -296,6 +342,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_importar) {
             importarLauncher.launch(new String[]{"text/*", "text/markdown", "text/plain"});
+        } else if (id == R.id.action_exportar_todo) {
+            exportarTodoLauncher.launch("nevernote.zip");
+        } else if (id == R.id.action_importar_todo) {
+            importarTodoLauncher.launch(new String[]{"application/zip", "application/octet-stream"});
         } else if (id == R.id.action_establecer_pin) {
             pedirNuevoPin();
         } else if (id == R.id.action_quitar_pin) {
@@ -368,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             Markdown.NotaMarkdown importada = Markdown.importar(contenido, nombreFichero(uri));
 
             NotasRepository.get(this).crearNota(importada.titulo, importada.texto, 1,
-                    new ArrayList<Etiqueta>(), new Runnable() {
+                    new ArrayList<Etiqueta>(), 0, new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(MainActivity.this, R.string.nota_importada, Toast.LENGTH_SHORT).show();
@@ -377,6 +427,43 @@ public class MainActivity extends AppCompatActivity {
                     });
         } catch (IOException e) {
             Toast.makeText(this, R.string.error_importar, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** Escribe todas las notas en un ZIP de copia de seguridad. */
+    private void exportarTodo(final Uri uri) {
+        NotasRepository.get(this).notasTodas(new NotasRepository.Callback<List<Nota>>() {
+            @Override
+            public void onResult(List<Nota> notas) {
+                try (OutputStream salida = getContentResolver().openOutputStream(uri)) {
+                    if (salida == null) {
+                        throw new IOException("No se pudo abrir el fichero");
+                    }
+                    Respaldo.exportar(notas, salida);
+                    Toast.makeText(MainActivity.this, R.string.respaldo_exportado, Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, R.string.error_respaldo, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    /** Lee un ZIP de copia de seguridad y crea las notas que contiene. */
+    private void importarTodo(Uri uri) {
+        try (InputStream entrada = getContentResolver().openInputStream(uri)) {
+            if (entrada == null) {
+                throw new IOException("No se pudo abrir el fichero");
+            }
+            List<Markdown.NotaMarkdown> notas = Respaldo.importar(entrada);
+            NotasRepository.get(this).crearNotas(notas, new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, R.string.respaldo_importado, Toast.LENGTH_SHORT).show();
+                    recargarListadoActual();
+                }
+            });
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.error_respaldo, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -393,8 +480,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setContentDescription(getString(descripcion));
     }
 
-    private void recargarListadoActual() {
-        Fragment actual = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+    private void recargarListadoActual() {        Fragment actual = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (actual instanceof ListNotasFragment) {
             ((ListNotasFragment) actual).recargar();
         } else if (actual instanceof ListLibretasFragment) {

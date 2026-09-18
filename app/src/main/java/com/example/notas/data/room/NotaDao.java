@@ -34,21 +34,21 @@ public interface NotaDao {
     @Query("SELECT * FROM notas WHERE nota_id = :id LIMIT 1")
     NotaConRelaciones getNotaConRelaciones(int id);
 
-    @Query("SELECT * FROM notas WHERE eliminada_en = 0 ORDER BY nota_id ASC")
+    @Query("SELECT * FROM notas WHERE eliminada_en = 0 ORDER BY fijada DESC, nota_id ASC")
     List<NotaEntity> getAllNotas();
 
     @Transaction
-    @Query("SELECT * FROM notas WHERE eliminada_en = 0 ORDER BY nota_id ASC")
+    @Query("SELECT * FROM notas WHERE eliminada_en = 0 ORDER BY fijada DESC, nota_id ASC")
     List<NotaConRelaciones> getAllNotasConRelaciones();
 
     @Transaction
     @Query("SELECT notas.* FROM notas INNER JOIN libretaNotas ON notas.nota_id = libretaNotas.nota_id " +
-            "WHERE libretaNotas.libreta_id = :idLibreta AND notas.eliminada_en = 0 ORDER BY notas.nota_id ASC")
+            "WHERE libretaNotas.libreta_id = :idLibreta AND notas.eliminada_en = 0 ORDER BY notas.fijada DESC, notas.nota_id ASC")
     List<NotaConRelaciones> getNotasDeLibretaConRelaciones(int idLibreta);
 
     @Transaction
     @Query("SELECT notas.* FROM notas INNER JOIN etiquetaNotas ON notas.nota_id = etiquetaNotas.nota_id " +
-            "WHERE etiquetaNotas.etiqueta_id = :idEtiqueta AND notas.eliminada_en = 0 ORDER BY notas.nota_id ASC")
+            "WHERE etiquetaNotas.etiqueta_id = :idEtiqueta AND notas.eliminada_en = 0 ORDER BY notas.fijada DESC, notas.nota_id ASC")
     List<NotaConRelaciones> getNotasDeEtiquetaConRelaciones(int idEtiqueta);
 
     @Transaction
@@ -57,21 +57,21 @@ public interface NotaDao {
 
     @Transaction
     @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid " +
-            "WHERE notas_fts MATCH :consulta AND notas.eliminada_en = 0 ORDER BY notas.nota_id ASC")
+            "WHERE notas_fts MATCH :consulta AND notas.eliminada_en = 0 ORDER BY notas.fijada DESC, notas.nota_id ASC")
     List<NotaConRelaciones> buscarNotas(String consulta);
 
     @Transaction
     @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid " +
             "INNER JOIN libretaNotas ON notas.nota_id = libretaNotas.nota_id " +
             "WHERE libretaNotas.libreta_id = :idLibreta AND notas_fts MATCH :consulta AND notas.eliminada_en = 0 " +
-            "ORDER BY notas.nota_id ASC")
+            "ORDER BY notas.fijada DESC, notas.nota_id ASC")
     List<NotaConRelaciones> buscarNotasDeLibreta(int idLibreta, String consulta);
 
     @Transaction
     @Query("SELECT notas.* FROM notas JOIN notas_fts ON notas.nota_id = notas_fts.rowid " +
             "INNER JOIN etiquetaNotas ON notas.nota_id = etiquetaNotas.nota_id " +
             "WHERE etiquetaNotas.etiqueta_id = :idEtiqueta AND notas_fts MATCH :consulta AND notas.eliminada_en = 0 " +
-            "ORDER BY notas.nota_id ASC")
+            "ORDER BY notas.fijada DESC, notas.nota_id ASC")
     List<NotaConRelaciones> buscarNotasDeEtiqueta(int idEtiqueta, String consulta);
 
     @Query("UPDATE notas SET eliminada_en = :fecha WHERE nota_id = :id")
@@ -82,6 +82,12 @@ public interface NotaDao {
 
     @Query("UPDATE notas SET recordatorio = :cuando WHERE nota_id = :id")
     void setRecordatorio(int id, long cuando);
+
+    @Query("UPDATE notas SET fijada = :fijada WHERE nota_id = :id")
+    void setFijada(int id, int fijada);
+
+    @Query("UPDATE notas SET color = :color WHERE nota_id = :id")
+    void setColor(int id, int color);
 
     @Transaction
     @Query("SELECT * FROM notas WHERE recordatorio > 0 AND eliminada_en = 0 ORDER BY recordatorio ASC")

@@ -25,6 +25,8 @@ public class Nota implements Serializable {
     private long fechaCreacion;
     private long fechaModificacion;
     private long recordatorio;
+    private boolean fijada;
+    private int color;
 
     /**
      * Crea una nota con todos sus datos.
@@ -93,6 +95,24 @@ public class Nota implements Serializable {
 
     public void setRecordatorio(long recordatorio) {
         this.recordatorio = recordatorio;
+    }
+
+    /** Indica si la nota está fijada (se muestra arriba del listado). */
+    public boolean isFijada() {
+        return fijada;
+    }
+
+    public void setFijada(boolean fijada) {
+        this.fijada = fijada;
+    }
+
+    /** Índice del color de fondo de la nota (0 = sin color). */
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public Libreta getLibreta() {
