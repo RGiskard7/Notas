@@ -3,13 +3,11 @@ package com.example.notas.UI;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -232,39 +230,26 @@ public class ListEtiquetasFragment extends Fragment {
 
     private void editarEtiqueta(int position) {
         final Etiqueta etiquetaEditar = listaEtiquetas.get(position);
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        final EditText input = new EditText(getActivity());
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(etiquetaEditar.getTitulo());
-
-        dialog.setTitle(R.string.editar_etiqueta);
-        dialog.setView(input);
-
-        dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                viewModel.editar(etiquetaEditar.getId(), input.getText().toString(),
-                        new NotasRepository.Callback<Boolean>() {
-                            @Override
-                            public void onResult(Boolean editada) {
-                                if (editada) {
-                                    Toast.makeText(getActivity(), R.string.etiqueta_editada, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getActivity(), R.string.etiqueta_duplicada, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
-        });
-        dialog.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        dialog.create().show();
+        DialogoNombre.mostrar(getActivity(), getString(R.string.editar_etiqueta), etiquetaEditar.getTitulo(),
+                new DialogoNombre.OnNombreAceptado() {
+                    @Override
+                    public void onNombre(String nombre) {
+                        if (nombre.equals(etiquetaEditar.getTitulo())) {
+                            return;
+                        }
+                        viewModel.editar(etiquetaEditar.getId(), nombre,
+                                new NotasRepository.Callback<Boolean>() {
+                                    @Override
+                                    public void onResult(Boolean editada) {
+                                        if (editada) {
+                                            Toast.makeText(getActivity(), R.string.etiqueta_editada, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(getActivity(), R.string.etiqueta_duplicada, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                    }
+                });
     }
 
     private void confirmarEliminar(final int position) {

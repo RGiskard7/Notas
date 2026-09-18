@@ -60,4 +60,17 @@ public class ListLibretasViewModel extends AndroidViewModel {
             }
         });
     }
+
+    /** Renombra la libreta si no hay otra con ese título; avisa por callback. */
+    public void editarSiNoExiste(final int id, final String titulo, final NotasRepository.Callback<Boolean> callback) {
+        repositorio.editarLibretaSiNoExiste(id, titulo, new NotasRepository.Callback<Boolean>() {
+            @Override
+            public void onResult(Boolean editada) {
+                if (Boolean.TRUE.equals(editada)) {
+                    cargar();
+                }
+                callback.onResult(editada);
+            }
+        });
+    }
 }

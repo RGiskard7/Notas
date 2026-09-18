@@ -2,7 +2,6 @@ package com.example.notas.UI;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,10 +22,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.notas.EditLibretaActivity;
 import com.example.notas.MainActivity;
 import com.example.notas.R;
 import com.example.notas.data.Libreta;
+import com.example.notas.data.NotasRepository;
 import com.example.notas.databinding.FragmentListLibretasBinding;
 import com.example.notas.util.FiltroTitulo;
 
@@ -218,15 +217,30 @@ public class ListLibretasFragment extends Fragment {
     }
 
     private void editarLibreta(int position) {
-        Libreta libretaEditar = listaLibretas.get(position);
-        if (libretaEditar.getId() != 1) {
-            Intent intent = new Intent(getActivity(), EditLibretaActivity.class);
-            intent.putExtra("libreta", libretaEditar);
-            intent.putExtra("tipo", "editable");
-            startActivity(intent);
-        } else {
+        final Libreta libretaEditar = listaLibretas.get(position);
+        if (libretaEditar.getId() == 1) {
             Toast.makeText(getActivity(), R.string.no_editar_default, Toast.LENGTH_SHORT).show();
+            return;
         }
+        DialogoNombre.mostrar(getActivity(), getString(R.string.editar_libreta), libretaEditar.getTitulo(),
+                new DialogoNombre.OnNombreAceptado() {
+                    @Override
+                    public void onNombre(String nombre) {
+                        if (nombre.equals(libretaEditar.getTitulo())) {
+                            return;
+                        }
+                        viewModel.editarSiNoExiste(libretaEditar.getId(), nombre, new NotasRepository.Callback<Boolean>() {
+                            @Override
+                            public void onResult(Boolean editada) {
+                                if (!editada) {
+                                    Toast.makeText(getActivity(), R.string.libreta_duplicada, Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Toast.makeText(getActivity(), R.string.libreta_guardada, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
     }
 
     private void confirmarEliminar(final int position) {
@@ -251,6 +265,13 @@ public class ListLibretasFragment extends Fragment {
         });
         builder.setNegativeButton(R.string.negativeBtnAlertDIalog, null);
         builder.create().show();
+    }
+
+    /** Vuelve a cargar el listado de libretas. */
+    public void resetListaLibretas() {
+        if (viewModel != null) {
+            viewModel.cargar();
+        }
     }
 
     /** Vuelve a cargar el listado de libretas. */

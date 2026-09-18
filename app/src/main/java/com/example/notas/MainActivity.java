@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 
+import com.example.notas.UI.DialogoNombre;
 import com.example.notas.UI.ListEtiquetasFragment;
 import com.example.notas.UI.ListLibretasFragment;
 import com.example.notas.UI.ListNotasFragment;
@@ -184,46 +185,46 @@ public class MainActivity extends AppCompatActivity {
 
                     startActivity(intent);
                 } else if (currentFragment instanceof  ListLibretasFragment) { // Nueva libreta
-                    Intent intent = new Intent(MainActivity.this, EditLibretaActivity.class);
-                    intent.putExtra("tipo", "nueva");
-                    startActivity(intent);
+                    final ListLibretasFragment listLibretasFragment = (ListLibretasFragment) currentFragment;
+                    DialogoNombre.mostrar(MainActivity.this, getString(R.string.nueva_libreta), "",
+                            new DialogoNombre.OnNombreAceptado() {
+                                @Override
+                                public void onNombre(String nombre) {
+                                    NotasRepository.get(MainActivity.this).crearLibretaSiNoExiste(nombre,
+                                            new NotasRepository.Callback<Boolean>() {
+                                                @Override
+                                                public void onResult(Boolean creada) {
+                                                    if (!creada) {
+                                                        Toast.makeText(MainActivity.this, R.string.libreta_duplicada, Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }
+                                                    listLibretasFragment.resetListaLibretas();
+                                                    Toast.makeText(MainActivity.this, R.string.libreta_guardada, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            });
 
                 } else if (currentFragment instanceof  ListEtiquetasFragment) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    final EditText input = new EditText(MainActivity.this);
                     final ListEtiquetasFragment listEtiquetasFragment = (ListEtiquetasFragment) currentFragment;
-
-                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-
-                    dialog.setTitle(R.string.nueva_etiqueta);
-                    dialog.setView(input);
-
-                    dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final String nombre = input.getText().toString();
-                            NotasRepository.get(MainActivity.this).crearEtiquetaSiNoExiste(nombre,
-                                    new NotasRepository.Callback<Boolean>() {
-                                        @Override
-                                        public void onResult(Boolean creada) {
-                                            if (!creada) {
-                                                Toast.makeText(MainActivity.this, R.string.etiqueta_duplicada, Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                            listEtiquetasFragment.resetListaEtiquetas();
-                                            Toast.makeText(MainActivity.this, R.string.etiqueta_guardada, Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    });
-                    dialog.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    dialog.create().show();
+                    DialogoNombre.mostrar(MainActivity.this, getString(R.string.nueva_etiqueta), "",
+                            new DialogoNombre.OnNombreAceptado() {
+                                @Override
+                                public void onNombre(String nombre) {
+                                    NotasRepository.get(MainActivity.this).crearEtiquetaSiNoExiste(nombre,
+                                            new NotasRepository.Callback<Boolean>() {
+                                                @Override
+                                                public void onResult(Boolean creada) {
+                                                    if (!creada) {
+                                                        Toast.makeText(MainActivity.this, R.string.etiqueta_duplicada, Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }
+                                                    listEtiquetasFragment.resetListaEtiquetas();
+                                                    Toast.makeText(MainActivity.this, R.string.etiqueta_guardada, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            });
                 }
             }
         });

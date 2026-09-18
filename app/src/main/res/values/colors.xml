@@ -3,6 +3,7 @@
     <!-- Paleta (modo claro) -->
     <color name="primary">#008577</color>
     <color name="primary_dark">#00574B</color>
+    <color name="primary_suave">#E0F2F1</color>
     <color name="secondary">#D81B60</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="on_secondary">#FFFFFF</color>

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginBottom="80dp">
+        android:layout_marginBottom="56dp">
 
         <EditText
             android:id="@+id/editTextTituloNwNota"
@@ -92,15 +92,90 @@
 
     </LinearLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <HorizontalScrollView
+        android:id="@+id/barraFormato"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?attr/colorSurface"
-        app:itemIconTint="?attr/colorOnSurface"
-        app:itemTextColor="?attr/colorOnSurface"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_menu_edit_nota" />
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <ImageButton
+                android:id="@+id/buttonNegrita"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/negrita"
+                app:srcCompat="@drawable/ic_negrita" />
+
+            <ImageButton
+                android:id="@+id/buttonCursiva"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/cursiva"
+                app:srcCompat="@drawable/ic_cursiva" />
+
+            <ImageButton
+                android:id="@+id/buttonTachado"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/tachado"
+                app:srcCompat="@drawable/ic_tachado" />
+
+            <ImageButton
+                android:id="@+id/buttonCodigo"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/codigo"
+                app:srcCompat="@drawable/ic_codigo" />
+
+            <ImageButton
+                android:id="@+id/buttonEncabezado"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/encabezado"
+                app:srcCompat="@drawable/ic_encabezado" />
+
+            <ImageButton
+                android:id="@+id/buttonCita"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/cita"
+                app:srcCompat="@drawable/ic_cita" />
+
+            <ImageButton
+                android:id="@+id/buttonVinietas"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/viñetas"
+                app:srcCompat="@drawable/ic_vinietas" />
+
+            <ImageButton
+                android:id="@+id/buttonListaNumerada"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/lista_numerada"
+                app:srcCompat="@drawable/ic_lista_numerada" />
+
+            <ImageButton
+                android:id="@+id/buttonCasilla"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/casilla"
+                app:srcCompat="@drawable/ic_casilla" />
+
+            <ImageButton
+                android:id="@+id/buttonEnlace"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/enlace"
+                app:srcCompat="@drawable/ic_enlace" />
+
+            <ImageButton
+                android:id="@+id/buttonSeparador"
+                style="@style/BotonFormato"
+                android:contentDescription="@string/separador"
+                app:srcCompat="@drawable/ic_separador" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

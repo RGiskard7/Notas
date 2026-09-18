@@ -83,4 +83,31 @@ public class FormatoNotaTest {
         assertFalse(fragmentos.get(0).negrita);
         assertFalse(fragmentos.get(0).cursiva);
     }
+
+    @Test
+    public void formateaTachado() {
+        List<FormatoNota.Fragmento> fragmentos = FormatoNota.formatearEnLinea("~~hola~~");
+
+        assertEquals(1, fragmentos.size());
+        assertTrue(fragmentos.get(0).tachado);
+        assertEquals("hola", fragmentos.get(0).texto);
+    }
+
+    @Test
+    public void formateaCodigo() {
+        List<FormatoNota.Fragmento> fragmentos = FormatoNota.formatearEnLinea("`codigo`");
+
+        assertEquals(1, fragmentos.size());
+        assertTrue(fragmentos.get(0).codigo);
+        assertEquals("codigo", fragmentos.get(0).texto);
+    }
+
+    @Test
+    public void detectaEncabezadosYCitas() {
+        assertTrue(FormatoNota.esEncabezado("## Titulo"));
+        assertEquals("Titulo", FormatoNota.textoEncabezado("## Titulo"));
+        assertTrue(FormatoNota.esCita("> cita"));
+        assertEquals("cita", FormatoNota.textoCita("> cita"));
+        assertTrue(FormatoNota.esSeparador("---"));
+    }
 }

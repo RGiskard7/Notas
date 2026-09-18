@@ -1,6 +1,5 @@
 package com.example.notas;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -25,7 +24,6 @@ import com.example.notas.databinding.ActivityEditNotaBinding;
 import com.example.notas.util.EtiquetaSelection;
 import com.example.notas.util.FormatoNota;
 import com.example.notas.util.Vinietas;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
@@ -48,7 +46,6 @@ public class EditNotaActivity extends AppCompatActivity {
     private EditText texto;
     private Chip chipLibreta;
     private Chip chipEtiquetas;
-    private BottomNavigationView bottomNavigationView;
     private boolean editando = false;
     private List<Libreta> allLibretas;
     private Set<Etiqueta> currentEtiquetasNota;
@@ -120,7 +117,6 @@ public class EditNotaActivity extends AppCompatActivity {
         texto = binding.editTextContenidoNwNota;
         chipLibreta = binding.chipLibreta;
         chipEtiquetas = binding.chipEtiquetas;
-        bottomNavigationView = binding.bottomNavigation;
 
         fillComponents();
     }
@@ -190,23 +186,72 @@ public class EditNotaActivity extends AppCompatActivity {
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        int id = item.getItemId();
-                        if (id == R.id.action_vinietas) {
-                            insertarVinieta();
-                        } else if (id == R.id.action_casilla) {
-                            insertarCasilla();
-                        } else if (id == R.id.action_negrita) {
-                            envolverSeleccion("**");
-                        } else if (id == R.id.action_cursiva) {
-                            envolverSeleccion("*");
-                        }
-                        return true;
-                    }
-                });
+        binding.buttonVinietas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarVinieta();
+            }
+        });
+        binding.buttonCasilla.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarAlInicioDeLinea(FormatoNota.MARCA_TAREA);
+            }
+        });
+        binding.buttonListaNumerada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarAlInicioDeLinea("1. ");
+            }
+        });
+        binding.buttonNegrita.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                envolverSeleccion("**");
+            }
+        });
+        binding.buttonCursiva.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                envolverSeleccion("*");
+            }
+        });
+        binding.buttonTachado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                envolverSeleccion("~~");
+            }
+        });
+        binding.buttonCodigo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                envolverSeleccion("`");
+            }
+        });
+        binding.buttonEnlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarEnlace();
+            }
+        });
+        binding.buttonEncabezado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarAlInicioDeLinea("## ");
+            }
+        });
+        binding.buttonCita.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarAlInicioDeLinea("> ");
+            }
+        });
+        binding.buttonSeparador.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertarSeparador();
+            }
+        });
     }
 
     /** Muestra la lista de libretas para elegir una. */
@@ -289,8 +334,8 @@ public class EditNotaActivity extends AppCompatActivity {
         }
     }
 
-    /** Inserta una casilla de tarea en la posición del cursor. */
-    private void insertarCasilla() {
+    /** Inserta una marca al principio de la línea del cursor (casilla, lista, cita...). */
+    private void insertarAlInicioDeLinea(String marca) {
         Editable contenido = texto.getText();
         int cursor = texto.getSelectionStart();
         if (cursor < 0) {
@@ -298,9 +343,38 @@ public class EditNotaActivity extends AppCompatActivity {
         }
 
         String original = contenido.toString();
-        String nuevo = FormatoNota.insertarCasilla(original, cursor);
+        String nuevo = FormatoNota.insertarAlInicioDeLinea(original, cursor, marca);
         texto.setText(nuevo);
         texto.setSelection(cursor + (nuevo.length() - original.length()));
+    }
+
+    /** Convierte la selección en un enlace de Markdown. */
+    private void insertarEnlace() {
+        int inicio = texto.getSelectionStart();
+        int fin = texto.getSelectionEnd();
+        if (inicio < 0) {
+            inicio = texto.getText().length();
+        }
+        if (fin < inicio) {
+            fin = inicio;
+        }
+
+        Editable contenido = texto.getText();
+        String seleccion = contenido.subSequence(inicio, fin).toString();
+        String enlace = "[" + seleccion + "](url)";
+        contenido.replace(inicio, fin, enlace);
+        texto.setSelection(inicio + enlace.length());
+    }
+
+    /** Inserta una línea separadora. */
+    private void insertarSeparador() {
+        Editable contenido = texto.getText();
+        int cursor = texto.getSelectionStart();
+        if (cursor < 0) {
+            cursor = contenido.length();
+        }
+        contenido.insert(cursor, "\n---\n");
+        texto.setSelection(cursor + 5);
     }
 
     /** Rodea el texto seleccionado con la marca indicada (negrita o cursiva). */

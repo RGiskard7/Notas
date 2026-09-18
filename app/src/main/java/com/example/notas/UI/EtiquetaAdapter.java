@@ -45,6 +45,7 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.Etique
     @Override
     public void onBindViewHolder(@NonNull final EtiquetaViewHolder holder, int position) {
         Etiqueta etiqueta = etiquetas.get(position);
+        holder.binding.imageViewIcono.setImageResource(R.drawable.ic_etiquetas);
         holder.binding.textViewTitulo2.setText(etiqueta.getTitulo());
         holder.binding.textViewNotas.setText(holder.itemView.getResources()
                 .getQuantityString(R.plurals.notas, etiqueta.getNumNotas(), etiqueta.getNumNotas()));

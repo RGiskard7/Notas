@@ -289,6 +289,20 @@ public class NotasRepository {
         }, callback);
     }
 
+    /** Cambia el título de una libreta si no lo tiene ya otra; el callback recibe true si se editó. */
+    public void editarLibretaSiNoExiste(final int id, final String titulo, Callback<Boolean> callback) {
+        leer(new Tarea<Boolean>() {
+            @Override
+            public Boolean ejecutar() {
+                if (libretaDAO.existTitulo(titulo)) {
+                    return false;
+                }
+                libretaDAO.editLibreta(id, titulo);
+                return true;
+            }
+        }, callback);
+    }
+
     /** Crea la etiqueta si el título no está en uso; el callback recibe true si se creó. */
     public void crearEtiquetaSiNoExiste(final String titulo, Callback<Boolean> callback) {
         leer(new Tarea<Boolean>() {
@@ -319,7 +333,8 @@ public class NotasRepository {
 
     /** Crea una nota, la asocia a la libreta y le añade las etiquetas indicadas. */
     public void crearNota(final String titulo, final String texto, final int idLibreta,
-                          final List<Etiqueta> etiquetas, final Runnable onDone) {        escribir(new Runnable() {
+                          final List<Etiqueta> etiquetas, final Runnable onDone) {
+        escribir(new Runnable() {
             @Override
             public void run() {
                 int idNota = notaDAO.createNota(titulo, texto);

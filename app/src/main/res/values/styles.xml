@@ -40,4 +40,14 @@
         <item name="android:background">@color/divider</item>
     </style>
 
+    <!-- Botón de la barra de formato del editor. -->
+    <style name="BotonFormato">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+
 </resources>

@@ -12,10 +12,12 @@ con búsqueda y ordenación. Proyecto original de 2020, migrado y modernizado.
 - **Etiquetas**: relación N:M con las notas.
 - **Búsqueda** por título y contenido (índice FTS4), respetando el ámbito
   (todas / libreta / etiqueta), y **ordenación** por fecha, título o número de notas.
-- Editor con inserción de viñetas, **casillas de tareas** y **negrita/cursiva** desde la
-  barra inferior; en la vista, las tareas se pueden marcar directamente.
-- Editor con el patrón de las apps de notas actuales: título y cuerpo sin cajas y la
-  libreta/etiquetas como *chips*.
+- Editor con el patrón de las apps de notas actuales: título y cuerpo sin cajas, la
+  libreta/etiquetas como *chips* y una barra de formato con negrita, cursiva, tachado,
+  código, encabezado, cita, viñetas, lista numerada, casilla, enlace y separador; en la
+  vista, las tareas se pueden marcar directamente.
+- **Libretas y etiquetas** con la misma experiencia: listados con icono y un diálogo
+  Material común para crearlas o renombrarlas (avisa si el título ya existe).
 - **Exportar e importar** notas en **Markdown** (ficheros `.md`).
 - **Papelera**: las notas se borran de forma lógica, se pueden **restaurar** (o deshacer
   al momento) y borrar definitivamente.
@@ -37,11 +39,11 @@ com.example.notas
 ├── MainActivity            Drawer + fragments (notas / libretas / etiquetas)
 ├── EditNotaActivity        Crear y editar notas
 ├── ViewNotaActivity        Ver, editar y eliminar una nota
-├── EditLibretaActivity     Crear y editar libretas
 ├── UI/
 │   ├── List*Fragment       Listados (RecyclerView)
 │   ├── *Adapter            Adapters con ViewHolder
-│   └── *ViewModel          ViewModel + LiveData por pantalla
+│   ├── *ViewModel          ViewModel + LiveData por pantalla
+│   └── DialogoNombre       Diálogo de nombre (crear y renombrar libretas/etiquetas)
 ├── util/                   Lógica pura testeable (filtro, fechas, selección)
 └── data/
     ├── NotasRepository     Acceso asíncrono a datos (executor + main handler)
@@ -70,19 +72,21 @@ Requisitos: JDK 17+, Android SDK con la plataforma 36.
 
 ## Tests
 
-145 tests:
+162 tests:
 
-- **data/** (48): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
+- **data/** (52): DAOs Room (CRUD, papelera, adjuntos, recordatorios, cascadas,
   duplicados, recuentos, fechas, búsqueda FTS), migraciones 1->2 a 5->6, garantía de
-  que producción no consulta en el hilo principal y entrega asíncrona del repositorio.
-- **util/** (51): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
-  negrita/cursiva), adjuntos, fechas, diff de etiquetas y viñetas.
+  que producción no consulta en el hilo principal, entrega asíncrona del repositorio y
+  creación/renombrado de libretas sin títulos repetidos.
+- **util/** (54): filtro por título, consulta FTS, Markdown, formato de nota (tareas,
+  negrita/cursiva/tachado/código, encabezados, citas), adjuntos, fechas, diff de
+  etiquetas y viñetas.
 - **recordatorios/** (1): programación y cancelación de la alarma.
 - **seguridad/** (8): PIN (guardar, comprobar, cambiar, quitar) y pantalla de bloqueo.
 - **ajustes/** (6): selector de tema y pantalla "Acerca de".
-- **UI/** (30): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, long-press,
-  estado vacío), renderizado de notas, barra de formato del editor, Activities de
-  edición/visualización y persistencia de la búsqueda.
+- **UI/** (40): `MainActivity` (navegación, FAB, atrás, ámbito, papelera, estado vacío),
+  renderizado de notas, vista previa con formato, barra de formato del editor, diálogo
+  de nombre, Activities de edición/visualización y persistencia de la búsqueda.
 - Ejemplo de plantilla (1).
 
 ## Notas

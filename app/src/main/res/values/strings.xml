@@ -24,6 +24,8 @@
     <string name="pin_guardado">PIN guardado</string>
     <string name="pin_quitado">PIN quitado</string>
     <string name="pin_corto">El PIN debe tener al menos 4 dígitos</string>
+    <string name="nombre">Nombre</string>
+    <string name="nombre_vacio">El nombre no puede estar vacío</string>
     <string name="ajustes">Ajustes</string>
     <string name="apariencia">Apariencia</string>
     <string name="tema_sistema">Según el sistema</string>
@@ -48,8 +50,6 @@
     <!-- String used for activity_edit_nota.xml -->
     <string name="editTextHintAs">"Título de la nota"</string>
     <string name="editTextHintAs2">"Contenido"</string>
-    <!-- String used for activity_edit_libreta.xml -->
-    <string name="editTextHintAc">"Nombre"</string>
 
     <!-- Títulos de pantalla -->
     <string name="nueva_nota">Nueva nota</string>
@@ -68,6 +68,13 @@
     <string name="casilla">Casilla</string>
     <string name="negrita">Negrita</string>
     <string name="cursiva">Cursiva</string>
+    <string name="tachado">Tachado</string>
+    <string name="lista_numerada">Lista numerada</string>
+    <string name="cita">Cita</string>
+    <string name="encabezado">Encabezado</string>
+    <string name="codigo">Código</string>
+    <string name="enlace">Enlace</string>
+    <string name="separador">Separador</string>
 
     <!-- Acciones -->
     <string name="ok">OK</string>

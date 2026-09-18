@@ -18,7 +18,6 @@ import com.example.notas.data.INotaDAO;
 import com.example.notas.data.Nota;
 import com.example.notas.data.NotasRepository;
 import com.example.notas.data.room.NotasDatabase;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -108,27 +107,67 @@ public class EditNotaActivityTest {
     }
 
     @Test
-    public void elBotonDeCasillaDelMenuInferiorInsertaUnaTarea() {
+    public void elBotonDeCasillaInsertaUnaTarea() {
         EditNotaActivity activity = lanzarNueva();
 
-        BottomNavigationView menu = activity.findViewById(R.id.bottom_navigation);
-        menu.setSelectedItemId(R.id.action_casilla);
+        activity.findViewById(R.id.buttonCasilla).performClick();
 
         EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
         assertEquals("- [ ] ", contenido.getText().toString());
     }
 
     @Test
-    public void elBotonDeNegritaDelMenuInferiorRodeaLaSeleccion() {
+    public void elBotonDeNegritaRodeaLaSeleccion() {
         EditNotaActivity activity = lanzarNueva();
         EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
         contenido.setText("hola");
         contenido.setSelection(0, 4);
 
-        BottomNavigationView menu = activity.findViewById(R.id.bottom_navigation);
-        menu.setSelectedItemId(R.id.action_negrita);
+        activity.findViewById(R.id.buttonNegrita).performClick();
 
         assertEquals("**hola**", contenido.getText().toString());
+    }
+
+    @Test
+    public void elBotonDeTachadoRodeaLaSeleccion() {
+        EditNotaActivity activity = lanzarNueva();
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        contenido.setText("hola");
+        contenido.setSelection(0, 4);
+
+        activity.findViewById(R.id.buttonTachado).performClick();
+
+        assertEquals("~~hola~~", contenido.getText().toString());
+    }
+
+    @Test
+    public void elBotonDeEncabezadoInsertaAlmohadillas() {
+        EditNotaActivity activity = lanzarNueva();
+
+        activity.findViewById(R.id.buttonEncabezado).performClick();
+
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        assertEquals("## ", contenido.getText().toString());
+    }
+
+    @Test
+    public void elBotonDeListaNumeradaInsertaElNumero() {
+        EditNotaActivity activity = lanzarNueva();
+
+        activity.findViewById(R.id.buttonListaNumerada).performClick();
+
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        assertEquals("1. ", contenido.getText().toString());
+    }
+
+    @Test
+    public void elBotonDeSeparadorInsertaLaLinea() {
+        EditNotaActivity activity = lanzarNueva();
+
+        activity.findViewById(R.id.buttonSeparador).performClick();
+
+        EditText contenido = activity.findViewById(R.id.editTextContenidoNwNota);
+        assertEquals("\n---\n", contenido.getText().toString());
     }
 
     @Test

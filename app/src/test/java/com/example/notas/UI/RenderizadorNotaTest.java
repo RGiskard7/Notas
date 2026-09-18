@@ -1,10 +1,13 @@
 package com.example.notas.UI;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 
 import org.junit.Test;
@@ -49,5 +52,21 @@ public class RenderizadorNotaTest {
         assertEquals(1, spans.length);
         spans[0].onClick(null);
         assertEquals(1, pulsada[0]);
+    }
+
+    @Test
+    public void elTachadoSeAplica() {
+        Spanned texto = (Spanned) RenderizadorNota.renderizar("~~hola~~", null);
+
+        assertEquals("hola", texto.toString());
+        assertEquals(1, texto.getSpans(0, texto.length(), StrikethroughSpan.class).length);
+    }
+
+    @Test
+    public void elEncabezadoSeAgranda() {
+        Spanned texto = (Spanned) RenderizadorNota.renderizar("## Titulo", null);
+
+        assertEquals("Titulo", texto.toString());
+        assertTrue(texto.getSpans(0, texto.length(), RelativeSizeSpan.class).length > 0);
     }
 }

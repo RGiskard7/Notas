@@ -9,8 +9,10 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.app.Dialog;
 import android.os.Looper;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -138,15 +140,51 @@ public class MainActivityTest {
     }
 
     @Test
-    public void fabDesdeLibretas_abreEdicionDeLibreta() {
+    public void fabDesdeLibretas_muestraElDialogoDeNuevaLibreta() {
         MainActivity activity = lanzar();
         seleccionarMenu(activity, R.id.allLibretas);
 
         activity.findViewById(R.id.fab).performClick();
 
-        Intent siguiente = shadowOf(activity).getNextStartedActivity();
-        assertNotNull(siguiente);
-        assertEquals(EditLibretaActivity.class.getName(), siguiente.getComponent().getClassName());
+        Dialog dialogo = ShadowDialog.getLatestDialog();
+        assertNotNull(dialogo);
+        assertTrue(dialogo.isShowing());
+    }
+
+    @Test
+    public void crearLibretaDesdeElDialogo_laGuardaYApareceEnLaLista() {
+        MainActivity activity = lanzar();
+        seleccionarMenu(activity, R.id.allLibretas);
+
+        activity.findViewById(R.id.fab).performClick();
+
+        AlertDialog dialogo = (AlertDialog) ShadowDialog.getLatestDialog();
+        EditText entrada = dialogo.findViewById(R.id.entradaNombre);
+        entrada.setText("Estudios");
+        dialogo.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        List<Libreta> libretas = new ArrayList<>();
+        libretaDAO.getAllLibretas(libretas);
+        boolean encontrada = false;
+        for (Libreta libreta : libretas) {
+            if ("Estudios".equals(libreta.getTitulo())) {
+                encontrada = true;
+            }
+        }
+        assertTrue(encontrada);
+    }
+
+    @Test
+    public void fabDesdeEtiquetas_muestraElDialogoDeNuevaEtiqueta() {
+        MainActivity activity = lanzar();
+        seleccionarMenu(activity, R.id.allEtiquetas);
+
+        activity.findViewById(R.id.fab).performClick();
+
+        Dialog dialogo = ShadowDialog.getLatestDialog();
+        assertNotNull(dialogo);
+        assertTrue(dialogo.isShowing());
     }
 
     @Test
