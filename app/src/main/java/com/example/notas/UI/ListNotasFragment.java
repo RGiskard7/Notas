@@ -315,6 +315,12 @@ public class ListNotasFragment extends Fragment {
             }
 
             @Override
+            public boolean isItemViewSwipeEnabled() {
+                // Mientras se seleccionan notas, deslizar no borra.
+                return !modoSeleccion;
+            }
+
+            @Override
             public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
                 return 0.5f;
             }

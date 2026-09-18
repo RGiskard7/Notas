@@ -68,7 +68,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="@string/acerca_de"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_info"
             app:tint="@color/on_surface" />
 
